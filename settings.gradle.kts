@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "WPUstudent"
+rootProject.name = "WPUStudent"
 include(":app")
