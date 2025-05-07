@@ -12,6 +12,9 @@ import androidx.compose.ui.Modifier
 // FIXME:
 //  https://developer.android.com/guide/navigation?hl=en
 //  https://developer.android.com/guide/navigation/navcontroller
+// TODO: Multi-window and desktop windowing support
+// TODO: Predictive back support
+// TODO: Material You support
 
 enum class Screens {
     Login,
