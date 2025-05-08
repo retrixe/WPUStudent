@@ -1,0 +1,123 @@
+package xyz.retrixe.wpustudent.api
+
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.Url
+import io.ktor.http.contentType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class OAuth2CodeRequest(
+    @SerialName("UserId") val userId: String,
+    @SerialName("Password") val password: String,
+    @SerialName("Captcha") val captcha: String = "-",
+    @SerialName("LoginUsing") val loginUsing: String = "OTP",
+    @SerialName("AppRef") val appRef: String = "studentportal",
+)
+
+@Serializable
+data class OAuth2CodeItem(
+    val emailId: String,
+    val redirectUrl: String,
+)
+
+@Serializable
+data class OAuth2CodeResponse(@SerialName("Item") val item: OAuth2CodeItem)
+
+suspend fun getOAuthCode(client: HttpClient, username: String, password: String): String {
+    /* Note: This hash in the query params seems optional; I'm not sure how it's calculated
+    curl 'https://mymitwpu.integratededucation.pwc.in/sso/api/account/oauth2/token?hash=zOMgcPkkFAmrQQhxscW8' \
+      -H 'content-type: application/json' \
+      -H 'x-applicationname: oneportal' \
+      -H 'x-appsecret;' \
+      -H 'x-requestfrom: web' \
+      --data-raw $'{"UserId":"ibrahim.ansari@mitwpu.edu.in","Password":"CENSORED","Captcha":"-","LoginUsing":"OTP","AppRef":"studentportal"}'
+     */
+    val response = client.post("sso/api/account/oauth2/token") {
+        contentType(ContentType.Application.Json)
+        header("x-applicationname", "oneportal")
+        header("x-appsecret", "")
+        header("x-requestfrom", "web")
+        setBody(OAuth2CodeRequest(username, password))
+    }
+    val body: OAuth2CodeResponse = response.body()
+    val url = Url(body.item.redirectUrl)
+    return url.parameters["code"]!!
+}
+
+@Serializable
+data class AccessTokenRequest(
+    @SerialName("ClientId") val clientId: Int = CLIENT_ID,
+    @SerialName("ClientSecret") val clientSecret: String = CLIENT_SECRET,
+    @SerialName("Code") val code: String,
+)
+
+/*
+{
+  "StatusCode": 200,
+  "Item": {
+    "Identity": {
+      "clientId": 3,
+      "AccessToken": "CENSORED",
+      "RefreshToken": "CENSORED",
+      "Scope": "openid",
+      "TokenType": "Bearer",
+      "ExpiresIn": 29079.47503
+    },
+    "UserInfo": {
+      "UserId": 78423,
+      "EmailId": "ibrahim.ansari@mitwpu.edu.in",
+      "FirstName": "Ibrahim",
+      "LastName": "Ansari",
+      "UserTypeInfo": {
+        "Code": "ST",
+        "DisplayName": "Student"
+      },
+      "MobileNumber": "CENSORED",
+      "DateOfBirth": "2004-12-02T00:00:00",
+      "ProfilePicture": "",
+      "RoleUserMaps": [
+        {
+          "RoleId": 109,
+          "RoleCode": "ST",
+          "RoleName": "Student",
+          "IsPrefered": false
+        }
+      ],
+      "IsFirstTimeLogin": false,
+      "IsMFAEnabledWithOTP": false,
+      "IsLock": false,
+      "LockCounter": 0
+    }
+  }
+}
+*/
+
+@Serializable
+data class AccessTokenIdentity(
+    @SerialName("AccessToken") val accessToken: String,
+    @SerialName("RefreshToken") val refreshToken: String,
+)
+
+@Serializable
+data class AccessTokenItem(@SerialName("Identity") val identity: AccessTokenIdentity)
+
+@Serializable
+data class AccessTokenResponse(@SerialName("Item") val item: AccessTokenItem)
+
+suspend fun getAccessToken(client: HttpClient, code: String): String {
+    val response = client.post("sso/oauth2/access_token") {
+        contentType(ContentType.Application.Json)
+        header("x-applicationname", "connectportal")
+        header("x-appsecret", CLIENT_SECRET)
+        header("x-requestfrom", "web")
+        setBody(AccessTokenRequest(code = code))
+    }
+    val body: AccessTokenResponse = response.body()
+    return body.item.identity.accessToken
+}
