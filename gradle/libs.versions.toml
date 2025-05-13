@@ -10,6 +10,8 @@ activityCompose = "1.10.1"
 composeBom = "2025.04.01"
 ktor = "3.1.2"
 kotlinxSerialization = "1.8.0"
+slf4j = "2.0.17"
+datastore = "1.1.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,8 +34,9 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.17" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-android = { module = "uk.uuid.slf4j:slf4j-android", version = "2.0.17-0" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

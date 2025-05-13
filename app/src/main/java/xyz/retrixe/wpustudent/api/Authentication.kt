@@ -31,13 +31,13 @@ data class OAuth2CodeResponse(@SerialName("Item") val item: OAuth2CodeItem)
 
 suspend fun getOAuthCode(client: HttpClient, username: String, password: String): String {
     /* Note: This hash in the query params seems optional; I'm not sure how it's calculated
-    curl 'https://mymitwpu.integratededucation.pwc.in/sso/api/account/oauth2/token?hash=zOMgcPkkFAmrQQhxscW8' \
-      -H 'content-type: application/json' \
-      -H 'x-applicationname: oneportal' \
-      -H 'x-appsecret;' \
-      -H 'x-requestfrom: web' \
-      --data-raw $'{"UserId":"ibrahim.ansari@mitwpu.edu.in","Password":"CENSORED","Captcha":"-","LoginUsing":"OTP","AppRef":"studentportal"}'
-     */
+        curl 'https://mymitwpu.integratededucation.pwc.in/sso/api/account/oauth2/token?hash=zOMgcPkkFAmrQQhxscW8' \
+          -H 'content-type: application/json' \
+          -H 'x-applicationname: oneportal' \
+          -H 'x-appsecret;' \
+          -H 'x-requestfrom: web' \
+          --data-raw $'{"UserId":"ibrahim.ansari@mitwpu.edu.in","Password":"CENSORED","Captcha":"-","LoginUsing":"OTP","AppRef":"studentportal"}'
+    */
     val response = client.post("sso/api/account/oauth2/token") {
         contentType(ContentType.Application.Json)
         header("x-applicationname", "oneportal")
@@ -57,8 +57,7 @@ data class AccessTokenRequest(
     @SerialName("Code") val code: String,
 )
 
-/*
-{
+/* {
   "StatusCode": 200,
   "Item": {
     "Identity": {
@@ -95,8 +94,7 @@ data class AccessTokenRequest(
       "LockCounter": 0
     }
   }
-}
-*/
+} */
 
 @Serializable
 data class AccessTokenIdentity(
@@ -111,6 +109,13 @@ data class AccessTokenItem(@SerialName("Identity") val identity: AccessTokenIden
 data class AccessTokenResponse(@SerialName("Item") val item: AccessTokenItem)
 
 suspend fun getAccessToken(client: HttpClient, code: String): String {
+    /*  curl 'https://mymitwpu.integratededucation.pwc.in/sso/oauth2/access_token' \
+          -H 'content-type: application/json' \
+          -H 'x-applicationname: connectportal' \
+          -H 'x-appsecret: hu5UEMnT0sg51gGtC7nC' \
+          -H 'x-requestfrom: web' \
+          --data-raw '{"ClientId":3,"ClientSecret":"hu5UEMnT0sg51gGtC7nC","Code":"RETURNED FROM REQ 1"}'
+    */
     val response = client.post("sso/oauth2/access_token") {
         contentType(ContentType.Application.Json)
         header("x-applicationname", "connectportal")

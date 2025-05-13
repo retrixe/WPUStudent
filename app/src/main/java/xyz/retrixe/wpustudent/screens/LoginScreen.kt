@@ -45,7 +45,7 @@ import xyz.retrixe.wpustudent.utils.handleKeyEvent
 
 @Composable
 fun LoginScreen(paddingValues: PaddingValues) {
-    val httpClient = remember { createHttpClient() }
+    val httpClient = remember { createHttpClient(null) }
     val coroutineScope = rememberCoroutineScope()
 
     var username by remember { mutableStateOf("") }
@@ -56,7 +56,7 @@ fun LoginScreen(paddingValues: PaddingValues) {
         try {
             val code = getOAuthCode(httpClient, username, password)
             val accessToken = getAccessToken(httpClient, code)
-            println("Access Token: $accessToken")
+            println("Access Token: $accessToken") // FIXME
         } catch (e: Exception) {
             e.printStackTrace() // FIXME
         }

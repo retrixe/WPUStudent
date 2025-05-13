@@ -7,6 +7,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -32,7 +33,7 @@ const val BASE_URL = "https://mymitwpu.integratededucation.pwc.in/"
 const val CLIENT_ID = 3
 const val CLIENT_SECRET = "hu5UEMnT0sg51gGtC7nC"
 
-fun createHttpClient(): HttpClient = HttpClient(Android) {
+fun createHttpClient(token: String?): HttpClient = HttpClient(Android) {
     expectSuccess = true
     BrowserUserAgent()
     install(Logging) {
@@ -43,5 +44,7 @@ fun createHttpClient(): HttpClient = HttpClient(Android) {
     }
     defaultRequest {
         url(BASE_URL)
+        // TODO: https://ktor.io/docs/client-bearer-auth.html#configure
+        if (token != null) header("Authorization", "Bearer $token")
     }
 }
