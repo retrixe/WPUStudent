@@ -36,17 +36,16 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import xyz.retrixe.wpustudent.R
-import xyz.retrixe.wpustudent.api.createHttpClient
-import xyz.retrixe.wpustudent.api.getAccessToken
-import xyz.retrixe.wpustudent.api.getOAuthCode
+import xyz.retrixe.wpustudent.models.SessionViewModel
+import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 import xyz.retrixe.wpustudent.ui.components.PasswordTextField
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.handleKeyEvent
 
 @Composable
-fun LoginScreen(paddingValues: PaddingValues) {
-    val httpClient = remember { createHttpClient(null) }
+fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel) {
     val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = LocalSnackbarHostState.current
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -54,11 +53,14 @@ fun LoginScreen(paddingValues: PaddingValues) {
 
     fun login() = coroutineScope.launch(Dispatchers.IO) {
         try {
-            val code = getOAuthCode(httpClient, username, password)
-            val accessToken = getAccessToken(httpClient, code)
-            println("Access Token: $accessToken") // FIXME
+            sessionViewModel.login(username, password)
         } catch (e: Exception) {
-            e.printStackTrace() // FIXME
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    e.localizedMessage ?: "Unknown error",
+                    withDismissAction = true
+                )
+            }
         }
     }
 

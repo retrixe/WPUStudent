@@ -40,7 +40,10 @@ fun createHttpClient(token: String?): HttpClient = HttpClient(Android) {
         level = LogLevel.INFO
     }
     install(ContentNegotiation) {
-        json(Json { encodeDefaults = true })
+        json(Json {
+            encodeDefaults = true
+            ignoreUnknownKeys = true
+        })
     }
     defaultRequest {
         url(BASE_URL)
