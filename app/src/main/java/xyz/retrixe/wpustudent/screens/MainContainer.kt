@@ -15,6 +15,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import xyz.retrixe.wpustudent.models.SessionViewModel
+import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
+import xyz.retrixe.wpustudent.screens.login.LoginScreen
+import xyz.retrixe.wpustudent.screens.main.MainScreen
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
 // FIXME:
@@ -56,9 +59,9 @@ fun MainContainer(
             LocalSnackbarHostState provides snackbarHostState,
         ) {
             when (screen) {
-                Screens.Loading -> LoadingScreen()
+                Screens.Loading -> LoadingScreen(innerPadding)
                 Screens.Login -> LoginScreen(innerPadding, sessionViewModel)
-                Screens.Main -> MainScreen("$accessToken $studentBasicInfo")
+                Screens.Main -> MainScreen(innerPadding, "$accessToken $studentBasicInfo")
             }
         }
     }
