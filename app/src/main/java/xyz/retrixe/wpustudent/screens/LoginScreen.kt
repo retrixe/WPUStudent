@@ -6,15 +6,24 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import xyz.retrixe.wpustudent.BuildConfig
 import xyz.retrixe.wpustudent.R
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
@@ -42,11 +52,13 @@ import xyz.retrixe.wpustudent.ui.components.PasswordTextField
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.handleKeyEvent
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHostState.current
 
+    var aboutDialog by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val (passwordFocus, loginButtonFocus) = remember { FocusRequester.createRefs() }
@@ -55,11 +67,35 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
         try {
             sessionViewModel.login(username, password)
         } catch (e: Exception) {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    e.localizedMessage ?: "Unknown error",
-                    withDismissAction = true
-                )
+            snackbarHostState.showSnackbar(
+                e.localizedMessage ?: "Unknown error",
+                withDismissAction = true
+            )
+        }
+    }
+
+    if (aboutDialog) {
+        BasicAlertDialog(onDismissRequest = { aboutDialog = false }) {
+            Surface(
+                modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = AlertDialogDefaults.TonalElevation
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("WPUStudent", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text("v" + BuildConfig.VERSION_NAME)
+                    Spacer(Modifier.height(16.dp))
+                    Text("A useful app for MIT-WPU students with various tools e.g. attendance tracking.")
+                    TextButton(
+                        onClick = { aboutDialog = false },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Close")
+                    }
+                }
             }
         }
     }
@@ -76,7 +112,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Spacer(Modifier.width(48.dp))
             Text("WPUStudent // Login", fontSize = 24.sp, fontWeight = FontWeight.Bold)
             PlainTooltipBox("Info") {
-                IconButton(onClick = { /* FIXME */ }) {
+                IconButton(onClick = { aboutDialog = true }) {
                     Icon(painter = painterResource(R.drawable.outline_info_24), contentDescription = "Info")
                 }
             }
