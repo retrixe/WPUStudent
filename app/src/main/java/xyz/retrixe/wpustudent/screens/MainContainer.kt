@@ -39,6 +39,7 @@ fun MainContainer(
 
     val loading by sessionViewModel.loading.collectAsState()
     val accessToken by sessionViewModel.accessToken.collectAsState()
+    val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsState(null)
 
     LaunchedEffect(loading, accessToken) {
         screen =
@@ -57,7 +58,7 @@ fun MainContainer(
             when (screen) {
                 Screens.Loading -> LoadingScreen()
                 Screens.Login -> LoginScreen(innerPadding, sessionViewModel)
-                Screens.Main -> MainScreen(accessToken ?: "NULL")
+                Screens.Main -> MainScreen("$accessToken $studentBasicInfo")
             }
         }
     }

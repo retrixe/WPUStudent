@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import xyz.retrixe.wpustudent.api.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.createHttpClient
 import xyz.retrixe.wpustudent.api.getAccessToken
@@ -32,8 +33,10 @@ class SessionViewModel(
     val accessToken = savedStateHandle
         .getStateFlow<String?>("access_token", null)
     val studentBasicInfo = savedStateHandle
-        .getStateFlow<StudentBasicInfo?>("student_basic_info", null)
-    val httpClient = accessToken.map { createHttpClient(it) }
+        .getStateFlow<String?>("student_basic_info", null)
+        .map { it?.let { Json.decodeFromString<StudentBasicInfo>(it) } }
+    val httpClient = accessToken
+        .map { createHttpClient(it) }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -53,7 +56,7 @@ class SessionViewModel(
             try {
                 val studentBasicInfo = retrieveSession(accessToken)
                 savedStateHandle["access_token"] = accessToken
-                savedStateHandle["student_basic_info"] = studentBasicInfo
+                savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
             } catch (e: Exception) {
                 Log.w("SessionViewModel", e)
             }
@@ -69,9 +72,9 @@ class SessionViewModel(
         val code = getOAuthCode(httpClient, username, password)
         val accessToken = getAccessToken(httpClient, code)
         val studentBasicInfo = retrieveSession(accessToken)
-        savedStateHandle["access_token"] = accessToken
-        savedStateHandle["student_basic_info"] = studentBasicInfo
         sessionDataStore.edit { it[SESSION_ACCESS_TOKEN] = accessToken }
+        savedStateHandle["access_token"] = accessToken
+        savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
     }
 
     companion object {
