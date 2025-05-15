@@ -35,10 +35,6 @@ import xyz.retrixe.wpustudent.screens.login.LoginScreen
 import xyz.retrixe.wpustudent.screens.main.MainScreen
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
-// FIXME: Predictive back support
-// TODO: Multi-window and desktop windowing support
-// TODO: Material You support
-
 object Screens {
     @Serializable object Loading
     @Serializable object Login

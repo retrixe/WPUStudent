@@ -9,6 +9,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import xyz.retrixe.wpustudent.screens.MainContainer
 import xyz.retrixe.wpustudent.ui.theme.WPUStudentTheme
 
+// TODO: Multi-window and desktop windowing support
+// TODO: Material You support
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
