@@ -25,6 +25,7 @@ enum class AppDestinations(val label: String, @DrawableRes val icon: Int) {
 fun MainScreen(paddingValues: PaddingValues, accessToken: String) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
 
+    // https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             AppDestinations.entries.forEach {
