@@ -65,16 +65,22 @@ fun MainContainer(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val startDestinationId =
+        if (navBackStackEntry != null) navController.graph.startDestinationId
+        else null
 
-    LaunchedEffect(loading, accessToken) {
+    LaunchedEffect(loading, accessToken, startDestinationId) {
         // Default is Loading, we never return
         if (loading) return@LaunchedEffect
-        else if (accessToken == null) {
+        // TODO: This works around foldables not working, and is logically correct, but...
+        //       Why does the navigation stack change when un/folding the phone at all?
+        val startDestination = navController.graph[navController.graph.startDestinationId]
+        if (accessToken == null && startDestination != navController.graph[Screens.Login]) {
             navController.navigate(Screens.Login) {
                 popUpTo(navController.graph.startDestinationId) { inclusive = true }
             }
             navController.graph.setStartDestination(Screens.Login)
-        } else {
+        } else if (accessToken != null && startDestination != navController.graph[Screens.Main]) {
             navController.navigate(Screens.Main) {
                 popUpTo(navController.graph.startDestinationId) { inclusive = true }
             }
