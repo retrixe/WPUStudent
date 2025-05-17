@@ -35,6 +35,8 @@ import xyz.retrixe.wpustudent.screens.login.LoginScreen
 import xyz.retrixe.wpustudent.screens.main.MainScreen
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
+// FIXME: Add screens for Home, Attendance, Holidays, Exams and Timetable
+
 object Screens {
     @Serializable object Loading
     @Serializable object Login

@@ -22,6 +22,8 @@ import xyz.retrixe.wpustudent.api.getAccessToken
 import xyz.retrixe.wpustudent.api.getOAuthCode
 import xyz.retrixe.wpustudent.api.retrieveStudentBasicInfo
 import xyz.retrixe.wpustudent.store.SESSION_ACCESS_TOKEN
+import xyz.retrixe.wpustudent.store.decryptFromString
+import xyz.retrixe.wpustudent.store.encryptToString
 import xyz.retrixe.wpustudent.store.sessionDataStore
 
 class SessionViewModel(
@@ -45,6 +47,7 @@ class SessionViewModel(
             // Retrieve token from DataStore
             val accessToken = sessionDataStore.data
                 .map { it[SESSION_ACCESS_TOKEN] }
+                .map { it?.let { decryptFromString(SESSION_ACCESS_TOKEN.name, it) } }
                 .firstOrNull()
 
             // If no access token, we're done here.
@@ -72,7 +75,8 @@ class SessionViewModel(
         val code = getOAuthCode(httpClient, username, password)
         val accessToken = getAccessToken(httpClient, code)
         val studentBasicInfo = retrieveSession(accessToken)
-        sessionDataStore.edit { it[SESSION_ACCESS_TOKEN] = accessToken }
+        val encryptedAccessToken = encryptToString(SESSION_ACCESS_TOKEN.name, accessToken)
+        sessionDataStore.edit { it[SESSION_ACCESS_TOKEN] = encryptedAccessToken }
         savedStateHandle["access_token"] = accessToken
         savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
     }
