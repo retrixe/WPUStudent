@@ -85,6 +85,8 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                     modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    Icon(painter = painterResource(R.drawable.outline_info_24), contentDescription = "Info")
+                    Spacer(Modifier.height(16.dp))
                     Text("WPUStudent", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Text("v" + BuildConfig.VERSION_NAME)
                     Spacer(Modifier.height(16.dp))
