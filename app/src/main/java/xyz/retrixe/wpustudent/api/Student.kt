@@ -110,11 +110,14 @@ data class StudentBasicInfo(
     @SerialName("FirstName") val firstName: String,
     @SerialName("MiddleName") val middleName: String,
     @SerialName("LastName") val lastName: String,
-    @SerialName("AdmissionDate") val admissionDate: String?,
     @SerialName("GlobalId") val globalId: String,
-    @SerialName("Date_Of_Birth") val dateOfBirth: String,
-    @SerialName("EmailId") val emailId: String,
+    @SerialName("TermName") val termName: String,
+    @SerialName("CourseFamilyName") val courseFamilyName: String,
+    @SerialName("ProfilePictureInfo") val profilePictureInfo: ProfilePictureInfo,
 )
+
+@Serializable
+data class ProfilePictureInfo(@SerialName("FilePath") val filePath: String)
 
 @Serializable
 data class StudentBasicInfoResponse(@SerialName("Items") val items: List<StudentBasicInfo>)

@@ -29,13 +29,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.get
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.R
+import xyz.retrixe.wpustudent.api.createHttpClient
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
 import xyz.retrixe.wpustudent.screens.login.LoginScreen
 import xyz.retrixe.wpustudent.screens.main.MainScreen
+import xyz.retrixe.wpustudent.screens.main.home.HomeScreen
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
-// FIXME: Add screens for Home, Attendance, Holidays, Exams, Timetable, Settings
+// FIXME: Add screens for Attendance, Holidays, Exams, Timetable, Settings
 
 object Screens {
     @Serializable object Loading
@@ -61,6 +63,7 @@ fun MainContainer(
 
     val loading by sessionViewModel.loading.collectAsState()
     val accessToken by sessionViewModel.accessToken.collectAsState()
+    val httpClient by sessionViewModel.httpClient.collectAsState(createHttpClient(null))
     val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsState(null)
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -135,7 +138,7 @@ fun MainContainer(
                     composable<Screens.Login> { LoginScreen(innerPadding, sessionViewModel) }
                     navigation<Screens.Main>(startDestination = Screens.Main.Home) {
                         composable<Screens.Main.Home> {
-                            MainScreen(innerPadding, "$accessToken $studentBasicInfo")
+                            HomeScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Attendance> {
                             MainScreen(innerPadding, "Attendance $accessToken $studentBasicInfo")
