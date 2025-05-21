@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.api
+package xyz.retrixe.wpustudent.api.endpoints
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -6,6 +6,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import xyz.retrixe.wpustudent.api.CLIENT_SECRET
+import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 
 /* FIXME
 curl 'https://mymitwpu.integratededucation.pwc.in/apigateway/attendance/api/attendance/summary' \
@@ -105,22 +107,7 @@ curl 'https://mymitwpu.integratededucation.pwc.in/apigateway/student-attendance/
     "AdditionalData": null
 } */
 @Serializable
-data class StudentBasicInfo(
-    @SerialName("StudentId") val studentId: String,
-    @SerialName("FirstName") val firstName: String,
-    @SerialName("MiddleName") val middleName: String,
-    @SerialName("LastName") val lastName: String,
-    @SerialName("GlobalId") val globalId: String,
-    @SerialName("TermName") val termName: String,
-    @SerialName("CourseFamilyName") val courseFamilyName: String,
-    @SerialName("ProfilePictureInfo") val profilePictureInfo: ProfilePictureInfo,
-)
-
-@Serializable
-data class ProfilePictureInfo(@SerialName("FilePath") val filePath: String)
-
-@Serializable
-data class StudentBasicInfoResponse(@SerialName("Items") val items: List<StudentBasicInfo>)
+private data class StudentBasicInfoResponse(@SerialName("Items") val items: List<StudentBasicInfo>)
 
 suspend fun retrieveStudentBasicInfo(
     client: HttpClient,

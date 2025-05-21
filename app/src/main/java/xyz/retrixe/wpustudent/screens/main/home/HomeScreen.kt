@@ -22,7 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,12 +33,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
-import xyz.retrixe.wpustudent.api.StudentBasicInfo
-import xyz.retrixe.wpustudent.api.fetchAsset
+import xyz.retrixe.wpustudent.api.endpoints.fetchAsset
+import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import java.io.Serializable
 
-sealed interface ProfilePictureState {
-    object Loading : ProfilePictureState
-    object Error : ProfilePictureState
+sealed interface ProfilePictureState : Serializable {
+    object Loading : ProfilePictureState {
+        @Suppress("unused") private fun readResolve(): Any = Loading
+    }
+
+    object Error : ProfilePictureState {
+        @Suppress("unused") private fun readResolve(): Any = Error
+    }
+
     data class Loaded(val data: ByteArray) : ProfilePictureState {
         override fun equals(other: Any?) =
             this === other && javaClass == other.javaClass && data.contentEquals(other.data)
@@ -53,12 +60,12 @@ fun HomeScreen(
     httpClient: HttpClient,
     studentBasicInfo: StudentBasicInfo
 ) {
-    var profilePicture by remember {
+    var profilePicture by rememberSaveable(studentBasicInfo.profilePictureInfo.filePath) {
         mutableStateOf<ProfilePictureState>(ProfilePictureState.Loading)
     }
 
     LaunchedEffect(studentBasicInfo.profilePictureInfo.filePath) {
-        profilePicture = ProfilePictureState.Loading
+        if (profilePicture != ProfilePictureState.Loading) return@LaunchedEffect
         try {
             val asset = fetchAsset(httpClient,
                 "iemsfilecontainer",

@@ -19,11 +19,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import xyz.retrixe.wpustudent.api.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.createHttpClient
-import xyz.retrixe.wpustudent.api.getAccessToken
-import xyz.retrixe.wpustudent.api.getOAuthCode
-import xyz.retrixe.wpustudent.api.retrieveStudentBasicInfo
+import xyz.retrixe.wpustudent.api.endpoints.getAccessToken
+import xyz.retrixe.wpustudent.api.endpoints.getOAuthCode
+import xyz.retrixe.wpustudent.api.endpoints.retrieveStudentBasicInfo
+import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.store.SESSION_ACCESS_TOKEN
 import xyz.retrixe.wpustudent.store.decryptFromString
 import xyz.retrixe.wpustudent.store.encryptToString

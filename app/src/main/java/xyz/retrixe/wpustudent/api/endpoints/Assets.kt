@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.api
+package xyz.retrixe.wpustudent.api.endpoints
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -9,9 +9,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import xyz.retrixe.wpustudent.api.CLIENT_SECRET
 
 @Serializable
-data class FetchAssetRequest(
+private data class FetchAssetRequest(
     @SerialName("ContainerName") val containerName: String,
     @SerialName("BlobRelativePath") val blobRelativePath: String,
     @SerialName("ActualFileName") val actualFileName: String,

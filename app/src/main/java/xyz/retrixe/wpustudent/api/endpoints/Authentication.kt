@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.api
+package xyz.retrixe.wpustudent.api.endpoints
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -10,9 +10,11 @@ import io.ktor.http.Url
 import io.ktor.http.contentType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import xyz.retrixe.wpustudent.api.CLIENT_ID
+import xyz.retrixe.wpustudent.api.CLIENT_SECRET
 
 @Serializable
-data class OAuth2CodeRequest(
+private data class OAuth2CodeRequest(
     @SerialName("UserId") val userId: String,
     @SerialName("Password") val password: String,
     @SerialName("Captcha") val captcha: String = "-",
@@ -21,13 +23,13 @@ data class OAuth2CodeRequest(
 )
 
 @Serializable
-data class OAuth2CodeItem(
+private data class OAuth2CodeResponse(@SerialName("Item") val item: OAuth2CodeItem)
+
+@Serializable
+private data class OAuth2CodeItem(
     val emailId: String,
     val redirectUrl: String,
 )
-
-@Serializable
-data class OAuth2CodeResponse(@SerialName("Item") val item: OAuth2CodeItem)
 
 suspend fun getOAuthCode(client: HttpClient, username: String, password: String): String {
     /* Note: This hash in the query params seems optional; I'm not sure how it's calculated
@@ -51,7 +53,7 @@ suspend fun getOAuthCode(client: HttpClient, username: String, password: String)
 }
 
 @Serializable
-data class AccessTokenRequest(
+private data class AccessTokenRequest(
     @SerialName("ClientId") val clientId: Int = CLIENT_ID,
     @SerialName("ClientSecret") val clientSecret: String = CLIENT_SECRET,
     @SerialName("Code") val code: String,
@@ -95,18 +97,17 @@ data class AccessTokenRequest(
     }
   }
 } */
+@Serializable
+private data class AccessTokenResponse(@SerialName("Item") val item: AccessTokenItem)
 
 @Serializable
-data class AccessTokenIdentity(
+private data class AccessTokenItem(@SerialName("Identity") val identity: AccessTokenIdentity)
+
+@Serializable
+private data class AccessTokenIdentity(
     @SerialName("AccessToken") val accessToken: String,
     @SerialName("RefreshToken") val refreshToken: String,
 )
-
-@Serializable
-data class AccessTokenItem(@SerialName("Identity") val identity: AccessTokenIdentity)
-
-@Serializable
-data class AccessTokenResponse(@SerialName("Item") val item: AccessTokenItem)
 
 suspend fun getAccessToken(client: HttpClient, code: String): String {
     /*  curl 'https://mymitwpu.integratededucation.pwc.in/sso/oauth2/access_token' \
