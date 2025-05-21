@@ -61,12 +61,16 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
     var aboutDialog by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var loading by remember { mutableStateOf(false) }
     val (passwordFocus, loginButtonFocus) = remember { FocusRequester.createRefs() }
 
     fun login() = coroutineScope.launch(Dispatchers.IO) {
+        loading = true
         try {
             sessionViewModel.login(username, password)
+            loading = false
         } catch (e: Exception) {
+            loading = false
             snackbarHostState.showSnackbar(
                 e.localizedMessage ?: "Unknown error",
                 withDismissAction = true
@@ -105,6 +109,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
     Column(
         Modifier.padding(paddingValues).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             Modifier.fillMaxWidth(),
@@ -121,7 +126,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
         }
         Spacer(Modifier.weight(1f))
         Column(
-            Modifier.padding(horizontal = 16.dp),
+            Modifier.padding(horizontal = 16.dp).width(512.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text("Enter your PwC credentials below:", fontSize = 16.sp)
@@ -132,6 +137,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                 value = username,
                 onValueChange = { username = it },
                 label = { Text("Username") },
+                enabled = !loading,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 keyboardActions = KeyboardActions(onNext = { passwordFocus.requestFocus() }),
                 singleLine = true
@@ -144,12 +150,14 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
+                enabled = !loading,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 keyboardActions = KeyboardActions(onDone = { login() }),
             )
             Button(
                 onClick = { login() },
-                modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus)
+                modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
+                enabled = !loading,
             ) {
                 Text("Login")
             }
