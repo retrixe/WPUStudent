@@ -35,6 +35,7 @@ import xyz.retrixe.wpustudent.screens.main.MainScreen
 import xyz.retrixe.wpustudent.screens.main.home.HomeScreen
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
+// FIXME: Multi-window and desktop windowing support
 // FIXME: Add screens for Attendance, Holidays, Exams, Timetable, Settings
 
 object Screens {
