@@ -12,9 +12,11 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import xyz.retrixe.wpustudent.api.StudentBasicInfo
@@ -31,6 +33,8 @@ class SessionViewModel(
     private val sessionDataStore: DataStore<Preferences>,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private val _vanillaHttpClient = createHttpClient(null)
+
     var loading = savedStateHandle
         .getStateFlow("loading", true)
     val accessToken = savedStateHandle
@@ -38,8 +42,10 @@ class SessionViewModel(
     val studentBasicInfo = savedStateHandle
         .getStateFlow<String?>("student_basic_info", null)
         .map { it?.let { Json.decodeFromString<StudentBasicInfo>(it) } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
     val httpClient = accessToken
         .map { createHttpClient(it) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, _vanillaHttpClient)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -69,7 +75,7 @@ class SessionViewModel(
     }
 
     suspend fun login(username: String, password: String) {
-        val httpClient = createHttpClient(null)
+        val httpClient = _vanillaHttpClient
         val code = getOAuthCode(httpClient, username, password)
         val accessToken = getAccessToken(httpClient, code)
         val studentBasicInfo = retrieveStudentBasicInfo(httpClient, accessToken)

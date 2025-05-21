@@ -13,7 +13,6 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -29,7 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.get
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.R
-import xyz.retrixe.wpustudent.api.createHttpClient
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
 import xyz.retrixe.wpustudent.screens.login.LoginScreen
@@ -63,33 +61,11 @@ fun MainContainer(
 
     val loading by sessionViewModel.loading.collectAsState()
     val accessToken by sessionViewModel.accessToken.collectAsState()
-    val httpClient by sessionViewModel.httpClient.collectAsState(createHttpClient(null))
-    val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsState(null)
+    val httpClient by sessionViewModel.httpClient.collectAsState()
+    val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val startDestinationId =
-        if (navBackStackEntry != null) navController.graph.startDestinationId
-        else null
-
-    LaunchedEffect(loading, accessToken, startDestinationId) {
-        // Don't touch navigation if the graph and stack have not yet been initialised.
-        if (loading || navBackStackEntry == null) return@LaunchedEffect
-        // TODO: This works around foldables not working, and is logically correct, but...
-        //       Why does the navigation stack change when un/folding the phone at all?
-        val startDestination = navController.graph[navController.graph.startDestinationId]
-        if (accessToken == null && startDestination != navController.graph[Screens.Login]) {
-            navController.navigate(Screens.Login) {
-                popUpTo(navController.graph.startDestinationId) { inclusive = true }
-            }
-            navController.graph.setStartDestination(Screens.Login)
-        } else if (accessToken != null && startDestination != navController.graph[Screens.Main]) {
-            navController.navigate(Screens.Main) {
-                popUpTo(navController.graph.startDestinationId) { inclusive = true }
-            }
-            navController.graph.setStartDestination(Screens.Main)
-        }
-    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -133,7 +109,11 @@ fun MainContainer(
                     }
                 }
             ) {
-                NavHost(navController = navController, startDestination = Screens.Loading) {
+                val startDestination =
+                    if (loading) Screens.Loading
+                    else if (accessToken == null) Screens.Login
+                    else Screens.Main
+                NavHost(navController = navController, startDestination = startDestination) {
                     composable<Screens.Loading> { LoadingScreen(innerPadding) }
                     composable<Screens.Login> { LoginScreen(innerPadding, sessionViewModel) }
                     navigation<Screens.Main>(startDestination = Screens.Main.Home) {
