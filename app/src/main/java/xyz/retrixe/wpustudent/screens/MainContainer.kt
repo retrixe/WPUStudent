@@ -31,8 +31,8 @@ import xyz.retrixe.wpustudent.R
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
 import xyz.retrixe.wpustudent.screens.login.LoginScreen
-import xyz.retrixe.wpustudent.screens.main.MainScreen
 import xyz.retrixe.wpustudent.screens.main.home.HomeScreen
+import xyz.retrixe.wpustudent.screens.main.settings.SettingsScreen
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
 // FIXME: Multi-window and desktop windowing support
@@ -43,11 +43,11 @@ object Screens {
     @Serializable object Login
     @Serializable object Main {
         @Serializable object Home
-        @Serializable object Attendance
+        @Serializable object Settings
 
         enum class Destinations(val label: String, @get:DrawableRes val icon: Int, val route: Any) {
             HOME("Home", R.drawable.baseline_home_24, Home),
-            ATTENDANCE("Attendance", R.drawable.baseline_co_present_24, Attendance),
+            SETTINGS("Settings", R.drawable.baseline_settings_24, Settings),
         }
     }
 }
@@ -121,8 +121,8 @@ fun MainContainer(
                         composable<Screens.Main.Home> {
                             HomeScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
-                        composable<Screens.Main.Attendance> {
-                            MainScreen(innerPadding, "Attendance $accessToken $studentBasicInfo")
+                        composable<Screens.Main.Settings> {
+                            SettingsScreen(innerPadding, sessionViewModel)
                         }
                     }
                 }

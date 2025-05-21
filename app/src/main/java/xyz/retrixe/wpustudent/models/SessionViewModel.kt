@@ -85,6 +85,13 @@ class SessionViewModel(
         savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
     }
 
+    suspend fun logout() {
+        sessionDataStore.edit { it.remove(SESSION_ACCESS_TOKEN) }
+        savedStateHandle["access_token"] = null
+        savedStateHandle["student_basic_info"] = null
+        // TODO: Perhaps we should invalidate?...
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
