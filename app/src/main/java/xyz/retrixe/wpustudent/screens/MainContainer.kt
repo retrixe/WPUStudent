@@ -35,7 +35,7 @@ import xyz.retrixe.wpustudent.screens.login.LoginScreen
 import xyz.retrixe.wpustudent.screens.main.MainScreen
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
-// FIXME: Add screens for Home, Attendance, Holidays, Exams and Timetable
+// FIXME: Add screens for Home, Attendance, Holidays, Exams, Timetable, Settings
 
 object Screens {
     @Serializable object Loading
@@ -44,7 +44,7 @@ object Screens {
         @Serializable object Home
         @Serializable object Attendance
 
-        enum class Destinations(val label: String, @DrawableRes val icon: Int, val route: Any) {
+        enum class Destinations(val label: String, @get:DrawableRes val icon: Int, val route: Any) {
             HOME("Home", R.drawable.baseline_home_24, Home),
             ATTENDANCE("Attendance", R.drawable.baseline_co_present_24, Attendance),
         }
@@ -70,8 +70,8 @@ fun MainContainer(
         else null
 
     LaunchedEffect(loading, accessToken, startDestinationId) {
-        // Default is Loading, we never return
-        if (loading) return@LaunchedEffect
+        // Don't touch navigation if the graph and stack have not yet been initialised.
+        if (loading || navBackStackEntry == null) return@LaunchedEffect
         // TODO: This works around foldables not working, and is logically correct, but...
         //       Why does the navigation stack change when un/folding the phone at all?
         val startDestination = navController.graph[navController.graph.startDestinationId]

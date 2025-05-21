@@ -119,7 +119,10 @@ data class StudentBasicInfo(
 @Serializable
 data class StudentBasicInfoResponse(@SerialName("Items") val items: List<StudentBasicInfo>)
 
-suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
+suspend fun retrieveStudentBasicInfo(
+    client: HttpClient,
+    bearerToken: String? = null // This function typically expects such a token where it is used
+): StudentBasicInfo {
     /*  curl 'https://mymitwpu.integratededucation.pwc.in/apigateway/connect-portal/api/studentloginbasicinfo' \
           -H 'authorization: Bearer BEARER' \
           -H 'x-applicationname: connectportal' \
@@ -130,6 +133,9 @@ suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
         header("x-applicationname", "connectportal")
         header("x-appsecret", CLIENT_SECRET)
         header("x-requestfrom", "web")
+        if (bearerToken != null) {
+            header("authorization", "Bearer $bearerToken")
+        }
     }
     val body: StudentBasicInfoResponse = response.body()
     return body.items.first()

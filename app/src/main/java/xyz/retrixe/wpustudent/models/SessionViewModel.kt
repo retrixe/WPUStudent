@@ -12,6 +12,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -57,7 +58,7 @@ class SessionViewModel(
             }
 
             try {
-                val studentBasicInfo = retrieveSession(accessToken)
+                val studentBasicInfo = retrieveStudentBasicInfo(httpClient.first(), accessToken)
                 savedStateHandle["access_token"] = accessToken
                 savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
             } catch (e: Exception) {
@@ -67,14 +68,11 @@ class SessionViewModel(
         }
     }
 
-    suspend fun retrieveSession(accessToken: String): StudentBasicInfo =
-        retrieveStudentBasicInfo(createHttpClient(accessToken))
-
     suspend fun login(username: String, password: String) {
         val httpClient = createHttpClient(null)
         val code = getOAuthCode(httpClient, username, password)
         val accessToken = getAccessToken(httpClient, code)
-        val studentBasicInfo = retrieveSession(accessToken)
+        val studentBasicInfo = retrieveStudentBasicInfo(httpClient, accessToken)
         val encryptedAccessToken = encryptToString(SESSION_ACCESS_TOKEN.name, accessToken)
         sessionDataStore.edit { it[SESSION_ACCESS_TOKEN] = encryptedAccessToken }
         savedStateHandle["access_token"] = accessToken
