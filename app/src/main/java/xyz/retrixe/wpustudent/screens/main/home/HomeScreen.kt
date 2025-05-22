@@ -37,16 +37,16 @@ import xyz.retrixe.wpustudent.api.endpoints.fetchAsset
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 import java.io.Serializable
 
-sealed interface ProfilePictureState : Serializable {
-    object Loading : ProfilePictureState {
+private sealed interface ProfilePicture : Serializable {
+    object Loading : ProfilePicture {
         @Suppress("unused") private fun readResolve(): Any = Loading
     }
 
-    object Error : ProfilePictureState {
+    object Error : ProfilePicture {
         @Suppress("unused") private fun readResolve(): Any = Error
     }
 
-    data class Loaded(val data: ByteArray) : ProfilePictureState {
+    data class Loaded(val data: ByteArray) : ProfilePicture {
         override fun equals(other: Any?) =
             this === other && javaClass == other.javaClass && data.contentEquals(other.data)
 
@@ -61,19 +61,19 @@ fun HomeScreen(
     studentBasicInfo: StudentBasicInfo
 ) {
     var profilePicture by rememberSaveable(studentBasicInfo.profilePictureInfo.filePath) {
-        mutableStateOf<ProfilePictureState>(ProfilePictureState.Loading)
+        mutableStateOf<ProfilePicture>(ProfilePicture.Loading)
     }
 
     LaunchedEffect(studentBasicInfo.profilePictureInfo.filePath) {
-        if (profilePicture != ProfilePictureState.Loading) return@LaunchedEffect
+        if (profilePicture != ProfilePicture.Loading) return@LaunchedEffect
         try {
             val asset = fetchAsset(httpClient,
                 "iemsfilecontainer",
                 studentBasicInfo.profilePictureInfo.filePath,
                 "profile-picture.png")
-            profilePicture = ProfilePictureState.Loaded(asset)
+            profilePicture = ProfilePicture.Loaded(asset)
         } catch (_: Exception) {
-            profilePicture = ProfilePictureState.Error
+            profilePicture = ProfilePicture.Error
         }
     }
 
@@ -82,12 +82,12 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (profilePicture) {
-            is ProfilePictureState.Loading -> {
+            is ProfilePicture.Loading -> {
                 CircularProgressIndicator(Modifier.size(192.dp).padding(48.dp))
             }
 
-            is ProfilePictureState.Loaded -> {
-                val imageData = (profilePicture as ProfilePictureState.Loaded).data
+            is ProfilePicture.Loaded -> {
+                val imageData = (profilePicture as ProfilePicture.Loaded).data
                 val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
                 Image(
                     bitmap = bitmap.asImageBitmap(),
