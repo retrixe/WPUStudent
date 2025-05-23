@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,6 +41,7 @@ import xyz.retrixe.wpustudent.api.entities.AttendedTerm
 import xyz.retrixe.wpustudent.api.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
+import kotlin.math.ceil
 
 @Parcelize
 private sealed interface AttendanceSummary : Parcelable {
@@ -115,7 +117,9 @@ fun AttendanceScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                LazyColumn { items(summary.sortedBy { it.moduleName }) { course ->
+                LazyColumn(
+                    Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
+                ) { items(summary.sortedBy { it.moduleName }) { course ->
                     val rawAttendance = course.presentCount / course.totalSessions
                     val attendance = rawAttendance * 100
                     val color = getThresholdColor(attendance, course.thresholdPercentage)
@@ -136,8 +140,23 @@ fun AttendanceScreen(
                                 val totalSessions = course.totalSessions.toInt()
                                 append(" ($presentCount / $totalSessions sessions)")
                             })
-                            // FIXME: If below threshold, how many classes to reach threshold?
-                            // FIXME: Estimate classes left, how many one should attend
+                            if (attendance < (course.thresholdPercentage + 5)) {
+                                // (present + x) / (total + x) = threshold
+                                // => (present + x) = threshold (total + x)
+                                // => present + x = threshold * total + threshold * x
+                                // => x - x * threshold = threshold * total - present
+                                // => x (1 - threshold) = threshold * total - present
+                                // => x = (threshold * total - present) / (1 - threshold)
+                                val present = course.presentCount
+                                val total = course.totalSessions
+                                val threshold = (course.thresholdPercentage + 5) / 100
+                                val classesLeft = ((threshold * total) - present) / (1 - threshold)
+                                Spacer(Modifier.height(16.dp))
+                                Text("Attend ${ceil(classesLeft).toInt()} classes to reach " +
+                                        "${(threshold * 100).toInt()}% threshold.")
+                            } else {
+                                // TODO: Estimate classes left, and how many one should attend
+                            }
                         }
                     }
                     Spacer(Modifier.height(16.dp))
