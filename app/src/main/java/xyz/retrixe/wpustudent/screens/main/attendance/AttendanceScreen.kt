@@ -1,5 +1,6 @@
 package xyz.retrixe.wpustudent.screens.main.attendance
 
+import android.os.Parcelable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,23 +33,19 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
+import kotlinx.parcelize.Parcelize
 import xyz.retrixe.wpustudent.api.endpoints.getAttendedCourses
 import xyz.retrixe.wpustudent.api.endpoints.getTermAttendanceSummary
 import xyz.retrixe.wpustudent.api.entities.AttendedTerm
 import xyz.retrixe.wpustudent.api.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
-import java.io.Serializable
 
-// FIXME: Not actually Serializable...
-private sealed interface AttendanceSummary : Serializable {
-    object Loading : AttendanceSummary {
-        @Suppress("unused") private fun readResolve(): Any = Loading
-    }
+@Parcelize
+private sealed interface AttendanceSummary : Parcelable {
+    object Loading : AttendanceSummary
 
-    object Error : AttendanceSummary {
-        @Suppress("unused") private fun readResolve(): Any = Error
-    }
+    object Error : AttendanceSummary
 
     data class Loaded(
         val summary: List<CourseAttendanceSummary>,

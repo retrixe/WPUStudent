@@ -1,5 +1,7 @@
 package xyz.retrixe.wpustudent.api.entities
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -18,6 +20,7 @@ data class StudentBasicInfo(
 @Serializable
 data class ProfilePictureInfo(@SerialName("FilePath") val filePath: String)
 
+@Parcelize
 @Serializable
 data class CourseAttendanceSummary(
     @SerialName("TotalSessions") val totalSessions: Double,
@@ -31,8 +34,9 @@ data class CourseAttendanceSummary(
     @SerialName("ThresholdPercentage") val thresholdPercentage: Double,
     @SerialName("SelectedStartDate") val selectedStartDate: String,
     @SerialName("SelectedEndDate") val selectedEndDate: String,
-)
+) : Parcelable
 
+@Parcelize
 @Serializable
 data class AttendedTerm(
     @SerialName("IsCurrentTerm") val isCurrentTerm: Boolean,
@@ -41,10 +45,11 @@ data class AttendedTerm(
     @SerialName("TermStartDate") val termStartDate: String,
     @SerialName("TermEndDate") val termEndDate: String,
     @SerialName("ModuleDropdownDetailsList") val attendedCourses: List<AttendedCourse>,
-)
+) : Parcelable
 
+@Parcelize
 @Serializable
 data class AttendedCourse(
     @SerialName("ModuleId") val moduleId: Int,
     @SerialName("ModuleName") val moduleName: String,
-)
+) : Parcelable
