@@ -1,18 +1,20 @@
 package xyz.retrixe.wpustudent.screens.main.attendance
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,17 +24,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
-import kotlinx.serialization.json.Json
 import xyz.retrixe.wpustudent.api.endpoints.getAttendedCourses
 import xyz.retrixe.wpustudent.api.endpoints.getTermAttendanceSummary
 import xyz.retrixe.wpustudent.api.entities.AttendedTerm
 import xyz.retrixe.wpustudent.api.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
 import java.io.Serializable
 
+// FIXME: Not actually Serializable...
 private sealed interface AttendanceSummary : Serializable {
     object Loading : AttendanceSummary {
         @Suppress("unused") private fun readResolve(): Any = Loading
@@ -47,6 +55,12 @@ private sealed interface AttendanceSummary : Serializable {
         val courses: List<AttendedTerm>,
     ) : AttendanceSummary
 }
+
+// FIXME: Eyesore on light theme
+private fun getThresholdColor(value: Double, threshold: Double) =
+    if (value >= threshold + 5) Color.Green
+    else if (value >= threshold) Color.Yellow
+    else Color.Red
 
 @Composable
 fun AttendanceScreen(
@@ -69,33 +83,73 @@ fun AttendanceScreen(
         }
     }
 
-    // FIXME Properly display this stuff you know
-    Column(
-        Modifier.fillMaxSize().padding(paddingValues).padding(8.dp, 48.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+        Spacer(Modifier.height(16.dp))
+        Text("Attendance", fontSize = 36.sp, fontWeight = FontWeight.Bold)
+
         when (attendanceSummary) {
             is AttendanceSummary.Loading -> {
-                CircularProgressIndicator(Modifier.size(192.dp).padding(48.dp))
+                Spacer(Modifier.weight(1f))
+                CircularProgressIndicator(Modifier.size(96.dp).align(Alignment.CenterHorizontally))
+                Spacer(Modifier.weight(1f))
             }
 
             is AttendanceSummary.Loaded -> {
-                Text(Json.encodeToString((attendanceSummary as AttendanceSummary.Loaded).courses))
+                val summary = (attendanceSummary as AttendanceSummary.Loaded).summary
+
+                Spacer(Modifier.height(16.dp))
+
+                Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+                    Text("Total", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    val totalAttendance =
+                        summary.sumOf { it.presentCount * 100 / it.totalSessions } / summary.size
+                    val lowestThreshold =
+                        summary.minOf { it.thresholdPercentage }
+                    Text("%.2f".format(totalAttendance) + "%",
+                        color = getThresholdColor(totalAttendance, lowestThreshold),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold)
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                LazyColumn { items(summary) { course ->
+                    val rawAttendance = course.presentCount / course.totalSessions
+                    val attendance = rawAttendance * 100
+                    val color = getThresholdColor(attendance, course.thresholdPercentage)
+
+                    OutlinedCard(Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(course.moduleName, fontSize = 20.sp)
+                            Spacer(Modifier.height(16.dp))
+                            // FIXME: Address issues with background color
+                            FixedFractionIndicator(Modifier.height(8.dp), rawAttendance, color)
+                            Spacer(Modifier.height(8.dp))
+                            Text(buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = color)) {
+                                    append("%.2f".format(attendance))
+                                    append("%")
+                                }
+                                val presentCount = course.presentCount.toInt()
+                                val totalSessions = course.totalSessions.toInt()
+                                append(" ($presentCount / $totalSessions sessions)")
+                            })
+                            // FIXME: If below threshold, how many classes to reach threshold?
+                            // FIXME: Estimate classes left, how many one should attend
+                        }
+                    }
+                    Spacer(Modifier.height(16.dp))
+                } }
             }
 
             else -> {
-                Box(
-                    Modifier
-                        .size(192.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
-                ) {
-                    Icon(
-                        Icons.Default.Warning,
-                        contentDescription = "Error loading profile picture",
-                        modifier = Modifier.size(96.dp).align(Alignment.Center)
-                    )
-                }
+                Spacer(Modifier.weight(1f))
+                Text("Failed to load attendance data!",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = MaterialTheme.colorScheme.error)
+                Spacer(Modifier.weight(1f))
             }
         }
     }

@@ -97,7 +97,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Modifier.padding(horizontal = 16.dp).width(512.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("Enter your PwC credentials below:", fontSize = 16.sp)
+            Text("Enter your PwC credentials below:")
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth()
                     .focusProperties { next = passwordFocus }
