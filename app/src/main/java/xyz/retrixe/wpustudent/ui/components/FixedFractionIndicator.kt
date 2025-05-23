@@ -12,8 +12,11 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun FixedFractionIndicator(modifier: Modifier = Modifier, fraction: Double, color: Color) {
-    // FIXME: Better background color
-    Row(modifier.fillMaxWidth().clip(MaterialTheme.shapes.small)) {
+    Row(modifier
+        .fillMaxWidth()
+        .background(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.shapes.small)
+        .clip(MaterialTheme.shapes.small)
+    ) {
         Spacer(modifier.fillMaxWidth(fraction.toFloat()).background(color))
     }
 }

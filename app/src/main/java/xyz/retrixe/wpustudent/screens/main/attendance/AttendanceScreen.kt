@@ -56,11 +56,16 @@ private sealed interface AttendanceSummary : Serializable {
     ) : AttendanceSummary
 }
 
-// FIXME: Eyesore on light theme
+// TODO
+//  - https://m3.material.io/styles/color/advanced/overview
+//  - https://github.com/material-foundation/material-color-utilities
+//  - https://material-foundation.github.io/material-theme-builder/
+//  - https://developer.android.com/develop/ui/compose/designsystems/custom
+@Composable
 private fun getThresholdColor(value: Double, threshold: Double) =
-    if (value >= threshold + 5) Color.Green
-    else if (value >= threshold) Color.Yellow
-    else Color.Red
+    if (value >= threshold + 5) Color(0xFF00BB90)
+    else if (value >= threshold) Color(0xFFFFCC02)
+    else MaterialTheme.colorScheme.error
 
 @Composable
 fun AttendanceScreen(
@@ -113,7 +118,7 @@ fun AttendanceScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                LazyColumn { items(summary) { course ->
+                LazyColumn { items(summary.sortedBy { it.moduleName }) { course ->
                     val rawAttendance = course.presentCount / course.totalSessions
                     val attendance = rawAttendance * 100
                     val color = getThresholdColor(attendance, course.thresholdPercentage)
@@ -122,13 +127,13 @@ fun AttendanceScreen(
                         Column(Modifier.padding(16.dp)) {
                             Text(course.moduleName, fontSize = 20.sp)
                             Spacer(Modifier.height(16.dp))
-                            // FIXME: Address issues with background color
                             FixedFractionIndicator(Modifier.height(8.dp), rawAttendance, color)
                             Spacer(Modifier.height(8.dp))
                             Text(buildAnnotatedString {
-                                withStyle(style = SpanStyle(color = color)) {
-                                    append("%.2f".format(attendance))
-                                    append("%")
+                                withStyle(
+                                    style = SpanStyle(color = color, fontWeight = FontWeight.Bold),
+                                ) {
+                                    append("%.2f".format(attendance) + "%")
                                 }
                                 val presentCount = course.presentCount.toInt()
                                 val totalSessions = course.totalSessions.toInt()
