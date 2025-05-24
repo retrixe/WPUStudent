@@ -12,6 +12,7 @@ data class StudentBasicInfo(
     @SerialName("MiddleName") val middleName: String,
     @SerialName("LastName") val lastName: String,
     @SerialName("GlobalId") val globalId: String,
+    @SerialName("TermCode") val termCode: String,
     @SerialName("TermName") val termName: String,
     @SerialName("CourseFamilyName") val courseFamilyName: String,
     @SerialName("ProfilePictureInfo") val profilePictureInfo: ProfilePictureInfo,
@@ -61,4 +62,22 @@ data class Holiday(
     @SerialName("SubType") val subType: String,
     @SerialName("StartDate") val startDate: String,
     @SerialName("EndDate") val endDate: String,
+) : Parcelable
+
+@Parcelize
+@Serializable
+data class ExamHallTicket(
+    val sessionName: String,
+    val ticket: List<List<Exam>>,
+) : Parcelable
+
+@Parcelize
+@Serializable
+data class Exam(
+    val examTypeCode: String,
+    val examDate: String,
+    val courseName: String,
+    val courseCode: String,
+    val time: String,
+    val eligibility: String,
 ) : Parcelable

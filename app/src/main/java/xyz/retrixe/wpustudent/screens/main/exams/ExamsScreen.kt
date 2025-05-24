@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.screens.main.holidays
+package xyz.retrixe.wpustudent.screens.main.exams
 
 import android.os.Parcelable
 import androidx.compose.foundation.layout.Column
@@ -33,115 +33,127 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.endpoints.getHolidays
-import xyz.retrixe.wpustudent.api.entities.Holiday
+import xyz.retrixe.wpustudent.api.endpoints.getExams
+import xyz.retrixe.wpustudent.api.entities.Exam
+import xyz.retrixe.wpustudent.api.entities.ExamHallTicket
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Parcelize
-private sealed interface Holidays : Parcelable {
-    object Loading : Holidays
+private sealed interface Exams : Parcelable {
+    object Loading : Exams
 
-    object Error : Holidays
+    object Error : Exams
 
-    data class Loaded(val holidays: List<Holiday>) : Holidays
+    data class Loaded(val data: ExamHallTicket) : Exams
 }
 
 @Composable
-private fun HolidayCard(holiday: Holiday) {
-    val startDate = LocalDate.parse(holiday.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-    val endDate = LocalDate.parse(holiday.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+private fun ExamsCard(exam: Exam) {
+    val date = LocalDate.parse(exam.examDate, DateTimeFormatter.ISO_LOCAL_DATE)
     OutlinedCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(holiday.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(exam.courseName, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(exam.courseCode, color = MaterialTheme.colorScheme.outline, fontSize = 24.sp)
             Spacer(Modifier.height(8.dp))
-            Badge(containerColor = MaterialTheme.colorScheme.primaryContainer) {
-                Text(holiday.subType)
+            Badge(containerColor = when (exam.examTypeCode) {
+                "SUPPL" -> MaterialTheme.colorScheme.errorContainer
+                else -> MaterialTheme.colorScheme.primaryContainer
+            }) {
+                Text(when (exam.examTypeCode) {
+                    "REG" -> "Regular"
+                    "SUPPL" -> "Backlog"
+                    else -> exam.examTypeCode
+                })
             }
             Spacer(Modifier.height(16.dp))
-            Text(buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(RFC_1123_DATE.format(startDate))
-                }
-                if (startDate != endDate) {
-                    append(" through ")
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(RFC_1123_DATE.format(endDate))
-                    }
-                }
-            }, fontSize = 20.sp)
+            Text(RFC_1123_DATE.format(date), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(exam.time, fontSize = 20.sp)
+            if (exam.eligibility != "Yes") {
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    buildAnnotatedString {
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Note: ") }
+                        append("You are ineligible for this exam!")
+                    },
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 20.sp)
+            }
         }
     }
 }
 
 @Composable
-fun HolidaysScreen(
+fun ExamsScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
     studentBasicInfo: StudentBasicInfo
 ) {
-    var holidays by rememberSaveable(studentBasicInfo.studentId) {
-        mutableStateOf<Holidays>(Holidays.Loading)
+    var exams by rememberSaveable(studentBasicInfo.studentId, studentBasicInfo.termCode) {
+        mutableStateOf<Exams>(Exams.Loading)
     }
 
     LaunchedEffect(studentBasicInfo.studentId) {
-        if (holidays != Holidays.Loading) return@LaunchedEffect
+        if (exams != Exams.Loading) return@LaunchedEffect
         try {
-            val data = getHolidays(httpClient, studentBasicInfo.studentId)
-            holidays = Holidays.Loaded(data)
+            val data = getExams(httpClient, studentBasicInfo.studentId, studentBasicInfo.termCode)
+            exams = Exams.Loaded(data)
         } catch (_: Exception) {
-            holidays = Holidays.Error
+            exams = Exams.Error
         }
     }
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
-        Text("Holidays", fontSize = 36.sp, fontWeight = FontWeight.Bold)
+        Text("Exams", fontSize = 36.sp, fontWeight = FontWeight.Bold)
 
-        when (holidays) {
-            is Holidays.Loading -> {
+        when (exams) {
+            is Exams.Loading -> {
                 Spacer(Modifier.weight(1f))
                 CircularProgressIndicator(Modifier.size(96.dp).align(Alignment.CenterHorizontally))
                 Spacer(Modifier.weight(1f))
             }
 
-            is Holidays.Loaded -> {
-                val holidays = (holidays as Holidays.Loaded).holidays
+            is Exams.Loaded -> {
+                val data = (exams as Exams.Loaded).data
 
+                Text(data.sessionName,
+                    color = MaterialTheme.colorScheme.outline,
+                    fontSize = 24.sp)
                 Spacer(Modifier.height(16.dp))
 
                 LazyColumn(
                     Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
                 ) {
-                    val sortedHolidays = holidays.sortedBy { it.startDate }
-                    val pastHolidays = sortedHolidays.takeWhile {
+                    val sortedExams = data.ticket.flatten().sortedBy { it.examDate }
+                    val completedExams = sortedExams.takeWhile {
                         LocalDate
-                            .parse(it.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                            .parse(it.examDate, DateTimeFormatter.ISO_LOCAL_DATE)
                             .isBefore(LocalDate.now())
                     }
-                    val upcomingHolidays = sortedHolidays
-                        .takeLast(sortedHolidays.size - pastHolidays.size)
+                    val upcomingExams = sortedExams
+                        .takeLast(sortedExams.size - completedExams.size)
 
-                    item { if (upcomingHolidays.isNotEmpty()) {
-                        Text("Upcoming holidays", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    item { if (upcomingExams.isNotEmpty()) {
+                        Text("Upcoming exams", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(16.dp))
                     } }
-                    items(upcomingHolidays) { holiday ->
-                        HolidayCard(holiday)
+                    items(upcomingExams) { exam ->
+                        ExamsCard(exam)
                         Spacer(Modifier.height(16.dp))
                     }
 
-                    item { if (pastHolidays.isNotEmpty()) {
-                        if (upcomingHolidays.isNotEmpty()) {
+                    item { if (completedExams.isNotEmpty()) {
+                        if (upcomingExams.isNotEmpty()) {
                             Spacer(Modifier.height(16.dp))
                         }
-                        Text("Past holidays", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Text("Completed exams", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(16.dp))
                     } }
-                    items(pastHolidays) { holiday ->
-                        HolidayCard(holiday)
+                    items(completedExams) { exam ->
+                        ExamsCard(exam)
                         Spacer(Modifier.height(16.dp))
                     }
                 }
@@ -149,7 +161,7 @@ fun HolidaysScreen(
 
             else -> {
                 Spacer(Modifier.weight(1f))
-                Text("Failed to load holidays!",
+                Text("Failed to load exams!",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterHorizontally),

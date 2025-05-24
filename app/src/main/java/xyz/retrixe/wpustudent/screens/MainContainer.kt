@@ -32,6 +32,7 @@ import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
 import xyz.retrixe.wpustudent.screens.login.LoginScreen
 import xyz.retrixe.wpustudent.screens.main.attendance.AttendanceScreen
+import xyz.retrixe.wpustudent.screens.main.exams.ExamsScreen
 import xyz.retrixe.wpustudent.screens.main.holidays.HolidaysScreen
 import xyz.retrixe.wpustudent.screens.main.home.HomeScreen
 import xyz.retrixe.wpustudent.screens.main.settings.SettingsScreen
@@ -45,13 +46,14 @@ object Screens {
     @Serializable object Main {
         @Serializable object Home
         @Serializable object Attendance
-        // FIXME: Exam screen
+        @Serializable object Exams
         @Serializable object Holidays
         @Serializable object Settings
 
         enum class Destinations(val label: String, @get:DrawableRes val icon: Int, val route: Any) {
             HOME("Home", R.drawable.baseline_home_24, Home),
             ATTENDANCE("Attendance", R.drawable.baseline_co_present_24, Attendance),
+            EXAMS("Exams", R.drawable.baseline_book_24, Exams),
             HOLIDAYS("Holidays", R.drawable.baseline_calendar_month_24, Holidays),
             SETTINGS("Settings", R.drawable.baseline_settings_24, Settings),
         }
@@ -129,6 +131,9 @@ fun MainContainer(
                         }
                         composable<Screens.Main.Attendance> {
                             AttendanceScreen(innerPadding, httpClient, studentBasicInfo!!)
+                        }
+                        composable<Screens.Main.Exams> {
+                            ExamsScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Holidays> {
                             HolidaysScreen(innerPadding, httpClient, studentBasicInfo!!)
