@@ -66,7 +66,7 @@ private fun ExamsCard(exam: Exam) {
                     "REG" -> "Regular"
                     "SUPPL" -> "Backlog"
                     else -> exam.examTypeCode
-                })
+                }, Modifier.padding(2.dp))
             }
             Spacer(Modifier.height(16.dp))
             Text(RFC_1123_DATE.format(date), fontSize = 20.sp, fontWeight = FontWeight.Bold)

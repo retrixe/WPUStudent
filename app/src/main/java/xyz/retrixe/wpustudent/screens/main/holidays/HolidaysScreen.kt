@@ -58,7 +58,7 @@ private fun HolidayCard(holiday: Holiday) {
             Text(holiday.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
             Badge(containerColor = MaterialTheme.colorScheme.primaryContainer) {
-                Text(holiday.subType)
+                Text(holiday.subType, Modifier.padding(2.dp))
             }
             Spacer(Modifier.height(16.dp))
             Text(buildAnnotatedString {
