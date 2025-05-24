@@ -15,9 +15,8 @@ import xyz.retrixe.wpustudent.api.entities.AttendedTerm
 import xyz.retrixe.wpustudent.api.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.entities.Holiday
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /* {
     "StatusCode": 200,
@@ -236,7 +235,7 @@ suspend fun getTermAttendanceSummary(
         header("x-applicationname", "connectportal")
         header("x-appsecret", CLIENT_SECRET)
         header("x-requestfrom", "web")
-        val endDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+        val endDate = DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now())
         setBody(TermAttendanceSummaryRequest(endDate = endDate, studentUniqueId = studentUniqueId))
     }
     val body: List<CourseAttendanceSummary> = response.body()
@@ -350,7 +349,10 @@ private data class AttendedCoursesResponse(
     @SerialName("TermDropdownDetailsList") val attendedTerms: List<AttendedTerm>
 )
 
-suspend fun getAttendedCourses(client: HttpClient): List<AttendedTerm> {
+suspend fun getAttendedCourses(
+    client: HttpClient,
+    studentUniqueId: String,
+): List<AttendedTerm> {
     /*  curl 'https://mymitwpu.integratededucation.pwc.in/apigateway/student-attendance/attendancedropdown' \
           -H 'authorization: Bearer BEARER' \
           -H 'content-type: application/json' \
@@ -364,7 +366,7 @@ suspend fun getAttendedCourses(client: HttpClient): List<AttendedTerm> {
         header("x-applicationname", "connectportal")
         header("x-appsecret", CLIENT_SECRET)
         header("x-requestfrom", "web")
-        setBody(mapOf("StudentUniqueID" to "c9bef136-396a-441e-9370-876fda382b20"))
+        setBody(mapOf("StudentUniqueID" to studentUniqueId))
     }
     val body: List<AttendedCoursesResponse> = response.body()
     return body.first().attendedTerms

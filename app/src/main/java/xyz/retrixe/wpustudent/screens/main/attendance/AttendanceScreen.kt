@@ -80,7 +80,7 @@ fun AttendanceScreen(
         if (attendanceSummary != AttendanceSummary.Loading) return@LaunchedEffect
         try {
             val summary = getTermAttendanceSummary(httpClient, studentBasicInfo.studentId)
-            val courses = getAttendedCourses(httpClient)
+            val courses = getAttendedCourses(httpClient, studentBasicInfo.studentId)
             attendanceSummary = AttendanceSummary.Loaded(summary, courses)
         } catch (_: Exception) {
             attendanceSummary = AttendanceSummary.Error
