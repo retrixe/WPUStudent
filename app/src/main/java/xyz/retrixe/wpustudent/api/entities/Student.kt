@@ -53,3 +53,12 @@ data class AttendedCourse(
     @SerialName("ModuleId") val moduleId: Int,
     @SerialName("ModuleName") val moduleName: String,
 ) : Parcelable
+
+@Parcelize
+@Serializable
+data class Holiday(
+    @SerialName("Name") val name: String,
+    @SerialName("SubType") val subType: String,
+    @SerialName("StartDate") val startDate: String,
+    @SerialName("EndDate") val endDate: String,
+) : Parcelable
