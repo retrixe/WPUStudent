@@ -25,7 +25,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
@@ -33,6 +36,26 @@ import kotlinx.parcelize.Parcelize
 import xyz.retrixe.wpustudent.api.endpoints.getHolidays
 import xyz.retrixe.wpustudent.api.entities.Holiday
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.SignStyle
+import java.time.temporal.ChronoField
+import java.util.Locale
+
+val RFC_1123_DATE: DateTimeFormatter = DateTimeFormatterBuilder()
+    .parseCaseInsensitive()
+    .parseLenient()
+    .optionalStart()
+    .appendText(ChronoField.DAY_OF_WEEK)
+    .appendLiteral(", ")
+    .optionalEnd()
+    .appendValue(ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
+    .appendLiteral(' ')
+    .appendText(ChronoField.MONTH_OF_YEAR)
+    .appendLiteral(' ')
+    .appendValue(ChronoField.YEAR, 4) // 2 digit year not handled
+    .toFormatter(Locale.US)
 
 @Parcelize
 private sealed interface Holidays : Parcelable {
@@ -41,6 +64,33 @@ private sealed interface Holidays : Parcelable {
     object Error : Holidays
 
     data class Loaded(val holidays: List<Holiday>) : Holidays
+}
+
+@Composable
+fun HolidayCard(holiday: Holiday) {
+    val startDate = LocalDate.parse(holiday.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    val endDate = LocalDate.parse(holiday.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    OutlinedCard(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text(holiday.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
+            Badge(containerColor = MaterialTheme.colorScheme.primaryContainer) {
+                Text(holiday.subType)
+            }
+            Spacer(Modifier.height(16.dp))
+            Text(buildAnnotatedString {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(RFC_1123_DATE.format(startDate))
+                }
+                if (startDate != endDate) {
+                    append(" through ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(RFC_1123_DATE.format(endDate))
+                    }
+                }
+            }, fontSize = 20.sp)
+        }
+    }
 }
 
 @Composable
@@ -81,30 +131,37 @@ fun HolidaysScreen(
 
                 LazyColumn(
                     Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
-                ) { items(holidays.sortedBy { it.startDate }) { holiday ->
-                    OutlinedCard(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(16.dp)) {
-                            Text(holiday.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                            Spacer(Modifier.height(8.dp))
-                            Badge { Text(holiday.subType) }
-                            Spacer(Modifier.height(16.dp))
-                            // FIXME: Format the dates...
-                            val endDate =
-                                if (holiday.startDate == holiday.endDate) ""
-                                else (" - " + holiday.endDate)
-                            Text(holiday.startDate + endDate, fontSize = 20.sp)
-                            /* Text(buildAnnotatedString {
-                                withStyle(
-                                    style = SpanStyle(color = color, fontWeight = FontWeight.Bold),
-                                ) {
-                                    append("%.2f".format(attendance) + "%")
-                                }
-                                append(" ($presentCount / $totalSessions sessions)")
-                            }) */
-                        }
+                ) {
+                    val sortedHolidays = holidays.sortedBy { it.startDate }
+                    val pastHolidays = sortedHolidays.takeWhile {
+                        LocalDate
+                            .parse(it.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                            .isBefore(LocalDate.now())
                     }
-                    Spacer(Modifier.height(16.dp))
-                } }
+                    val upcomingHolidays = sortedHolidays
+                        .takeLast(sortedHolidays.size - pastHolidays.size)
+
+                    item { if (upcomingHolidays.isNotEmpty()) {
+                        Text("Upcoming holidays", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.height(16.dp))
+                    } }
+                    items(upcomingHolidays) { holiday ->
+                        HolidayCard(holiday)
+                        Spacer(Modifier.height(16.dp))
+                    }
+
+                    item { if (pastHolidays.isNotEmpty()) {
+                        if (upcomingHolidays.isNotEmpty()) {
+                            Spacer(Modifier.height(16.dp))
+                        }
+                        Text("Past holidays", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.height(16.dp))
+                    } }
+                    items(pastHolidays) { holiday ->
+                        HolidayCard(holiday)
+                        Spacer(Modifier.height(16.dp))
+                    }
+                }
             }
 
             else -> {
