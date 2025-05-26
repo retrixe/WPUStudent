@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
@@ -78,9 +80,14 @@ fun HomeScreen(
     }
 
     Column(
-        Modifier.fillMaxSize().padding(paddingValues).padding(8.dp, 48.dp),
+        Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(8.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(Modifier.height(40.dp))
         when (profilePicture) {
             is ProfilePicture.Loading -> {
                 CircularProgressIndicator(Modifier.size(192.dp).padding(48.dp))

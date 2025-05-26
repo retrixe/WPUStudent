@@ -51,7 +51,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
     val snackbarHostState = LocalSnackbarHostState.current
 
     var aboutDialog by remember { mutableStateOf(false) }
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     val (passwordFocus, loginButtonFocus) = remember { FocusRequester.createRefs() }
@@ -59,7 +59,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
     fun login() = coroutineScope.launch(Dispatchers.IO) {
         loading = true
         try {
-            sessionViewModel.login(username, password)
+            sessionViewModel.login(email, password)
             loading = false
         } catch (e: Exception) {
             loading = false
@@ -97,14 +97,14 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Modifier.padding(horizontal = 16.dp).width(512.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("Enter your PwC credentials below:")
+            Text("Enter your MIT-WPU PwC login e-mail and password:")
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth()
                     .focusProperties { next = passwordFocus }
                     .onKeyEvent { handleKeyEvent(it, Key.Enter) { passwordFocus.requestFocus() } },
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("E-mail") },
                 enabled = !loading,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 keyboardActions = KeyboardActions(onNext = { passwordFocus.requestFocus() }),
@@ -125,7 +125,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Button(
                 onClick = { login() },
                 modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
-                enabled = !loading,
+                enabled = !loading && !email.isBlank() && !password.isBlank(),
             ) {
                 Text("Login")
             }
