@@ -1,6 +1,5 @@
 package xyz.retrixe.wpustudent.screens.main.attendance
 
-import android.os.Parcelable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,11 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,27 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
-import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.endpoints.getAttendedCourses
-import xyz.retrixe.wpustudent.api.endpoints.getTermAttendanceSummary
-import xyz.retrixe.wpustudent.api.entities.AttendedTerm
-import xyz.retrixe.wpustudent.api.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
 import kotlin.math.ceil
-
-@Parcelize
-private sealed interface AttendanceSummary : Parcelable {
-    object Loading : AttendanceSummary
-
-    object Error : AttendanceSummary
-
-    data class Loaded(
-        val summary: List<CourseAttendanceSummary>,
-        val courses: List<AttendedTerm>,
-    ) : AttendanceSummary
-}
 
 // TODO
 //  - https://m3.material.io/styles/color/advanced/overview
@@ -72,34 +53,23 @@ fun AttendanceScreen(
     httpClient: HttpClient,
     studentBasicInfo: StudentBasicInfo
 ) {
-    var attendanceSummary by rememberSaveable(studentBasicInfo.studentId) {
-        mutableStateOf<AttendanceSummary>(AttendanceSummary.Loading)
-    }
-
-    LaunchedEffect(studentBasicInfo.studentId) {
-        if (attendanceSummary != AttendanceSummary.Loading) return@LaunchedEffect
-        try {
-            val summary = getTermAttendanceSummary(httpClient, studentBasicInfo.studentId)
-            val courses = getAttendedCourses(httpClient, studentBasicInfo.studentId)
-            attendanceSummary = AttendanceSummary.Loaded(summary, courses)
-        } catch (_: Exception) {
-            attendanceSummary = AttendanceSummary.Error
-        }
-    }
+    val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient, studentBasicInfo)
+    val attendanceViewModel: AttendanceViewModel = viewModel(factory = attendanceViewModelFactory)
+    val data by attendanceViewModel.data.collectAsState()
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
         Text("Attendance", fontSize = 36.sp, fontWeight = FontWeight.Bold)
 
-        when (attendanceSummary) {
-            is AttendanceSummary.Loading -> {
+        when (data) {
+            is AttendanceViewModel.Data.Loading -> {
                 Spacer(Modifier.weight(1f))
                 CircularProgressIndicator(Modifier.size(96.dp).align(Alignment.CenterHorizontally))
                 Spacer(Modifier.weight(1f))
             }
 
-            is AttendanceSummary.Loaded -> {
-                val summary = (attendanceSummary as AttendanceSummary.Loaded).summary
+            is AttendanceViewModel.Data.Loaded -> {
+                val summary = (data as AttendanceViewModel.Data.Loaded).summary
 
                 Spacer(Modifier.height(16.dp))
 

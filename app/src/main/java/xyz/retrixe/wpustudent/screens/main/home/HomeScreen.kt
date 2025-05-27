@@ -21,11 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,27 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
-import xyz.retrixe.wpustudent.api.endpoints.fetchAsset
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
-import java.io.Serializable
-
-private sealed interface ProfilePicture : Serializable {
-    object Loading : ProfilePicture {
-        @Suppress("unused") private fun readResolve(): Any = Loading
-    }
-
-    object Error : ProfilePicture {
-        @Suppress("unused") private fun readResolve(): Any = Error
-    }
-
-    data class Loaded(val data: ByteArray) : ProfilePicture {
-        override fun equals(other: Any?) =
-            this === other && javaClass == other.javaClass && data.contentEquals(other.data)
-
-        override fun hashCode() = data.contentHashCode()
-    }
-}
+import xyz.retrixe.wpustudent.models.main.home.HomeViewModel
 
 @Composable
 fun HomeScreen(
@@ -62,22 +42,9 @@ fun HomeScreen(
     httpClient: HttpClient,
     studentBasicInfo: StudentBasicInfo
 ) {
-    var profilePicture by rememberSaveable(studentBasicInfo.profilePictureInfo.filePath) {
-        mutableStateOf<ProfilePicture>(ProfilePicture.Loading)
-    }
-
-    LaunchedEffect(studentBasicInfo.profilePictureInfo.filePath) {
-        if (profilePicture != ProfilePicture.Loading) return@LaunchedEffect
-        try {
-            val asset = fetchAsset(httpClient,
-                "iemsfilecontainer",
-                studentBasicInfo.profilePictureInfo.filePath,
-                "profile-picture.png")
-            profilePicture = ProfilePicture.Loaded(asset)
-        } catch (_: Exception) {
-            profilePicture = ProfilePicture.Error
-        }
-    }
+    val homeViewModelFactory = HomeViewModel.Factory(httpClient, studentBasicInfo)
+    val homeViewModel: HomeViewModel = viewModel(factory = homeViewModelFactory)
+    val data by homeViewModel.data.collectAsState()
 
     Column(
         Modifier
@@ -88,13 +55,13 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(40.dp))
-        when (profilePicture) {
-            is ProfilePicture.Loading -> {
+        when (data) {
+            is HomeViewModel.Data.Loading -> {
                 CircularProgressIndicator(Modifier.size(192.dp).padding(48.dp))
             }
 
-            is ProfilePicture.Loaded -> {
-                val imageData = (profilePicture as ProfilePicture.Loaded).data
+            is HomeViewModel.Data.Loaded -> {
+                val imageData = (data as HomeViewModel.Data.Loaded).profilePicture
                 val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
                 Image(
                     bitmap = bitmap.asImageBitmap(),

@@ -1,6 +1,5 @@
 package xyz.retrixe.wpustudent.screens.main.holidays
 
-import android.os.Parcelable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -18,11 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
@@ -31,23 +27,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
-import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.endpoints.getHolidays
 import xyz.retrixe.wpustudent.api.entities.Holiday
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.models.main.holidays.HolidaysViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
-@Parcelize
-private sealed interface Holidays : Parcelable {
-    object Loading : Holidays
-
-    object Error : Holidays
-
-    data class Loaded(val holidays: List<Holiday>) : Holidays
-}
 
 @Composable
 private fun HolidayCard(holiday: Holiday) {
@@ -82,33 +69,23 @@ fun HolidaysScreen(
     httpClient: HttpClient,
     studentBasicInfo: StudentBasicInfo
 ) {
-    var holidays by rememberSaveable(studentBasicInfo.studentId) {
-        mutableStateOf<Holidays>(Holidays.Loading)
-    }
-
-    LaunchedEffect(studentBasicInfo.studentId) {
-        if (holidays != Holidays.Loading) return@LaunchedEffect
-        try {
-            val data = getHolidays(httpClient, studentBasicInfo.studentId)
-            holidays = Holidays.Loaded(data)
-        } catch (_: Exception) {
-            holidays = Holidays.Error
-        }
-    }
+    val holidaysViewModelFactory = HolidaysViewModel.Factory(httpClient, studentBasicInfo)
+    val holidaysViewModel: HolidaysViewModel = viewModel(factory = holidaysViewModelFactory)
+    val data by holidaysViewModel.data.collectAsState()
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
         Text("Holidays", fontSize = 36.sp, fontWeight = FontWeight.Bold)
 
-        when (holidays) {
-            is Holidays.Loading -> {
+        when (data) {
+            is HolidaysViewModel.Data.Loading -> {
                 Spacer(Modifier.weight(1f))
                 CircularProgressIndicator(Modifier.size(96.dp).align(Alignment.CenterHorizontally))
                 Spacer(Modifier.weight(1f))
             }
 
-            is Holidays.Loaded -> {
-                val holidays = (holidays as Holidays.Loaded).holidays
+            is HolidaysViewModel.Data.Loaded -> {
+                val holidays = (data as HolidaysViewModel.Data.Loaded).holidays
 
                 Spacer(Modifier.height(16.dp))
 
