@@ -23,15 +23,15 @@ class HolidaysViewModel(
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val data = getHolidays(httpClient, studentBasicInfo.studentId)
-                savedStateHandle["data"] = Data.Loaded(data)
-            } catch (e: Exception) {
-                Log.w(this@HolidaysViewModel::class.simpleName, e)
-                savedStateHandle["data"] = Data.Error
-            }
+    init { viewModelScope.launch(Dispatchers.IO) { fetchData() } }
+
+    suspend fun fetchData() {
+        try {
+            val data = getHolidays(httpClient, studentBasicInfo.studentId)
+            savedStateHandle["data"] = Data.Loaded(data)
+        } catch (e: Exception) {
+            Log.w(this@HolidaysViewModel::class.simpleName, e)
+            savedStateHandle["data"] = Data.Error
         }
     }
 

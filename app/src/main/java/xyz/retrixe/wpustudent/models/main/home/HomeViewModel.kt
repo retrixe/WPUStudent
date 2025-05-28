@@ -21,18 +21,18 @@ class HomeViewModel(
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val asset = fetchAsset(httpClient,
-                    "iemsfilecontainer",
-                    studentBasicInfo.profilePictureInfo.filePath,
-                    "profile-picture.png")
-                savedStateHandle["data"] = Data.Loaded(asset)
-            } catch (e: Exception) {
-                Log.w(this@HomeViewModel::class.simpleName, e)
-                savedStateHandle["data"] = Data.Error
-            }
+    init { viewModelScope.launch(Dispatchers.IO) { fetchData() } }
+
+    suspend fun fetchData() {
+        try {
+            val asset = fetchAsset(httpClient,
+                "iemsfilecontainer",
+                studentBasicInfo.profilePictureInfo.filePath,
+                "profile-picture.png")
+            savedStateHandle["data"] = Data.Loaded(asset)
+        } catch (e: Exception) {
+            Log.w(this@HomeViewModel::class.simpleName, e)
+            savedStateHandle["data"] = Data.Error
         }
     }
 

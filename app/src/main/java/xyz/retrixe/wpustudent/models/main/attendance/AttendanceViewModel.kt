@@ -25,16 +25,16 @@ class AttendanceViewModel(
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val summary = getTermAttendanceSummary(httpClient, studentBasicInfo.studentId)
-                val courses = getAttendedCourses(httpClient, studentBasicInfo.studentId)
-                savedStateHandle["data"] = Data.Loaded(summary, courses)
-            } catch (e: Exception) {
-                Log.w(this@AttendanceViewModel::class.simpleName, e)
-                savedStateHandle["data"] = Data.Error
-            }
+    init { viewModelScope.launch(Dispatchers.IO) { fetchData() } }
+
+    suspend fun fetchData() {
+        try {
+            val summary = getTermAttendanceSummary(httpClient, studentBasicInfo.studentId)
+            val courses = getAttendedCourses(httpClient, studentBasicInfo.studentId)
+            savedStateHandle["data"] = Data.Loaded(summary, courses)
+        } catch (e: Exception) {
+            Log.w(this@AttendanceViewModel::class.simpleName, e)
+            savedStateHandle["data"] = Data.Error
         }
     }
 

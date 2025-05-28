@@ -23,15 +23,15 @@ class ExamsViewModel(
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val data = getExams(httpClient, studentBasicInfo.studentId, studentBasicInfo.termCode)
-                savedStateHandle["data"] = Data.Loaded(data)
-            } catch (e: Exception) {
-                Log.w(this@ExamsViewModel::class.simpleName, e)
-                savedStateHandle["data"] = Data.Error
-            }
+    init { viewModelScope.launch(Dispatchers.IO) { fetchData() } }
+
+    suspend fun fetchData() {
+        try {
+            val data = getExams(httpClient, studentBasicInfo.studentId, studentBasicInfo.termCode)
+            savedStateHandle["data"] = Data.Loaded(data)
+        } catch (e: Exception) {
+            Log.w(this@ExamsViewModel::class.simpleName, e)
+            savedStateHandle["data"] = Data.Error
         }
     }
 

@@ -97,7 +97,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Modifier.padding(horizontal = 16.dp).width(512.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("Enter your MIT-WPU PwC login e-mail and password:")
+            Text("Enter your MIT-WPU PwC login details:")
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth()
                     .focusProperties { next = passwordFocus }

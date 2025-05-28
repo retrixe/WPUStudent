@@ -13,12 +13,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
@@ -29,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.launch
 import xyz.retrixe.wpustudent.api.entities.Holiday
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.holidays.HolidaysViewModel
@@ -63,6 +72,7 @@ private fun HolidayCard(holiday: Holiday) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HolidaysScreen(
     paddingValues: PaddingValues,
@@ -72,6 +82,17 @@ fun HolidaysScreen(
     val holidaysViewModelFactory = HolidaysViewModel.Factory(httpClient, studentBasicInfo)
     val holidaysViewModel: HolidaysViewModel = viewModel(factory = holidaysViewModelFactory)
     val data by holidaysViewModel.data.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
+    val refreshState = rememberPullToRefreshState()
+    var refreshing by remember { mutableStateOf(false) }
+
+    fun refresh() = coroutineScope.launch {
+        if (data is HolidaysViewModel.Data.Loading) return@launch
+        refreshing = true
+        holidaysViewModel.fetchData()
+        refreshing = false
+    }
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
@@ -89,37 +110,61 @@ fun HolidaysScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                LazyColumn(
-                    Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
+                PullToRefreshBox(
+                    isRefreshing = refreshing,
+                    onRefresh = ::refresh,
+                    modifier = Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
+                    state = refreshState,
+                    indicator = {
+                        PullToRefreshDefaults.Indicator(
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            isRefreshing = refreshing,
+                            // containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            color = MaterialTheme.colorScheme.primary, //.onPrimaryContainer,
+                            state = refreshState
+                        )
+                    },
                 ) {
-                    val sortedHolidays = holidays.sortedBy { it.startDate }
-                    val pastHolidays = sortedHolidays.takeWhile {
-                        LocalDate
-                            .parse(it.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                            .isBefore(LocalDate.now())
-                    }
-                    val upcomingHolidays = sortedHolidays
-                        .takeLast(sortedHolidays.size - pastHolidays.size)
+                    LazyColumn(Modifier.fillMaxSize()) {
+                        val sortedHolidays = holidays.sortedBy { it.startDate }
+                        val pastHolidays = sortedHolidays.takeWhile {
+                            LocalDate
+                                .parse(it.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                .isBefore(LocalDate.now())
+                        }
+                        val upcomingHolidays = sortedHolidays
+                            .takeLast(sortedHolidays.size - pastHolidays.size)
 
-                    item { if (upcomingHolidays.isNotEmpty()) {
-                        Text("Upcoming holidays", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        Spacer(Modifier.height(16.dp))
-                    } }
-                    items(upcomingHolidays) { holiday ->
-                        HolidayCard(holiday)
-                        Spacer(Modifier.height(16.dp))
-                    }
-
-                    item { if (pastHolidays.isNotEmpty()) {
                         if (upcomingHolidays.isNotEmpty()) {
+                            item {
+                                Text(
+                                    "Upcoming holidays",
+                                    fontSize = 24.sp, fontWeight = FontWeight.Bold
+                                )
+                                Spacer(Modifier.height(16.dp))
+                            }
+                        }
+                        items(upcomingHolidays) { holiday ->
+                            HolidayCard(holiday)
                             Spacer(Modifier.height(16.dp))
                         }
-                        Text("Past holidays", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        Spacer(Modifier.height(16.dp))
-                    } }
-                    items(pastHolidays) { holiday ->
-                        HolidayCard(holiday)
-                        Spacer(Modifier.height(16.dp))
+
+                        if (pastHolidays.isNotEmpty()) {
+                            item {
+                                if (upcomingHolidays.isNotEmpty()) {
+                                    Spacer(Modifier.height(16.dp))
+                                }
+                                Text(
+                                    "Past holidays",
+                                    fontSize = 24.sp, fontWeight = FontWeight.Bold
+                                )
+                                Spacer(Modifier.height(16.dp))
+                            }
+                        }
+                        items(pastHolidays) { holiday ->
+                            HolidayCard(holiday)
+                            Spacer(Modifier.height(16.dp))
+                        }
                     }
                 }
             }

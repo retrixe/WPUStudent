@@ -14,12 +14,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.launch
+import xyz.retrixe.wpustudent.api.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
@@ -48,6 +58,50 @@ private fun getThresholdColor(value: Double, threshold: Double) =
     else MaterialTheme.colorScheme.error
 
 @Composable
+private fun AttendanceCard(course: CourseAttendanceSummary) {
+    val rawAttendance = course.presentCount / course.totalSessions
+    val attendance = rawAttendance * 100
+    val color = getThresholdColor(attendance, course.thresholdPercentage)
+
+    OutlinedCard(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text(course.moduleName, fontSize = 20.sp)
+            Spacer(Modifier.height(16.dp))
+            FixedFractionIndicator(Modifier.height(8.dp), rawAttendance, color)
+            Spacer(Modifier.height(8.dp))
+            Text(buildAnnotatedString {
+                withStyle(style = SpanStyle(color = color, fontWeight = FontWeight.Bold)) {
+                    append("%.2f".format(attendance) + "%")
+                }
+                val presentCount = course.presentCount.toInt()
+                val totalSessions = course.totalSessions.toInt()
+                append(" ($presentCount / $totalSessions sessions)")
+            })
+            if (attendance < (course.thresholdPercentage + 5)) {
+                // (present + x) / (total + x) = threshold
+                // => (present + x) = threshold (total + x)
+                // => present + x = threshold * total + threshold * x
+                // => x - x * threshold = threshold * total - present
+                // => x (1 - threshold) = threshold * total - present
+                // => x = (threshold * total - present) / (1 - threshold)
+                val present = course.presentCount
+                val total = course.totalSessions
+                val threshold = (course.thresholdPercentage + 5) / 100
+                val classesLeft = ((threshold * total) - present) / (1 - threshold)
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    "Attend ${ceil(classesLeft).toInt()} classes to reach " +
+                            "${(threshold * 100).toInt()}% threshold."
+                )
+            } else {
+                // TODO: Estimate classes left, and how many one should attend
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun AttendanceScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
@@ -56,6 +110,17 @@ fun AttendanceScreen(
     val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient, studentBasicInfo)
     val attendanceViewModel: AttendanceViewModel = viewModel(factory = attendanceViewModelFactory)
     val data by attendanceViewModel.data.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
+    val refreshState = rememberPullToRefreshState()
+    var refreshing by remember { mutableStateOf(false) }
+
+    fun refresh() = coroutineScope.launch {
+        if (data is AttendanceViewModel.Data.Loading) return@launch
+        refreshing = true
+        attendanceViewModel.fetchData()
+        refreshing = false
+    }
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
@@ -87,50 +152,28 @@ fun AttendanceScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                LazyColumn(
-                    Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
-                ) { items(summary.sortedBy { it.moduleName }) { course ->
-                    val rawAttendance = course.presentCount / course.totalSessions
-                    val attendance = rawAttendance * 100
-                    val color = getThresholdColor(attendance, course.thresholdPercentage)
-
-                    OutlinedCard(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(16.dp)) {
-                            Text(course.moduleName, fontSize = 20.sp)
+                PullToRefreshBox(
+                    isRefreshing = refreshing,
+                    onRefresh = ::refresh,
+                    modifier = Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
+                    state = refreshState,
+                    indicator = {
+                        PullToRefreshDefaults.Indicator(
+                            modifier = Modifier.align(Alignment.TopCenter),
+                            isRefreshing = refreshing,
+                            // containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            color = MaterialTheme.colorScheme.primary, //.onPrimaryContainer,
+                            state = refreshState
+                        )
+                    },
+                ) {
+                    LazyColumn(Modifier.fillMaxSize()) {
+                        items(summary.sortedBy { it.moduleName }) { course ->
+                            AttendanceCard(course)
                             Spacer(Modifier.height(16.dp))
-                            FixedFractionIndicator(Modifier.height(8.dp), rawAttendance, color)
-                            Spacer(Modifier.height(8.dp))
-                            Text(buildAnnotatedString {
-                                withStyle(
-                                    style = SpanStyle(color = color, fontWeight = FontWeight.Bold),
-                                ) {
-                                    append("%.2f".format(attendance) + "%")
-                                }
-                                val presentCount = course.presentCount.toInt()
-                                val totalSessions = course.totalSessions.toInt()
-                                append(" ($presentCount / $totalSessions sessions)")
-                            })
-                            if (attendance < (course.thresholdPercentage + 5)) {
-                                // (present + x) / (total + x) = threshold
-                                // => (present + x) = threshold (total + x)
-                                // => present + x = threshold * total + threshold * x
-                                // => x - x * threshold = threshold * total - present
-                                // => x (1 - threshold) = threshold * total - present
-                                // => x = (threshold * total - present) / (1 - threshold)
-                                val present = course.presentCount
-                                val total = course.totalSessions
-                                val threshold = (course.thresholdPercentage + 5) / 100
-                                val classesLeft = ((threshold * total) - present) / (1 - threshold)
-                                Spacer(Modifier.height(16.dp))
-                                Text("Attend ${ceil(classesLeft).toInt()} classes to reach " +
-                                        "${(threshold * 100).toInt()}% threshold.")
-                            } else {
-                                // TODO: Estimate classes left, and how many one should attend
-                            }
                         }
                     }
-                    Spacer(Modifier.height(16.dp))
-                } }
+                }
             }
 
             else -> {
