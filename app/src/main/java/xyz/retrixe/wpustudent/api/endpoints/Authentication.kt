@@ -127,3 +127,7 @@ suspend fun getAccessToken(client: HttpClient, code: String): String {
     val body: AccessTokenResponse = response.body()
     return body.item.identity.accessToken
 }
+
+/* FIXME: suspend fun logout(client: HttpClient) {
+    // curl 'https://mymitwpu.integratededucation.pwc.in/sso/user/oauth2/logout?autoId=UNKNOWN&client_id=3&clientSecret=hu5UEMnT0sg51gGtC7nC' \
+} */

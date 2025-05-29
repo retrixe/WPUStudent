@@ -41,8 +41,10 @@ fun SettingsScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     var aboutDialog by remember { mutableStateOf(false) }
+    var loggingOut by remember { mutableStateOf(false) }
 
     fun logout() = coroutineScope.launch {
+        loggingOut = true
         sessionViewModel.logout()
     }
 
@@ -70,6 +72,7 @@ fun SettingsScreen(
         Button(
             { logout() },
             Modifier.width(512.dp).fillMaxWidth(),
+            enabled = loggingOut,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error,
                 contentColor = MaterialTheme.colorScheme.onError,

@@ -68,7 +68,7 @@ class SessionViewModel(
                 savedStateHandle["access_token"] = accessToken
                 savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
             } catch (e: Exception) {
-                Log.w("SessionViewModel", e)
+                Log.w(this@SessionViewModel::class.simpleName, e)
             }
             savedStateHandle["loading"] = false
         }
@@ -89,7 +89,6 @@ class SessionViewModel(
         sessionDataStore.edit { it.remove(SESSION_ACCESS_TOKEN) }
         savedStateHandle["access_token"] = null
         savedStateHandle["student_basic_info"] = null
-        // TODO: Perhaps we should invalidate?...
     }
 
     companion object {
