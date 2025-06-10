@@ -72,7 +72,7 @@ fun SettingsScreen(
         Button(
             { logout() },
             Modifier.width(512.dp).fillMaxWidth(),
-            enabled = loggingOut,
+            enabled = !loggingOut,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error,
                 contentColor = MaterialTheme.colorScheme.onError,
