@@ -121,8 +121,8 @@ private data class TermAttendanceSummaryRequest(
     @SerialName("EndDate") val endDate: String,
     @SerialName("ModeName") val modeName: String = "term",
     @SerialName("StudentUniqueId") val studentUniqueId: String,
-    @SerialName("SelectedModuleId") val selectedModuleId: Int? = null,
-    @SerialName("SelectedTermId") val selectedTermId: Int? = null,
+    @SerialName("SelectedModuleId") val selectedModuleId: String? = null,
+    @SerialName("SelectedTermId") val selectedTermId: String? = null,
 )
 
 /* [

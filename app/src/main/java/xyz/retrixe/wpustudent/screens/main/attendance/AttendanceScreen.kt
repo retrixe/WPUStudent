@@ -77,6 +77,7 @@ private fun AttendanceCard(course: CourseAttendanceSummary) {
                 val totalSessions = course.totalSessions.toInt()
                 append(" ($presentCount / $totalSessions sessions)")
             })
+            Spacer(Modifier.height(16.dp))
             if (attendance < (course.thresholdPercentage + 5)) {
                 // (present + x) / (total + x) = threshold
                 // => (present + x) = threshold (total + x)
@@ -88,12 +89,25 @@ private fun AttendanceCard(course: CourseAttendanceSummary) {
                 val total = course.totalSessions
                 val threshold = (course.thresholdPercentage + 5) / 100
                 val classesLeft = ((threshold * total) - present) / (1 - threshold)
-                Spacer(Modifier.height(16.dp))
                 Text(
                     "Attend ${ceil(classesLeft).toInt()} classes to reach " +
                             "${(threshold * 100).toInt()}% threshold."
                 )
             } else {
+                // present / (total + x) = threshold
+                // => present = threshold (total + x)
+                // => present = threshold * total + threshold * x
+                // => threshold * x = present - threshold * total
+                // => x = present - (threshold * total) / threshold
+                // => x = (present / threshold) - total
+                val present = course.presentCount
+                val total = course.totalSessions
+                val threshold = (course.thresholdPercentage + 5) / 100
+                val skippableClasses = (present / threshold) - total
+                Text(
+                    "You can skip ${ceil(skippableClasses).toInt()} classes and stay at the " +
+                            "${(threshold * 100).toInt()}% threshold."
+                )
                 // TODO: Estimate classes left, and how many one should attend
             }
         }
