@@ -29,6 +29,7 @@ import androidx.navigation.get
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.R
 import xyz.retrixe.wpustudent.models.SessionViewModel
+import xyz.retrixe.wpustudent.models.SettingsViewModel
 import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
 import xyz.retrixe.wpustudent.screens.login.LoginScreen
 import xyz.retrixe.wpustudent.screens.main.attendance.AttendanceScreen
@@ -62,7 +63,8 @@ object Screens {
 
 @Composable
 fun MainContainer(
-    sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModel.Factory)
+    sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModel.Factory),
+    settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
 ) {
     // https://developer.android.com/develop/ui/compose/navigation
     val navController = rememberNavController()
@@ -72,6 +74,8 @@ fun MainContainer(
     val accessToken by sessionViewModel.accessToken.collectAsState()
     val httpClient by sessionViewModel.httpClient.collectAsState()
     val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsState()
+
+    val attendanceThresholdOverride by settingsViewModel.attendanceThresholdOverride.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -130,7 +134,8 @@ fun MainContainer(
                             HomeScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Attendance> {
-                            AttendanceScreen(innerPadding, httpClient, studentBasicInfo!!)
+                            AttendanceScreen(innerPadding, httpClient, studentBasicInfo!!,
+                                attendanceThresholdOverride?.toDouble())
                         }
                         composable<Screens.Main.Exams> {
                             ExamsScreen(innerPadding, httpClient, studentBasicInfo!!)

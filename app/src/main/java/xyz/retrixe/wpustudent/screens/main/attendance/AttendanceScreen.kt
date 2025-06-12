@@ -53,15 +53,15 @@ import kotlin.math.ceil
 //  - https://developer.android.com/develop/ui/compose/designsystems/custom
 @Composable
 private fun getThresholdColor(value: Double, threshold: Double) =
-    if (value >= threshold + 5) Color(0xFF00BB90)
-    else if (value >= threshold) Color(0xFFFFCC02)
+    if (value >= threshold) Color(0xFF00BB90)
+    else if (value >= threshold - 5) Color(0xFFFFCC02)
     else MaterialTheme.colorScheme.error
 
 @Composable
-private fun AttendanceCard(course: CourseAttendanceSummary) {
+private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
     val rawAttendance = course.presentCount / course.totalSessions
     val attendance = rawAttendance * 100
-    val color = getThresholdColor(attendance, course.thresholdPercentage)
+    val color = getThresholdColor(attendance, threshold)
 
     OutlinedCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
@@ -78,7 +78,7 @@ private fun AttendanceCard(course: CourseAttendanceSummary) {
                 append(" ($presentCount / $totalSessions sessions)")
             })
             Spacer(Modifier.height(16.dp))
-            if (attendance < (course.thresholdPercentage + 5)) {
+            if (attendance < threshold) {
                 // (present + x) / (total + x) = threshold
                 // => (present + x) = threshold (total + x)
                 // => present + x = threshold * total + threshold * x
@@ -87,7 +87,7 @@ private fun AttendanceCard(course: CourseAttendanceSummary) {
                 // => x = (threshold * total - present) / (1 - threshold)
                 val present = course.presentCount
                 val total = course.totalSessions
-                val threshold = (course.thresholdPercentage + 5) / 100
+                val threshold = threshold / 100
                 val classesLeft = ((threshold * total) - present) / (1 - threshold)
                 Text(
                     "Attend ${ceil(classesLeft).toInt()} classes to reach " +
@@ -102,7 +102,7 @@ private fun AttendanceCard(course: CourseAttendanceSummary) {
                 // => x = (present / threshold) - total
                 val present = course.presentCount
                 val total = course.totalSessions
-                val threshold = (course.thresholdPercentage + 5) / 100
+                val threshold = threshold / 100
                 val skippableClasses = (present / threshold) - total
                 Text(
                     "You can skip ${ceil(skippableClasses).toInt()} classes and stay at the " +
@@ -119,7 +119,8 @@ private fun AttendanceCard(course: CourseAttendanceSummary) {
 fun AttendanceScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
-    studentBasicInfo: StudentBasicInfo
+    studentBasicInfo: StudentBasicInfo,
+    attendanceThresholdOverride: Double?,
 ) {
     val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient, studentBasicInfo)
     val attendanceViewModel: AttendanceViewModel = viewModel(factory = attendanceViewModelFactory)
@@ -158,7 +159,7 @@ fun AttendanceScreen(
                         val totalAttendance =
                             summary.sumOf { it.presentCount * 100 / it.totalSessions } / summary.size
                         val lowestThreshold =
-                            summary.minOf { it.thresholdPercentage }
+                            attendanceThresholdOverride ?: summary.minOf { it.thresholdPercentage + 5 }
                         Text(
                             "%.2f".format(totalAttendance) + "%",
                             color = getThresholdColor(totalAttendance, lowestThreshold),
@@ -194,7 +195,8 @@ fun AttendanceScreen(
                 ) {
                     LazyColumn(Modifier.fillMaxSize()) {
                         items(summary.sortedBy { it.moduleName }) { course ->
-                            AttendanceCard(course)
+                            AttendanceCard(course,
+                                attendanceThresholdOverride ?: (course.thresholdPercentage + 5))
                             Spacer(Modifier.height(16.dp))
                         }
                     }
