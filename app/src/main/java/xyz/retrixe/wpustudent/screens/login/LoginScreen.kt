@@ -34,15 +34,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.R
+import xyz.retrixe.wpustudent.api.json
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 import xyz.retrixe.wpustudent.ui.components.AboutDialog
 import xyz.retrixe.wpustudent.ui.components.PasswordTextField
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.handleKeyEvent
+
+@Serializable private data class LoginError(@SerialName("Message") val message: String?)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +68,13 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
         try {
             sessionViewModel.login(email, password)
             loading = false
+        } catch (e: ClientRequestException) {
+            loading = false
+            val data: LoginError = json.decodeFromString(e.response.bodyAsText())
+            snackbarHostState.showSnackbar(
+                data.message ?: e.localizedMessage,
+                withDismissAction = true
+            )
         } catch (e: Exception) {
             loading = false
             snackbarHostState.showSnackbar(

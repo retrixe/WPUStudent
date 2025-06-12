@@ -33,6 +33,11 @@ const val BASE_URL = "https://mymitwpu.integratededucation.pwc.in/"
 const val CLIENT_ID = 3
 const val CLIENT_SECRET = "hu5UEMnT0sg51gGtC7nC"
 
+val json = Json {
+    encodeDefaults = true
+    ignoreUnknownKeys = true
+}
+
 fun createHttpClient(token: String?): HttpClient = HttpClient(Android) {
     expectSuccess = true
     BrowserUserAgent()
@@ -40,10 +45,7 @@ fun createHttpClient(token: String?): HttpClient = HttpClient(Android) {
         level = LogLevel.INFO
     }
     install(ContentNegotiation) {
-        json(Json {
-            encodeDefaults = true
-            ignoreUnknownKeys = true
-        })
+        json(json)
     }
     defaultRequest {
         url(BASE_URL)
