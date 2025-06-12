@@ -1,7 +1,14 @@
 package xyz.retrixe.wpustudent.screens.main.holidays
 
+import android.content.ContentUris
+import android.content.Context
+import android.content.Intent
+import android.icu.util.Calendar
+import android.provider.CalendarContract
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,9 +18,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -29,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -45,11 +56,23 @@ import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+fun openCalendar(context: Context, date: LocalDate) {
+    val builder = CalendarContract.CONTENT_URI.buildUpon()
+    builder.appendPath("time")
+    val calendar = Calendar.getInstance()
+    calendar.set(date.year, date.monthValue - 1, date.dayOfMonth)
+    ContentUris.appendId(builder, calendar.getTimeInMillis())
+    val intent = Intent(Intent.ACTION_VIEW).setData(builder.build())
+    context.startActivity(intent)
+}
+
 @Composable
 private fun HolidayCard(holiday: Holiday) {
+    val context = LocalContext.current
     val startDate = LocalDate.parse(holiday.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     val endDate = LocalDate.parse(holiday.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-    OutlinedCard(Modifier.fillMaxWidth()) {
+
+    OutlinedCard({ openCalendar(context, startDate) }, Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(holiday.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
@@ -68,6 +91,14 @@ private fun HolidayCard(holiday: Holiday) {
                     }
                 }
             }, fontSize = 20.sp)
+            Spacer(Modifier.height(16.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+            ) {
+                Text("Open Calendar", fontWeight = FontWeight.Medium)
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Open calendar")
+            }
         }
     }
 }
