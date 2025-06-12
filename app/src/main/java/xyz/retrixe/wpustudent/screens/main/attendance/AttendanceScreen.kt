@@ -154,14 +154,25 @@ fun AttendanceScreen(
 
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                     Text("Total", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    val totalAttendance =
-                        summary.sumOf { it.presentCount * 100 / it.totalSessions } / summary.size
-                    val lowestThreshold =
-                        summary.minOf { it.thresholdPercentage }
-                    Text("%.2f".format(totalAttendance) + "%",
-                        color = getThresholdColor(totalAttendance, lowestThreshold),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold)
+                    if (summary.isNotEmpty()) {
+                        val totalAttendance =
+                            summary.sumOf { it.presentCount * 100 / it.totalSessions } / summary.size
+                        val lowestThreshold =
+                            summary.minOf { it.thresholdPercentage }
+                        Text(
+                            "%.2f".format(totalAttendance) + "%",
+                            color = getThresholdColor(totalAttendance, lowestThreshold),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    } else {
+                        Text(
+                            "N/A",
+                            color = MaterialTheme.colorScheme.outline,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
 
                 Spacer(Modifier.height(16.dp))
