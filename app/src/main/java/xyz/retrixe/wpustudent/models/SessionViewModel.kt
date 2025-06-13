@@ -86,6 +86,11 @@ class SessionViewModel(
     }
 
     suspend fun logout() {
+        try {
+            xyz.retrixe.wpustudent.api.endpoints.logout(httpClient.first())
+        } catch (e: Exception) {
+            Log.w(this@SessionViewModel::class.simpleName, e)
+        }
         sessionDataStore.edit { it.remove(SESSION_ACCESS_TOKEN) }
         savedStateHandle["access_token"] = null
         savedStateHandle["student_basic_info"] = null

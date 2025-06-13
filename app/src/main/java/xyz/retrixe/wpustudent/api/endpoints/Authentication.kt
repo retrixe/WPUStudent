@@ -2,6 +2,7 @@ package xyz.retrixe.wpustudent.api.endpoints
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -128,6 +129,16 @@ suspend fun getAccessToken(client: HttpClient, code: String): String {
     return body.item.identity.accessToken
 }
 
-/* FIXME: suspend fun logout(client: HttpClient) {
-    // curl 'https://mymitwpu.integratededucation.pwc.in/sso/user/oauth2/logout?autoId=UNKNOWN&client_id=3&clientSecret=hu5UEMnT0sg51gGtC7nC' \
-} */
+// FIXME: https://mymitwpu.integratededucation.pwc.in/sso/user/oauth2/refresh-token
+
+suspend fun logout(client: HttpClient) {
+    // TODO: How in the blazes does this API work?
+    // curl 'https://mymitwpu.integratededucation.pwc.in/sso/user/oauth2/logout?autoId=UNKNOWN&client_id=3&clientSecret=hu5UEMnT0sg51gGtC7nC'
+    val characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    val autoId = (0..19).map { _ -> characters.random() }.joinToString("")
+    client.get("sso/user/oauth2/logout") {
+        url.parameters.append("autoId", autoId)
+        url.parameters.append("client_id", CLIENT_ID.toString())
+        url.parameters.append("clientSecret", CLIENT_SECRET)
+    }
+}
