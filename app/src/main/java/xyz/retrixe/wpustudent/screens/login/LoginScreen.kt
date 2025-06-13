@@ -66,7 +66,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
     fun login() = coroutineScope.launch(Dispatchers.IO) {
         loading = true
         try {
-            sessionViewModel.login(email, password)
+            sessionViewModel.login(email, password, false)
             loading = false
         } catch (e: ClientRequestException) {
             loading = false

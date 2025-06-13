@@ -14,3 +14,4 @@ val Context.sessionDataStore: DataStore<Preferences> by preferencesDataStore(
 )
 
 val SESSION_ACCESS_TOKEN = stringPreferencesKey("access_token")
+val SESSION_ACCOUNT_DETAILS = stringPreferencesKey("account_details")

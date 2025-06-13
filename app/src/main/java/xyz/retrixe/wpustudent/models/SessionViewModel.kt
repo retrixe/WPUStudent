@@ -25,6 +25,7 @@ import xyz.retrixe.wpustudent.api.endpoints.getOAuthCode
 import xyz.retrixe.wpustudent.api.endpoints.retrieveStudentBasicInfo
 import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.store.SESSION_ACCESS_TOKEN
+import xyz.retrixe.wpustudent.store.SESSION_ACCOUNT_DETAILS
 import xyz.retrixe.wpustudent.store.decryptFromString
 import xyz.retrixe.wpustudent.store.encryptToString
 import xyz.retrixe.wpustudent.store.sessionDataStore
@@ -51,10 +52,14 @@ class SessionViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             if (!loading.value) return@launch
 
-            // Retrieve token from DataStore
+            // Retrieve token and account details from DataStore
             val accessToken = sessionDataStore.data
                 .map { it[SESSION_ACCESS_TOKEN] }
                 .map { it?.let { decryptFromString(SESSION_ACCESS_TOKEN.name, it) } }
+                .firstOrNull()
+            val accountDetails = sessionDataStore.data
+                .map { it[SESSION_ACCOUNT_DETAILS] }
+                .map { it?.let { decryptFromString(SESSION_ACCOUNT_DETAILS.name, it).split(":") } }
                 .firstOrNull()
 
             // If no access token, we're done here.
@@ -64,9 +69,14 @@ class SessionViewModel(
             }
 
             try {
-                val studentBasicInfo = retrieveStudentBasicInfo(httpClient.first(), accessToken)
-                savedStateHandle["access_token"] = accessToken
-                savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
+                try {
+                    val studentBasicInfo = retrieveStudentBasicInfo(httpClient.first(), accessToken)
+                    savedStateHandle["access_token"] = accessToken
+                    savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
+                } catch (e: Exception) {
+                    if (accountDetails == null) throw e
+                    else login(accountDetails[0], accountDetails[1], false)
+                }
             } catch (e: Exception) {
                 Log.w(this@SessionViewModel::class.simpleName, e)
             }
@@ -74,13 +84,18 @@ class SessionViewModel(
         }
     }
 
-    suspend fun login(username: String, password: String) {
+    suspend fun login(username: String, password: String, saveDetails: Boolean) {
         val httpClient = _vanillaHttpClient
         val code = getOAuthCode(httpClient, username, password)
         val accessToken = getAccessToken(httpClient, code)
         val studentBasicInfo = retrieveStudentBasicInfo(httpClient, accessToken)
         val encryptedAccessToken = encryptToString(SESSION_ACCESS_TOKEN.name, accessToken)
-        sessionDataStore.edit { it[SESSION_ACCESS_TOKEN] = encryptedAccessToken }
+        val accountDetails = "$username:$password"
+        val encryptedAccountDetails = encryptToString(SESSION_ACCOUNT_DETAILS.name, accountDetails)
+        sessionDataStore.edit {
+            it[SESSION_ACCESS_TOKEN] = encryptedAccessToken
+            if (saveDetails) it[SESSION_ACCOUNT_DETAILS] = encryptedAccountDetails
+        }
         savedStateHandle["access_token"] = accessToken
         savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
     }
@@ -91,7 +106,10 @@ class SessionViewModel(
         } catch (e: Exception) {
             Log.w(this@SessionViewModel::class.simpleName, e)
         }
-        sessionDataStore.edit { it.remove(SESSION_ACCESS_TOKEN) }
+        sessionDataStore.edit {
+            it.remove(SESSION_ACCESS_TOKEN)
+            it.remove(SESSION_ACCOUNT_DETAILS)
+        }
         savedStateHandle["access_token"] = null
         savedStateHandle["student_basic_info"] = null
     }
