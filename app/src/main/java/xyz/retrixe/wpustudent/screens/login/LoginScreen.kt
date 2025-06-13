@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,17 +57,19 @@ import xyz.retrixe.wpustudent.utils.handleKeyEvent
 fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHostState.current
+    val (passwordFocus, rememberPasswordFocus, loginButtonFocus) =
+        remember { FocusRequester.createRefs() }
 
     var aboutDialog by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
-    val (passwordFocus, loginButtonFocus) = remember { FocusRequester.createRefs() }
+    var rememberPassword by remember { mutableStateOf(true) }
 
     fun login() = coroutineScope.launch(Dispatchers.IO) {
         loading = true
         try {
-            sessionViewModel.login(email, password, false)
+            sessionViewModel.login(email, password, rememberPassword)
             loading = false
         } catch (e: ClientRequestException) {
             loading = false
@@ -127,7 +130,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             PasswordTextField(
                 modifier = Modifier.fillMaxWidth()
                     .focusRequester(passwordFocus)
-                    .focusProperties { next = loginButtonFocus }
+                    .focusProperties { next = rememberPasswordFocus }
                     .onKeyEvent { handleKeyEvent(it, Key.Enter) { login() } },
                 value = password,
                 onValueChange = { password = it },
@@ -136,6 +139,17 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 keyboardActions = KeyboardActions(onDone = { login() }),
             )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Remember Password")
+                Checkbox(
+                    modifier = Modifier
+                        .focusRequester(rememberPasswordFocus)
+                        .focusProperties { next = loginButtonFocus },
+                    enabled = !loading,
+                    checked = rememberPassword,
+                    onCheckedChange = { rememberPassword = it }
+                )
+            }
             Button(
                 onClick = { login() },
                 modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
