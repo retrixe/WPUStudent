@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import xyz.retrixe.wpustudent.R
 import xyz.retrixe.wpustudent.models.SessionViewModel
+import xyz.retrixe.wpustudent.models.SettingsViewModel
 import xyz.retrixe.wpustudent.ui.components.AboutDialog
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 
@@ -38,10 +41,14 @@ import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 fun SettingsScreen(
     paddingValues: PaddingValues,
     sessionViewModel: SessionViewModel,
+    settingsViewModel: SettingsViewModel,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    var attendanceThresholdDialog by remember { mutableStateOf(false) }
     var aboutDialog by remember { mutableStateOf(false) }
     var loggingOut by remember { mutableStateOf(false) }
+
+    val attendanceThreshold by settingsViewModel.attendanceThresholdOverride.collectAsState()
 
     fun logout() = coroutineScope.launch {
         loggingOut = true
@@ -50,6 +57,15 @@ fun SettingsScreen(
 
     if (aboutDialog) {
         AboutDialog { aboutDialog = false }
+    }
+
+    if (attendanceThresholdDialog) {
+        AttendanceThresholdDialog(attendanceThreshold, { coroutineScope.launch {
+            settingsViewModel.setAttendanceThresholdOverride(it)
+            attendanceThresholdDialog = false
+        } }, {
+            attendanceThresholdDialog = false
+        })
     }
 
     Column(
@@ -66,6 +82,17 @@ fun SettingsScreen(
                 IconButton(onClick = { aboutDialog = true }) {
                     Icon(painter = painterResource(R.drawable.outline_info_24), contentDescription = "Info")
                 }
+            }
+        }
+        Spacer(Modifier.height(24.dp))
+        Card(
+            { attendanceThresholdDialog = true },
+            Modifier.width(512.dp).fillMaxWidth()
+        ) {
+            Column(Modifier.padding(16.dp)) {
+                Text("Attendance Threshold Override", fontSize = 20.sp)
+                Text(attendanceThreshold?.toString() ?: "N/A",
+                    fontSize = 14.sp, color = MaterialTheme.colorScheme.outline)
             }
         }
         Spacer(Modifier.height(24.dp))

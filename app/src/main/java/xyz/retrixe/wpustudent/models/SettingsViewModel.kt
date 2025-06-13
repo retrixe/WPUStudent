@@ -33,9 +33,12 @@ class SettingsViewModel(
         }
     }
 
-    suspend fun setAttendanceThresholdOverride(value: Int) {
+    suspend fun setAttendanceThresholdOverride(value: Int?) {
         savedStateHandle["attendance_threshold_override"] = value
-        settingsDataStore.edit { it[SETTINGS_ATTENDANCE_THRESHOLD_OVERRIDE] = value }
+        settingsDataStore.edit {
+            if (value != null) it[SETTINGS_ATTENDANCE_THRESHOLD_OVERRIDE] = value
+            else it.remove(SETTINGS_ATTENDANCE_THRESHOLD_OVERRIDE)
+        }
     }
 
     companion object {

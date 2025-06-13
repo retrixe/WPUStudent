@@ -144,7 +144,7 @@ fun MainContainer(
                             HolidaysScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Settings> {
-                            SettingsScreen(innerPadding, sessionViewModel)
+                            SettingsScreen(innerPadding, sessionViewModel, settingsViewModel)
                         }
                     }
                 }
