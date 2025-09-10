@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.api.endpoints
+package xyz.retrixe.wpustudent.api.pwc.endpoints
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -10,12 +10,12 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import xyz.retrixe.wpustudent.api.CLIENT_SECRET
-import xyz.retrixe.wpustudent.api.entities.AttendedTerm
-import xyz.retrixe.wpustudent.api.entities.CourseAttendanceSummary
-import xyz.retrixe.wpustudent.api.entities.ExamHallTicket
-import xyz.retrixe.wpustudent.api.entities.Holiday
-import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.CLIENT_SECRET
+import xyz.retrixe.wpustudent.api.pwc.entities.AttendedTerm
+import xyz.retrixe.wpustudent.api.pwc.entities.CourseAttendanceSummary
+import xyz.retrixe.wpustudent.api.pwc.entities.ExamHallTicket
+import xyz.retrixe.wpustudent.api.pwc.entities.Holiday
+import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

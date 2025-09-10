@@ -10,8 +10,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.api.endpoints.fetchAsset
-import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.endpoints.fetchAsset
+import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 import java.io.Serializable
 
 class HomeViewModel(

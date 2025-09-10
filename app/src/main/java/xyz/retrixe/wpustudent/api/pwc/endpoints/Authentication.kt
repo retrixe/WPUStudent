@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.api.endpoints
+package xyz.retrixe.wpustudent.api.pwc.endpoints
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -11,8 +11,8 @@ import io.ktor.http.Url
 import io.ktor.http.contentType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import xyz.retrixe.wpustudent.api.CLIENT_ID
-import xyz.retrixe.wpustudent.api.CLIENT_SECRET
+import xyz.retrixe.wpustudent.api.pwc.CLIENT_ID
+import xyz.retrixe.wpustudent.api.pwc.CLIENT_SECRET
 
 @Serializable
 private data class OAuth2CodeRequest(

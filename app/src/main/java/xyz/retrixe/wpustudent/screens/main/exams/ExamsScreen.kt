@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.api.entities.Exam
-import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.entities.Exam
+import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.exams.ExamsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate

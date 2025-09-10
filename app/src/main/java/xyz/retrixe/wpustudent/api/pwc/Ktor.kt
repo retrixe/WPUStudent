@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.api
+package xyz.retrixe.wpustudent.api.pwc
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android

@@ -12,9 +12,9 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.endpoints.getExams
-import xyz.retrixe.wpustudent.api.entities.ExamHallTicket
-import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.endpoints.getExams
+import xyz.retrixe.wpustudent.api.pwc.entities.ExamHallTicket
+import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 
 class ExamsViewModel(
     private val httpClient: HttpClient,

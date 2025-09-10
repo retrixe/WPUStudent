@@ -12,9 +12,9 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.endpoints.getHolidays
-import xyz.retrixe.wpustudent.api.entities.Holiday
-import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.endpoints.getHolidays
+import xyz.retrixe.wpustudent.api.pwc.entities.Holiday
+import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 
 class HolidaysViewModel(
     private val httpClient: HttpClient,

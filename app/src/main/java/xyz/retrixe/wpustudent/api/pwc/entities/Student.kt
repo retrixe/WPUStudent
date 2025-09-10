@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.api.entities
+package xyz.retrixe.wpustudent.api.pwc.entities
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -12,11 +12,11 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.endpoints.getAttendedCourses
-import xyz.retrixe.wpustudent.api.endpoints.getTermAttendanceSummary
-import xyz.retrixe.wpustudent.api.entities.AttendedTerm
-import xyz.retrixe.wpustudent.api.entities.CourseAttendanceSummary
-import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.endpoints.getAttendedCourses
+import xyz.retrixe.wpustudent.api.pwc.endpoints.getTermAttendanceSummary
+import xyz.retrixe.wpustudent.api.pwc.entities.AttendedTerm
+import xyz.retrixe.wpustudent.api.pwc.entities.CourseAttendanceSummary
+import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 
 class AttendanceViewModel(
     private val httpClient: HttpClient,

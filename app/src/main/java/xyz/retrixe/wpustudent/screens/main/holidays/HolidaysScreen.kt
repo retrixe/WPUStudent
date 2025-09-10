@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.api.entities.Holiday
-import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.entities.Holiday
+import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.holidays.HolidaysViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate

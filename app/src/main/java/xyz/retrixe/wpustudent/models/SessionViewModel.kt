@@ -19,11 +19,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import xyz.retrixe.wpustudent.api.createHttpClient
-import xyz.retrixe.wpustudent.api.endpoints.getAccessToken
-import xyz.retrixe.wpustudent.api.endpoints.getOAuthCode
-import xyz.retrixe.wpustudent.api.endpoints.retrieveStudentBasicInfo
-import xyz.retrixe.wpustudent.api.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.createHttpClient
+import xyz.retrixe.wpustudent.api.pwc.endpoints.getAccessToken
+import xyz.retrixe.wpustudent.api.pwc.endpoints.getOAuthCode
+import xyz.retrixe.wpustudent.api.pwc.endpoints.retrieveStudentBasicInfo
+import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.store.SESSION_ACCESS_TOKEN
 import xyz.retrixe.wpustudent.store.SESSION_ACCOUNT_DETAILS
 import xyz.retrixe.wpustudent.store.decryptFromString
@@ -102,7 +102,7 @@ class SessionViewModel(
 
     suspend fun logout() {
         try {
-            xyz.retrixe.wpustudent.api.endpoints.logout(httpClient.first())
+            xyz.retrixe.wpustudent.api.pwc.endpoints.logout(httpClient.first())
         } catch (e: Exception) {
             Log.w(this@SessionViewModel::class.simpleName, e)
         }

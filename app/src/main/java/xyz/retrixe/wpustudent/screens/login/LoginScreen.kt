@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.R
-import xyz.retrixe.wpustudent.api.json
+import xyz.retrixe.wpustudent.api.pwc.json
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 import xyz.retrixe.wpustudent.ui.components.AboutDialog
