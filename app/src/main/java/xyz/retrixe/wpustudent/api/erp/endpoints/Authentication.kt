@@ -5,6 +5,7 @@ import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.formUrlEncode
@@ -51,6 +52,9 @@ suspend fun login(client: HttpClient, username: String, password: String): Strin
     }
     // If error: <input type="hidden" name="hdnMsg" id="hdnMsg" value="USER Id/ Password Mismatch ERR-ADM05" />
     // This ERP doesn't even use HTTP status codes HAHAHAHAHAHHAHAhhahahahahahHAHAHahahhahHAA......
+    val hdnMsg = response.bodyAsText().split("\n").find { it.contains("hdnMsg") }
+    if (hdnMsg != null)
+        throw ResponseException(response, hdnMsg.substringAfter("value=\"").substringBefore("\""))
 
     val cookies = response.setCookie()
     val authTokenCookie = cookies.find { it.name == "AuthToken" }?.value

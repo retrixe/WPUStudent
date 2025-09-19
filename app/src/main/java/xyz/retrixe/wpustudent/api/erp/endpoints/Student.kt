@@ -10,6 +10,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import it.skrape.core.htmlDocument
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.api.erp.entities.ProfilePictureInfo
@@ -42,17 +43,19 @@ suspend fun retrieveStudentInfo(
         }
     }
     val body = response.bodyAsText()
-    // TODO: Parse student info from body
-    return StudentInfo(
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ProfilePictureInfo(""))
+    return htmlDocument(response.bodyAsText()) {
+        // TODO: Parse student info from body
+        StudentInfo(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ProfilePictureInfo(""))
+    }
 }
 
 // TODO: Everything below needs updating
