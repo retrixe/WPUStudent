@@ -2,19 +2,20 @@ package xyz.retrixe.wpustudent.api.erp.endpoints
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.cookie
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import it.skrape.core.htmlDocument
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import xyz.retrixe.wpustudent.api.erp.entities.ProfilePictureInfo
-import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
+import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.pwc.CLIENT_SECRET
 import xyz.retrixe.wpustudent.api.pwc.entities.AttendedTerm
 import xyz.retrixe.wpustudent.api.pwc.entities.CourseAttendanceSummary
@@ -23,38 +24,37 @@ import xyz.retrixe.wpustudent.api.pwc.entities.Holiday
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-suspend fun retrieveStudentInfo(
+suspend fun retrieveStudentBasicInfo(
     client: HttpClient,
     token: String? = null // This function typically expects such a token where it is used
-): StudentInfo {
-    /*  curl 'https://erp.mitwpu.edu.in/STUDENT/Profile/printstudent.aspx?MENU_CODE=MWEBSTUDprofile' \
+): StudentBasicInfo {
+    /*  curl 'https://erp.mitwpu.edu.in/ERP_Main.aspx' \
           -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*SLASH*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
           -H 'accept-language: en-US,en;q=0.9' \
           -b 'ASP.NET_SessionId=CENSORED; AuthToken=CENSORED' \
           -H 'priority: u=0, i' \
-          -H 'referer: https://erp.mitwpu.edu.in/ERP_Main.aspx' \
+          -H 'referer: https://erp.mitwpu.edu.in/login.aspx' \
           -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
     */
-    val response = client.get("STUDENT/Profile/printstudent.aspx") {
-        url.parameters.append("MENU_CODE", "MWEBSTUDprofile")
+    val response = client.get("ERP_Main.aspx") {
         if (token != null) {
             cookie("AuthToken", token.split("|")[0])
             cookie("ASP.NET_SessionId", token.split("|")[1])
         }
     }
-    val body = response.bodyAsText()
+
+    if (response.request.url.encodedPath == "/Login.aspx")
+        throw ResponseException(response, "Logged out")
+    else if (response.request.url.encodedPath != "/ERP_Main.aspx")
+        throw ResponseException(response, "Unknown redirect")
+
     return htmlDocument(response.bodyAsText()) {
-        // TODO: Parse student info from body
-        StudentInfo(
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ProfilePictureInfo(""))
+        StudentBasicInfo(
+            document.select("span#span_userid").text().trim(),
+            document.select("h6#span_username").text().trim().replace("- ", ""),
+            document.select("span#span_regular").text().trim(),
+            document.select("span#span_courseyear").text().trim(),
+            document.select("img#imgprofile").attr("src"))
     }
 }
 

@@ -12,13 +12,13 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
+import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.pwc.endpoints.getHolidays
 import xyz.retrixe.wpustudent.api.pwc.entities.Holiday
 
 class HolidaysViewModel(
     private val httpClient: HttpClient,
-    private val studentInfo: StudentInfo,
+    private val studentBasicInfo: StudentBasicInfo,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
@@ -27,7 +27,7 @@ class HolidaysViewModel(
 
     suspend fun fetchData() {
         try {
-            val data = getHolidays(httpClient, studentInfo.studentId)
+            val data = getHolidays(httpClient, studentBasicInfo.prn)
             savedStateHandle["data"] = Data.Loaded(data)
         } catch (e: Exception) {
             Log.w(this@HolidaysViewModel::class.simpleName, e)
@@ -46,7 +46,7 @@ class HolidaysViewModel(
 
     class Factory(
         private val httpClient: HttpClient,
-        private val studentInfo: StudentInfo
+        private val studentBasicInfo: StudentBasicInfo
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -55,7 +55,7 @@ class HolidaysViewModel(
 
             return HolidaysViewModel(
                 httpClient = httpClient,
-                studentInfo = studentInfo,
+                studentBasicInfo = studentBasicInfo,
                 savedStateHandle = savedStateHandle
             ) as T
         }

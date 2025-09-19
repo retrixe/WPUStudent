@@ -73,7 +73,7 @@ fun MainContainer(
     val loading by sessionViewModel.loading.collectAsState()
     val accessToken by sessionViewModel.accessToken.collectAsState()
     val httpClient by sessionViewModel.httpClient.collectAsState()
-    val studentInfo by sessionViewModel.studentInfo.collectAsState()
+    val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsState()
 
     val attendanceThresholdOverride by settingsViewModel.attendanceThresholdOverride.collectAsState()
 
@@ -131,17 +131,17 @@ fun MainContainer(
                     composable<Screens.Login> { LoginScreen(innerPadding, sessionViewModel) }
                     navigation<Screens.Main>(startDestination = Screens.Main.Home) {
                         composable<Screens.Main.Home> {
-                            HomeScreen(innerPadding, httpClient, studentInfo!!)
+                            HomeScreen(innerPadding, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Attendance> {
-                            AttendanceScreen(innerPadding, httpClient, studentInfo!!,
+                            AttendanceScreen(innerPadding, httpClient, studentBasicInfo!!,
                                 attendanceThresholdOverride?.toDouble())
                         }
                         composable<Screens.Main.Exams> {
-                            ExamsScreen(innerPadding, httpClient, studentInfo!!)
+                            ExamsScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Holidays> {
-                            HolidaysScreen(innerPadding, httpClient, studentInfo!!)
+                            HolidaysScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Settings> {
                             SettingsScreen(innerPadding, sessionViewModel, settingsViewModel)

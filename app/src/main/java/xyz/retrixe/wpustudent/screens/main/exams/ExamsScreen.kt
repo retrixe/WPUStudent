@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
+import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.pwc.entities.Exam
 import xyz.retrixe.wpustudent.models.main.exams.ExamsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
@@ -85,9 +85,9 @@ private fun ExamsCard(exam: Exam) {
 fun ExamsScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
-    studentInfo: StudentInfo
+    studentBasicInfo: StudentBasicInfo
 ) {
-    val examsViewModelFactory = ExamsViewModel.Factory(httpClient, studentInfo)
+    val examsViewModelFactory = ExamsViewModel.Factory(httpClient, studentBasicInfo)
     val examsViewModel: ExamsViewModel = viewModel(factory = examsViewModelFactory)
     val data by examsViewModel.data.collectAsState()
 

@@ -12,7 +12,7 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
+import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.pwc.endpoints.getAttendedCourses
 import xyz.retrixe.wpustudent.api.pwc.endpoints.getTermAttendanceSummary
 import xyz.retrixe.wpustudent.api.pwc.entities.AttendedTerm
@@ -20,7 +20,7 @@ import xyz.retrixe.wpustudent.api.pwc.entities.CourseAttendanceSummary
 
 class AttendanceViewModel(
     private val httpClient: HttpClient,
-    private val studentInfo: StudentInfo,
+    private val studentBasicInfo: StudentBasicInfo,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
@@ -29,8 +29,8 @@ class AttendanceViewModel(
 
     suspend fun fetchData() {
         try {
-            val summary = getTermAttendanceSummary(httpClient, studentInfo.studentId)
-            val courses = getAttendedCourses(httpClient, studentInfo.studentId)
+            val summary = getTermAttendanceSummary(httpClient, studentBasicInfo.prn)
+            val courses = getAttendedCourses(httpClient, studentBasicInfo.prn)
             savedStateHandle["data"] = Data.Loaded(summary, courses)
         } catch (e: Exception) {
             Log.w(this@AttendanceViewModel::class.simpleName, e)
@@ -52,7 +52,7 @@ class AttendanceViewModel(
 
     class Factory(
         private val httpClient: HttpClient,
-        private val studentInfo: StudentInfo
+        private val studentBasicInfo: StudentBasicInfo
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -61,7 +61,7 @@ class AttendanceViewModel(
 
             return AttendanceViewModel(
                 httpClient = httpClient,
-                studentInfo = studentInfo,
+                studentBasicInfo = studentBasicInfo,
                 savedStateHandle = savedStateHandle
             ) as T
         }

@@ -5,23 +5,16 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-// TODO: Everything below needs updating
 @Serializable
-data class StudentInfo(
-    @SerialName("StudentId") val studentId: String,
-    @SerialName("FirstName") val firstName: String,
-    @SerialName("MiddleName") val middleName: String,
-    @SerialName("LastName") val lastName: String,
-    @SerialName("GlobalId") val globalId: String,
-    @SerialName("TermCode") val termCode: String,
-    @SerialName("TermName") val termName: String,
-    @SerialName("CourseFamilyName") val courseFamilyName: String,
-    @SerialName("ProfilePictureInfo") val profilePictureInfo: ProfilePictureInfo,
+data class StudentBasicInfo(
+    val prn: String,
+    val name: String,
+    val term: String,
+    val section: String,
+    val profilePicture: String,
 )
 
-@Serializable
-data class ProfilePictureInfo(@SerialName("FilePath") val filePath: String)
-
+// TODO: Everything below needs updating
 @Parcelize
 @Serializable
 data class CourseAttendanceSummary(
