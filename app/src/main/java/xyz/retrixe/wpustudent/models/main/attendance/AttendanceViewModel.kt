@@ -12,15 +12,15 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
 import xyz.retrixe.wpustudent.api.pwc.endpoints.getAttendedCourses
 import xyz.retrixe.wpustudent.api.pwc.endpoints.getTermAttendanceSummary
 import xyz.retrixe.wpustudent.api.pwc.entities.AttendedTerm
 import xyz.retrixe.wpustudent.api.pwc.entities.CourseAttendanceSummary
-import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 
 class AttendanceViewModel(
     private val httpClient: HttpClient,
-    private val studentBasicInfo: StudentBasicInfo,
+    private val studentInfo: StudentInfo,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
@@ -29,8 +29,8 @@ class AttendanceViewModel(
 
     suspend fun fetchData() {
         try {
-            val summary = getTermAttendanceSummary(httpClient, studentBasicInfo.studentId)
-            val courses = getAttendedCourses(httpClient, studentBasicInfo.studentId)
+            val summary = getTermAttendanceSummary(httpClient, studentInfo.studentId)
+            val courses = getAttendedCourses(httpClient, studentInfo.studentId)
             savedStateHandle["data"] = Data.Loaded(summary, courses)
         } catch (e: Exception) {
             Log.w(this@AttendanceViewModel::class.simpleName, e)
@@ -52,7 +52,7 @@ class AttendanceViewModel(
 
     class Factory(
         private val httpClient: HttpClient,
-        private val studentBasicInfo: StudentBasicInfo
+        private val studentInfo: StudentInfo
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -61,7 +61,7 @@ class AttendanceViewModel(
 
             return AttendanceViewModel(
                 httpClient = httpClient,
-                studentBasicInfo = studentBasicInfo,
+                studentInfo = studentInfo,
                 savedStateHandle = savedStateHandle
             ) as T
         }

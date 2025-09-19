@@ -33,16 +33,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
-import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
 import xyz.retrixe.wpustudent.models.main.home.HomeViewModel
 
 @Composable
 fun HomeScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
-    studentBasicInfo: StudentBasicInfo
+    studentInfo: StudentInfo
 ) {
-    val homeViewModelFactory = HomeViewModel.Factory(httpClient, studentBasicInfo)
+    val homeViewModelFactory = HomeViewModel.Factory(httpClient, studentInfo)
     val homeViewModel: HomeViewModel = viewModel(factory = homeViewModelFactory)
     val data by homeViewModel.data.collectAsState()
 
@@ -87,21 +87,21 @@ fun HomeScreen(
         }
         Spacer(Modifier.height(24.dp))
         val middleName =
-            if (studentBasicInfo.middleName == "") " "
-            else " ${studentBasicInfo.middleName} "
-        Text(studentBasicInfo.firstName + middleName + studentBasicInfo.lastName,
+            if (studentInfo.middleName == "") " "
+            else " ${studentInfo.middleName} "
+        Text(studentInfo.firstName + middleName + studentInfo.lastName,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             fontSize = 36.sp)
-        Text("PRN ${studentBasicInfo.globalId}",
+        Text("PRN ${studentInfo.globalId}",
             textAlign = TextAlign.Center,
             fontSize = 24.sp)
         Spacer(Modifier.height(8.dp))
-        Text(studentBasicInfo.termName,
+        Text(studentInfo.termName,
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
             color = MaterialTheme.colorScheme.outline)
-        Text(studentBasicInfo.courseFamilyName,
+        Text(studentInfo.courseFamilyName,
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
             color = MaterialTheme.colorScheme.outline)

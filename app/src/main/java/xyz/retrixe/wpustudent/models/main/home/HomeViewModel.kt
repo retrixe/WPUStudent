@@ -10,13 +10,13 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
 import xyz.retrixe.wpustudent.api.pwc.endpoints.fetchAsset
-import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 import java.io.Serializable
 
 class HomeViewModel(
     private val httpClient: HttpClient,
-    private val studentBasicInfo: StudentBasicInfo,
+    private val studentInfo: StudentInfo,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
@@ -27,7 +27,7 @@ class HomeViewModel(
         try {
             val asset = fetchAsset(httpClient,
                 "iemsfilecontainer",
-                studentBasicInfo.profilePictureInfo.filePath,
+                studentInfo.profilePictureInfo.filePath,
                 "profile-picture.png")
             savedStateHandle["data"] = Data.Loaded(asset)
         } catch (e: Exception) {
@@ -57,7 +57,7 @@ class HomeViewModel(
 
     class Factory(
         private val httpClient: HttpClient,
-        private val studentBasicInfo: StudentBasicInfo
+        private val studentInfo: StudentInfo
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -66,7 +66,7 @@ class HomeViewModel(
 
             return HomeViewModel(
                 httpClient = httpClient,
-                studentBasicInfo = studentBasicInfo,
+                studentInfo = studentInfo,
                 savedStateHandle = savedStateHandle
             ) as T
         }

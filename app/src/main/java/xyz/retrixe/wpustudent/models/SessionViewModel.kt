@@ -21,8 +21,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import xyz.retrixe.wpustudent.api.erp.createHttpClient
 import xyz.retrixe.wpustudent.api.erp.endpoints.login
-import xyz.retrixe.wpustudent.api.pwc.endpoints.retrieveStudentBasicInfo
-import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.erp.endpoints.retrieveStudentInfo
+import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
 import xyz.retrixe.wpustudent.store.SESSION_ACCESS_TOKEN
 import xyz.retrixe.wpustudent.store.SESSION_ACCOUNT_DETAILS
 import xyz.retrixe.wpustudent.store.decryptFromString
@@ -39,9 +39,9 @@ class SessionViewModel(
         .getStateFlow("loading", true)
     val accessToken = savedStateHandle
         .getStateFlow<String?>("access_token", null)
-    val studentBasicInfo = savedStateHandle
-        .getStateFlow<String?>("student_basic_info", null)
-        .map { it?.let { Json.decodeFromString<StudentBasicInfo>(it) } }
+    val studentInfo = savedStateHandle
+        .getStateFlow<String?>("student_info", null)
+        .map { it?.let { Json.decodeFromString<StudentInfo>(it) } }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
     val httpClient = accessToken
         .map { createHttpClient(it) }
@@ -69,9 +69,9 @@ class SessionViewModel(
 
             try {
                 try {
-                    val studentBasicInfo = retrieveStudentBasicInfo(httpClient.first(), accessToken)
+                    val studentBasicInfo = retrieveStudentInfo(httpClient.first())
                     savedStateHandle["access_token"] = accessToken
-                    savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
+                    savedStateHandle["student_info"] = Json.encodeToString(studentBasicInfo)
                 } catch (e: Exception) {
                     if (accountDetails == null) throw e
                     else login(accountDetails[0], accountDetails[1], false)
@@ -86,7 +86,7 @@ class SessionViewModel(
     suspend fun login(username: String, password: String, saveDetails: Boolean) {
         val httpClient = _vanillaHttpClient
         val authToken = login(httpClient, username, password)
-        val studentBasicInfo = retrieveStudentBasicInfo(httpClient, authToken)
+        val studentInfo = retrieveStudentInfo(httpClient, authToken)
         val encryptedAccessToken = encryptToString(SESSION_ACCESS_TOKEN.name, authToken)
         val accountDetails = "$username:$password"
         val encryptedAccountDetails = encryptToString(SESSION_ACCOUNT_DETAILS.name, accountDetails)
@@ -95,7 +95,7 @@ class SessionViewModel(
             if (saveDetails) it[SESSION_ACCOUNT_DETAILS] = encryptedAccountDetails
         }
         savedStateHandle["access_token"] = authToken
-        savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
+        savedStateHandle["student_info"] = Json.encodeToString(studentInfo)
     }
 
     suspend fun logout() {
@@ -109,7 +109,7 @@ class SessionViewModel(
             it.remove(SESSION_ACCOUNT_DETAILS)
         }
         savedStateHandle["access_token"] = null
-        savedStateHandle["student_basic_info"] = null
+        savedStateHandle["student_info"] = null
     }
 
     companion object {

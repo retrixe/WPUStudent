@@ -17,7 +17,6 @@ suspend fun login(client: HttpClient, username: String, password: String): Strin
           -H 'cache-control: no-cache' \
           -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8' \
           -b 'ASP.NET_SessionId=CENSORED' \
-          -H 'dnt: 1' \
           -H 'origin: https://erp.mitwpu.edu.in' \
           -H 'priority: u=1, i' \
           -H 'referer: https://erp.mitwpu.edu.in/login.aspx' \
@@ -50,14 +49,17 @@ suspend fun login(client: HttpClient, username: String, password: String): Strin
             "btnLogin" to "Login",
         ).formUrlEncode())
     }
+    // If error: <input type="hidden" name="hdnMsg" id="hdnMsg" value="USER Id/ Password Mismatch ERR-ADM05" />
+    // This ERP doesn't even use HTTP status codes HAHAHAHAHAHHAHAhhahahahahahHAHAHahahhahHAA......
+
     val cookies = response.setCookie()
-    // We'll discard ASP.NET_SessionId for now...
     val authTokenCookie = cookies.find { it.name == "AuthToken" }?.value
         ?: throw ResponseException(response, "No AuthToken cookie found")
-    println(authTokenCookie)
-    return authTokenCookie
+    val sessionIdCookie = cookies.find { it.name == "ASP.NET_SessionId" }?.value
+        ?: throw ResponseException(response, "No ASP.NET_SessionId cookie found")
+    return "$authTokenCookie|$sessionIdCookie"
 }
 
 suspend fun logout(client: HttpClient) {
-    TODO("This doesn't work yet")
+    // TODO: No-op
 }

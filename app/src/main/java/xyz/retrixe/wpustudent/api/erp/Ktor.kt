@@ -29,6 +29,9 @@ fun createHttpClient(token: String?): HttpClient = HttpClient(Android) {
     }
     defaultRequest {
         url(BASE_URL)
-        if (token != null) cookie("AuthToken", token)
+        if (token != null) {
+            cookie("AuthToken", token.split("|")[0])
+            cookie("ASP.NET_SessionId", token.split("|")[1])
+        }
     }
 }

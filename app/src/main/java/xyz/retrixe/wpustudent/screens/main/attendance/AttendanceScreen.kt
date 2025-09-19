@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
+import xyz.retrixe.wpustudent.api.erp.entities.StudentInfo
 import xyz.retrixe.wpustudent.api.pwc.entities.CourseAttendanceSummary
-import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
 import kotlin.math.ceil
@@ -119,10 +119,10 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
 fun AttendanceScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
-    studentBasicInfo: StudentBasicInfo,
+    studentInfo: StudentInfo,
     attendanceThresholdOverride: Double?,
 ) {
-    val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient, studentBasicInfo)
+    val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient, studentInfo)
     val attendanceViewModel: AttendanceViewModel = viewModel(factory = attendanceViewModelFactory)
     val data by attendanceViewModel.data.collectAsState()
 

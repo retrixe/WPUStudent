@@ -56,7 +56,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
         remember { FocusRequester.createRefs() }
 
     var aboutDialog by remember { mutableStateOf(false) }
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     var rememberPassword by remember { mutableStateOf(true) }
@@ -64,7 +64,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
     fun login() = coroutineScope.launch(Dispatchers.IO) {
         loading = true
         try {
-            sessionViewModel.login(email, password, rememberPassword)
+            sessionViewModel.login(username, password, rememberPassword)
             loading = false
         } catch (e: ClientRequestException) {
             loading = false
@@ -112,9 +112,9 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                 modifier = Modifier.fillMaxWidth()
                     .focusProperties { next = passwordFocus }
                     .onKeyEvent { handleKeyEvent(it, Key.Enter) { passwordFocus.requestFocus() } },
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("E-mail") },
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
                 enabled = !loading,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 keyboardActions = KeyboardActions(onNext = { passwordFocus.requestFocus() }),
@@ -146,7 +146,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Button(
                 onClick = { login() },
                 modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
-                enabled = !loading && !email.isBlank() && !password.isBlank(),
+                enabled = !loading && !username.isBlank() && !password.isBlank(),
             ) {
                 Text("Login")
             }
