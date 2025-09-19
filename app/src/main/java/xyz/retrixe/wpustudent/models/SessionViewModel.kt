@@ -19,9 +19,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import xyz.retrixe.wpustudent.api.pwc.createHttpClient
-import xyz.retrixe.wpustudent.api.pwc.endpoints.getAccessToken
-import xyz.retrixe.wpustudent.api.pwc.endpoints.getOAuthCode
+import xyz.retrixe.wpustudent.api.erp.createHttpClient
+import xyz.retrixe.wpustudent.api.erp.endpoints.login
 import xyz.retrixe.wpustudent.api.pwc.endpoints.retrieveStudentBasicInfo
 import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.store.SESSION_ACCESS_TOKEN
@@ -86,23 +85,22 @@ class SessionViewModel(
 
     suspend fun login(username: String, password: String, saveDetails: Boolean) {
         val httpClient = _vanillaHttpClient
-        val code = getOAuthCode(httpClient, username, password)
-        val accessToken = getAccessToken(httpClient, code)
-        val studentBasicInfo = retrieveStudentBasicInfo(httpClient, accessToken)
-        val encryptedAccessToken = encryptToString(SESSION_ACCESS_TOKEN.name, accessToken)
+        val authToken = login(httpClient, username, password)
+        val studentBasicInfo = retrieveStudentBasicInfo(httpClient, authToken)
+        val encryptedAccessToken = encryptToString(SESSION_ACCESS_TOKEN.name, authToken)
         val accountDetails = "$username:$password"
         val encryptedAccountDetails = encryptToString(SESSION_ACCOUNT_DETAILS.name, accountDetails)
         sessionDataStore.edit {
             it[SESSION_ACCESS_TOKEN] = encryptedAccessToken
             if (saveDetails) it[SESSION_ACCOUNT_DETAILS] = encryptedAccountDetails
         }
-        savedStateHandle["access_token"] = accessToken
+        savedStateHandle["access_token"] = authToken
         savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
     }
 
     suspend fun logout() {
         try {
-            xyz.retrixe.wpustudent.api.pwc.endpoints.logout(httpClient.first())
+            xyz.retrixe.wpustudent.api.erp.endpoints.logout(httpClient.first())
         } catch (e: Exception) {
             Log.w(this@SessionViewModel::class.simpleName, e)
         }
