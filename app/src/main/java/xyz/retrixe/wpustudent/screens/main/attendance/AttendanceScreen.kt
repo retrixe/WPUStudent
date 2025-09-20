@@ -40,8 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
-import xyz.retrixe.wpustudent.api.pwc.entities.CourseAttendanceSummary
+import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
 import kotlin.math.ceil
@@ -59,13 +58,13 @@ private fun getThresholdColor(value: Double, threshold: Double) =
 
 @Composable
 private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
-    val rawAttendance = course.presentCount / course.totalSessions
+    val rawAttendance = course.present.toDouble() / course.total
     val attendance = rawAttendance * 100
     val color = getThresholdColor(attendance, threshold)
 
     OutlinedCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(course.moduleName, fontSize = 20.sp)
+            Text("${course.subjectName} (${course.subjectType})", fontSize = 20.sp)
             Spacer(Modifier.height(16.dp))
             FixedFractionIndicator(Modifier.height(8.dp), rawAttendance, color)
             Spacer(Modifier.height(8.dp))
@@ -73,8 +72,8 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
                 withStyle(style = SpanStyle(color = color, fontWeight = FontWeight.Bold)) {
                     append("%.2f".format(attendance) + "%")
                 }
-                val presentCount = course.presentCount.toInt()
-                val totalSessions = course.totalSessions.toInt()
+                val presentCount = course.present
+                val totalSessions = course.total
                 append(" ($presentCount / $totalSessions sessions)")
             })
             Spacer(Modifier.height(16.dp))
@@ -85,8 +84,8 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
                 // => x - x * threshold = threshold * total - present
                 // => x (1 - threshold) = threshold * total - present
                 // => x = (threshold * total - present) / (1 - threshold)
-                val present = course.presentCount
-                val total = course.totalSessions
+                val present = course.present.toDouble()
+                val total = course.total.toDouble()
                 val threshold = threshold / 100
                 val classesLeft = ((threshold * total) - present) / (1 - threshold)
                 Text(
@@ -100,8 +99,8 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
                 // => threshold * x = present - threshold * total
                 // => x = present - (threshold * total) / threshold
                 // => x = (present / threshold) - total
-                val present = course.presentCount
-                val total = course.totalSessions
+                val present = course.present.toDouble()
+                val total = course.total.toDouble()
                 val threshold = threshold / 100
                 val skippableClasses = (present / threshold) - total
                 Text(
@@ -114,15 +113,16 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
     }
 }
 
+const val THRESHOLD_PERCENTAGE = 75.0 // +5'ed everywhere it's used, thus 80%
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
-    studentBasicInfo: StudentBasicInfo,
     attendanceThresholdOverride: Double?,
 ) {
-    val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient, studentBasicInfo)
+    val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient)
     val attendanceViewModel: AttendanceViewModel = viewModel(factory = attendanceViewModelFactory)
     val data by attendanceViewModel.data.collectAsState()
 
@@ -156,10 +156,12 @@ fun AttendanceScreen(
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                     Text("Total", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     if (summary.isNotEmpty()) {
+                        // Previously, when we were using PwC:
+                        // summary.sumOf { it.presentCount * 100 / it.totalSessions } / summary.size
                         val totalAttendance =
-                            summary.sumOf { it.presentCount * 100 / it.totalSessions } / summary.size
+                            summary.sumOf { it.present.toDouble() * 100 } / summary.sumOf { it.total }
                         val lowestThreshold =
-                            attendanceThresholdOverride ?: summary.minOf { it.thresholdPercentage + 5 }
+                            attendanceThresholdOverride ?: summary.minOf { THRESHOLD_PERCENTAGE + 5 }
                         Text(
                             "%.2f".format(totalAttendance) + "%",
                             color = getThresholdColor(totalAttendance, lowestThreshold),
@@ -194,9 +196,9 @@ fun AttendanceScreen(
                     },
                 ) {
                     LazyColumn(Modifier.fillMaxSize()) {
-                        items(summary.sortedBy { it.moduleName }) { course ->
+                        items(summary.sortedBy { it.subjectName + it.subjectType }) { course ->
                             AttendanceCard(course,
-                                attendanceThresholdOverride ?: (course.thresholdPercentage + 5))
+                                attendanceThresholdOverride ?: (THRESHOLD_PERCENTAGE + 5))
                             Spacer(Modifier.height(16.dp))
                         }
                     }

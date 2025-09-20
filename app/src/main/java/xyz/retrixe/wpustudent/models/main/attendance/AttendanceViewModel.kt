@@ -12,15 +12,11 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
-import xyz.retrixe.wpustudent.api.pwc.endpoints.getAttendedCourses
-import xyz.retrixe.wpustudent.api.pwc.endpoints.getTermAttendanceSummary
-import xyz.retrixe.wpustudent.api.pwc.entities.AttendedTerm
-import xyz.retrixe.wpustudent.api.pwc.entities.CourseAttendanceSummary
+import xyz.retrixe.wpustudent.api.erp.endpoints.getAttendanceSummary
+import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 
 class AttendanceViewModel(
     private val httpClient: HttpClient,
-    private val studentBasicInfo: StudentBasicInfo,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
@@ -29,9 +25,8 @@ class AttendanceViewModel(
 
     suspend fun fetchData() {
         try {
-            val summary = getTermAttendanceSummary(httpClient, studentBasicInfo.prn)
-            val courses = getAttendedCourses(httpClient, studentBasicInfo.prn)
-            savedStateHandle["data"] = Data.Loaded(summary, courses)
+            val summary = getAttendanceSummary(httpClient)
+            savedStateHandle["data"] = Data.Loaded(summary)
         } catch (e: Exception) {
             Log.w(this@AttendanceViewModel::class.simpleName, e)
             savedStateHandle["data"] = Data.Error
@@ -46,13 +41,11 @@ class AttendanceViewModel(
 
         data class Loaded(
             val summary: List<CourseAttendanceSummary>,
-            val courses: List<AttendedTerm>,
         ) : Data
     }
 
     class Factory(
         private val httpClient: HttpClient,
-        private val studentBasicInfo: StudentBasicInfo
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -61,7 +54,6 @@ class AttendanceViewModel(
 
             return AttendanceViewModel(
                 httpClient = httpClient,
-                studentBasicInfo = studentBasicInfo,
                 savedStateHandle = savedStateHandle
             ) as T
         }

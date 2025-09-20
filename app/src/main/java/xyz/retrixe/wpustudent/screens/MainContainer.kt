@@ -134,7 +134,7 @@ fun MainContainer(
                             HomeScreen(innerPadding, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Attendance> {
-                            AttendanceScreen(innerPadding, httpClient, studentBasicInfo!!,
+                            AttendanceScreen(innerPadding, httpClient,
                                 attendanceThresholdOverride?.toDouble())
                         }
                         composable<Screens.Main.Exams> {
