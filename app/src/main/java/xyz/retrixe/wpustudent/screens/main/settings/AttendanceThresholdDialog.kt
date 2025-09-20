@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.utils.handleKeyEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +51,7 @@ fun AttendanceThresholdDialog(
             tonalElevation = AlertDialogDefaults.TonalElevation
         ) {
             Column(Modifier.padding(24.dp)) {
-                Text("Attendance Threshold Override",
+                Text("Attendance Threshold",
                     fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(16.dp))
                 OutlinedTextField(
@@ -64,7 +65,7 @@ fun AttendanceThresholdDialog(
                             tempValue
                         }
                     },
-                    placeholder = { Text("Default: No override") },
+                    placeholder = { Text("Default: ${THRESHOLD_PERCENTAGE + 5}%") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onNext = { onSubmit(newValue) }),
                     singleLine = true

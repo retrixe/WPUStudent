@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import xyz.retrixe.wpustudent.R
+import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.models.SettingsViewModel
 import xyz.retrixe.wpustudent.ui.components.AboutDialog
@@ -48,7 +49,7 @@ fun SettingsScreen(
     var aboutDialog by remember { mutableStateOf(false) }
     var loggingOut by remember { mutableStateOf(false) }
 
-    val attendanceThreshold by settingsViewModel.attendanceThresholdOverride.collectAsState()
+    val attendanceThreshold by settingsViewModel.attendanceThreshold.collectAsState()
 
     fun logout() = coroutineScope.launch {
         loggingOut = true
@@ -61,7 +62,7 @@ fun SettingsScreen(
 
     if (attendanceThresholdDialog) {
         AttendanceThresholdDialog(attendanceThreshold, { coroutineScope.launch {
-            settingsViewModel.setAttendanceThresholdOverride(it)
+            settingsViewModel.setAttendanceThreshold(it)
             attendanceThresholdDialog = false
         } }, {
             attendanceThresholdDialog = false
@@ -90,8 +91,8 @@ fun SettingsScreen(
             Modifier.width(512.dp).fillMaxWidth()
         ) {
             Column(Modifier.padding(16.dp)) {
-                Text("Attendance Threshold Override", fontSize = 20.sp)
-                Text(attendanceThreshold?.toString() ?: "N/A",
+                Text("Attendance Threshold", fontSize = 20.sp)
+                Text(attendanceThreshold?.toString() ?: "Default: ${THRESHOLD_PERCENTAGE + 5}%",
                     fontSize = 14.sp, color = MaterialTheme.colorScheme.outline)
             }
         }

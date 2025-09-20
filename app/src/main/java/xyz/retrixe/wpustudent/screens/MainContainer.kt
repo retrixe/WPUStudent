@@ -75,7 +75,7 @@ fun MainContainer(
     val httpClient by sessionViewModel.httpClient.collectAsState()
     val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsState()
 
-    val attendanceThresholdOverride by settingsViewModel.attendanceThresholdOverride.collectAsState()
+    val attendanceThreshold by settingsViewModel.attendanceThreshold.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -135,7 +135,7 @@ fun MainContainer(
                         }
                         composable<Screens.Main.Attendance> {
                             AttendanceScreen(innerPadding, httpClient,
-                                attendanceThresholdOverride?.toDouble())
+                                attendanceThreshold?.toDouble())
                         }
                         composable<Screens.Main.Exams> {
                             ExamsScreen(innerPadding, httpClient, studentBasicInfo!!)

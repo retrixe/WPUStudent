@@ -13,4 +13,4 @@ val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
     corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() }
 )
 
-val SETTINGS_ATTENDANCE_THRESHOLD_OVERRIDE = intPreferencesKey("attendance_threshold_override")
+val SETTINGS_ATTENDANCE_THRESHOLD = intPreferencesKey("attendance_threshold")

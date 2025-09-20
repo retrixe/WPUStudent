@@ -13,6 +13,8 @@ data class StudentBasicInfo(
     val profilePicture: String,
 )
 
+const val THRESHOLD_PERCENTAGE = 75.0 // +5'ed everywhere it's used, thus 80%
+
 @Parcelize
 @Serializable
 data class CourseAttendanceSummary(

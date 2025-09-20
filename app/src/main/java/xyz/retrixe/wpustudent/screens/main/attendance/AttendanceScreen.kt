@@ -41,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
+import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
 import kotlin.math.ceil
@@ -114,14 +115,12 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
     }
 }
 
-const val THRESHOLD_PERCENTAGE = 75.0 // +5'ed everywhere it's used, thus 80%
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
-    attendanceThresholdOverride: Double?,
+    attendanceThreshold: Double?,
 ) {
     val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient)
     val attendanceViewModel: AttendanceViewModel = viewModel(factory = attendanceViewModelFactory)
@@ -162,7 +161,7 @@ fun AttendanceScreen(
                         val totalAttendance =
                             summary.sumOf { it.present.toDouble() * 100 } / summary.sumOf { it.total }
                         val lowestThreshold =
-                            attendanceThresholdOverride ?: summary.minOf { THRESHOLD_PERCENTAGE + 5 }
+                            attendanceThreshold ?: summary.minOf { THRESHOLD_PERCENTAGE + 5 }
                         Text(
                             "%.2f".format(totalAttendance) + "%",
                             color = getThresholdColor(totalAttendance, lowestThreshold),
@@ -199,7 +198,7 @@ fun AttendanceScreen(
                     LazyColumn(Modifier.fillMaxSize()) {
                         items(summary.sortedBy { it.subjectName + it.subjectType }) { course ->
                             AttendanceCard(course,
-                                attendanceThresholdOverride ?: (THRESHOLD_PERCENTAGE + 5))
+                                attendanceThreshold ?: (THRESHOLD_PERCENTAGE + 5))
                             Spacer(Modifier.height(16.dp))
                         }
                     }
