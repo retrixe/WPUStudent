@@ -30,9 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
-@OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun HomeScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo) {
     val profilePictureB64Data = studentBasicInfo.profilePicture.substringAfter(",")
