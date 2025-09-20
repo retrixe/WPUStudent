@@ -54,7 +54,7 @@ suspend fun login(client: HttpClient, username: String, password: String): Strin
     // This ERP doesn't even use HTTP status codes HAHAHAHAHAHHAHAhhahahahahahHAHAHahahhahHAA......
     val hdnMsg = response.bodyAsText().split("\n").find { it.contains("hdnMsg") }
     if (hdnMsg != null)
-        throw ResponseException(response, hdnMsg.substringAfter("value=\"").substringBefore("\""))
+        throw Exception(hdnMsg.substringAfter("value=\"").substringBefore("\""))
 
     val cookies = response.setCookie()
     val authTokenCookie = cookies.find { it.name == "AuthToken" }?.value
@@ -64,6 +64,7 @@ suspend fun login(client: HttpClient, username: String, password: String): Strin
     return "$authTokenCookie|$sessionIdCookie"
 }
 
+@Suppress("UNUSED_PARAMETER", "RedundantSuspendModifier")
 suspend fun logout(client: HttpClient) {
-    // TODO: No-op
+    // TODO: No-op, it's a pain to implement (storing __VIEWSTATE in login), and tokens expire quickly anyway
 }
