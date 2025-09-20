@@ -92,7 +92,7 @@ fun SettingsScreen(
         ) {
             Column(Modifier.padding(16.dp)) {
                 Text("Attendance Threshold", fontSize = 20.sp)
-                Text(attendanceThreshold?.toString() ?: "Default: ${THRESHOLD_PERCENTAGE + 5}%",
+                Text(attendanceThreshold?.toString() ?: "Default: ${THRESHOLD_PERCENTAGE.toInt() + 5}%",
                     fontSize = 14.sp, color = MaterialTheme.colorScheme.outline)
             }
         }

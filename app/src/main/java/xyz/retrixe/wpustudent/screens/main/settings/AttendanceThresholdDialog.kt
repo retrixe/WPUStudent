@@ -65,7 +65,7 @@ fun AttendanceThresholdDialog(
                             tempValue
                         }
                     },
-                    placeholder = { Text("Default: ${THRESHOLD_PERCENTAGE + 5}%") },
+                    placeholder = { Text("Default: ${THRESHOLD_PERCENTAGE.toInt() + 5}%") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onNext = { onSubmit(newValue) }),
                     singleLine = true
