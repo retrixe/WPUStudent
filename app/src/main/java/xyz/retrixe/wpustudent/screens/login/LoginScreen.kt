@@ -39,18 +39,13 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.R
-import xyz.retrixe.wpustudent.api.pwc.json
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 import xyz.retrixe.wpustudent.ui.components.AboutDialog
 import xyz.retrixe.wpustudent.ui.components.PasswordTextField
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.handleKeyEvent
-
-@Serializable private data class LoginError(@SerialName("Message") val message: String?)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +56,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
         remember { FocusRequester.createRefs() }
 
     var aboutDialog by remember { mutableStateOf(false) }
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     var rememberPassword by remember { mutableStateOf(true) }
@@ -69,15 +64,13 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
     fun login() = coroutineScope.launch(Dispatchers.IO) {
         loading = true
         try {
-            sessionViewModel.login(email, password, rememberPassword)
+            sessionViewModel.login(username, password, rememberPassword)
             loading = false
         } catch (e: ClientRequestException) {
             loading = false
-            val data: LoginError = json.decodeFromString(e.response.bodyAsText())
-            snackbarHostState.showSnackbar(
-                data.message ?: e.localizedMessage,
-                withDismissAction = true
-            )
+            // When we moved from PwC, this error handling was updated
+            val response = e.response.bodyAsText().ifBlank { null }
+            snackbarHostState.showSnackbar(response ?: e.localizedMessage, withDismissAction = true)
         } catch (e: Exception) {
             loading = false
             snackbarHostState.showSnackbar(
@@ -114,14 +107,14 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Modifier.padding(horizontal = 16.dp).width(512.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("Enter your MIT-WPU PwC login details:")
+            Text("Enter your MIT-WPU ERP login details:")
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth()
                     .focusProperties { next = passwordFocus }
                     .onKeyEvent { handleKeyEvent(it, Key.Enter) { passwordFocus.requestFocus() } },
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("E-mail") },
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
                 enabled = !loading,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 keyboardActions = KeyboardActions(onNext = { passwordFocus.requestFocus() }),
@@ -153,7 +146,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Button(
                 onClick = { login() },
                 modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
-                enabled = !loading && !email.isBlank() && !password.isBlank(),
+                enabled = !loading && !username.isBlank() && !password.isBlank(),
             ) {
                 Text("Login")
             }

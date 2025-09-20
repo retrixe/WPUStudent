@@ -12,9 +12,9 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.pwc.endpoints.getExams
-import xyz.retrixe.wpustudent.api.pwc.entities.ExamHallTicket
-import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.erp.endpoints.getExams
+import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
+import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 
 class ExamsViewModel(
     private val httpClient: HttpClient,
@@ -27,7 +27,7 @@ class ExamsViewModel(
 
     suspend fun fetchData() {
         try {
-            val data = getExams(httpClient, studentBasicInfo.studentId, studentBasicInfo.termCode)
+            val data = getExams(httpClient, studentBasicInfo.prn, studentBasicInfo.prn)
             savedStateHandle["data"] = Data.Loaded(data)
         } catch (e: Exception) {
             Log.w(this@ExamsViewModel::class.simpleName, e)

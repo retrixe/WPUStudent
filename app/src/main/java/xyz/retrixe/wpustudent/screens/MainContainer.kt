@@ -54,7 +54,7 @@ object Screens {
         enum class Destinations(val label: String, @get:DrawableRes val icon: Int, val route: Any) {
             HOME("Home", R.drawable.baseline_home_24, Home),
             ATTENDANCE("Attendance", R.drawable.baseline_co_present_24, Attendance),
-            EXAMS("Exams", R.drawable.baseline_book_24, Exams),
+            // TODO: EXAMS("Exams", R.drawable.baseline_book_24, Exams),
             HOLIDAYS("Holidays", R.drawable.baseline_calendar_month_24, Holidays),
             SETTINGS("Settings", R.drawable.baseline_settings_24, Settings),
         }
@@ -131,17 +131,17 @@ fun MainContainer(
                     composable<Screens.Login> { LoginScreen(innerPadding, sessionViewModel) }
                     navigation<Screens.Main>(startDestination = Screens.Main.Home) {
                         composable<Screens.Main.Home> {
-                            HomeScreen(innerPadding, httpClient, studentBasicInfo!!)
+                            HomeScreen(innerPadding, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Attendance> {
-                            AttendanceScreen(innerPadding, httpClient, studentBasicInfo!!,
+                            AttendanceScreen(innerPadding, httpClient,
                                 attendanceThresholdOverride?.toDouble())
                         }
                         composable<Screens.Main.Exams> {
                             ExamsScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Holidays> {
-                            HolidaysScreen(innerPadding, httpClient, studentBasicInfo!!)
+                            HolidaysScreen(innerPadding)
                         }
                         composable<Screens.Main.Settings> {
                             SettingsScreen(innerPadding, sessionViewModel, settingsViewModel)

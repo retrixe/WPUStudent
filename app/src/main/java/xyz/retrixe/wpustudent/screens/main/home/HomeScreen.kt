@@ -16,13 +16,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,20 +28,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import io.ktor.client.HttpClient
-import xyz.retrixe.wpustudent.api.pwc.entities.StudentBasicInfo
-import xyz.retrixe.wpustudent.models.main.home.HomeViewModel
+import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalEncodingApi::class)
 @Composable
-fun HomeScreen(
-    paddingValues: PaddingValues,
-    httpClient: HttpClient,
-    studentBasicInfo: StudentBasicInfo
-) {
-    val homeViewModelFactory = HomeViewModel.Factory(httpClient, studentBasicInfo)
-    val homeViewModel: HomeViewModel = viewModel(factory = homeViewModelFactory)
-    val data by homeViewModel.data.collectAsState()
+fun HomeScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo) {
+    val profilePictureB64Data = studentBasicInfo.profilePicture.substringAfter(",")
+    val profilePicture =
+        if (profilePictureB64Data.isEmpty()) null
+        else try {
+            Base64.decode(profilePictureB64Data)
+        } catch (_: Exception) {
+            null
+        }
 
     Column(
         Modifier
@@ -55,53 +53,41 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(40.dp))
-        when (data) {
-            is HomeViewModel.Data.Loading -> {
-                CircularProgressIndicator(Modifier.size(192.dp).padding(48.dp))
-            }
-
-            is HomeViewModel.Data.Loaded -> {
-                val imageData = (data as HomeViewModel.Data.Loaded).profilePicture
-                val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-                Image(
-                    bitmap = bitmap.asImageBitmap(),
-                    contentDescription = "Profile picture",
-                    modifier = Modifier.size(192.dp).clip(CircleShape)
+        if (profilePicture == null) {
+            Box(
+                Modifier
+                    .size(192.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+            ) {
+                Icon(
+                    Icons.Default.Warning,
+                    contentDescription = "Error loading profile picture",
+                    modifier = Modifier.size(96.dp).align(Alignment.Center)
                 )
             }
-
-            else -> {
-                Box(
-                    Modifier
-                        .size(192.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
-                ) {
-                    Icon(
-                        Icons.Default.Warning,
-                        contentDescription = "Error loading profile picture",
-                        modifier = Modifier.size(96.dp).align(Alignment.Center)
-                    )
-                }
-            }
+        } else {
+            val bitmap = BitmapFactory.decodeByteArray(profilePicture, 0, profilePicture.size)
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Profile picture",
+                modifier = Modifier.size(192.dp).clip(CircleShape)
+            )
         }
         Spacer(Modifier.height(24.dp))
-        val middleName =
-            if (studentBasicInfo.middleName == "") " "
-            else " ${studentBasicInfo.middleName} "
-        Text(studentBasicInfo.firstName + middleName + studentBasicInfo.lastName,
+        Text(studentBasicInfo.name,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             fontSize = 36.sp)
-        Text("PRN ${studentBasicInfo.globalId}",
+        Text("PRN ${studentBasicInfo.prn}",
             textAlign = TextAlign.Center,
             fontSize = 24.sp)
         Spacer(Modifier.height(8.dp))
-        Text(studentBasicInfo.termName,
+        Text(studentBasicInfo.term,
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
             color = MaterialTheme.colorScheme.outline)
-        Text(studentBasicInfo.courseFamilyName,
+        Text(studentBasicInfo.section,
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
             color = MaterialTheme.colorScheme.outline)
