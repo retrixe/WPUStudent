@@ -44,6 +44,7 @@ import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
 import kotlin.math.ceil
+import kotlin.math.floor
 
 // TODO
 //  - https://m3.material.io/styles/color/advanced/overview
@@ -104,7 +105,7 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
                 val threshold = threshold / 100
                 val skippableClasses = (present / threshold) - total
                 Text(
-                    "You can skip ${ceil(skippableClasses).toInt()} classes and stay at the " +
+                    "You can skip ${floor(skippableClasses).toInt()} classes and stay at " +
                             "${(threshold * 100).toInt()}% threshold."
                 )
                 // TODO: Estimate classes left, and how many one should attend
