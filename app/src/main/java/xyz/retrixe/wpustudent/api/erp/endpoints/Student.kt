@@ -16,10 +16,9 @@ import it.skrape.core.htmlDocument
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
+import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
 import xyz.retrixe.wpustudent.api.erp.entities.Holiday
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
-import xyz.retrixe.wpustudent.api.pwc.CLIENT_SECRET
-import xyz.retrixe.wpustudent.api.pwc.entities.ExamHallTicket
 
 suspend fun retrieveStudentBasicInfo(
     client: HttpClient,
@@ -118,7 +117,7 @@ fun getHolidays(): List<Holiday> {
     )
 }
 
-// TODO: Everything below needs updating
+// TODO: Exams API is still built for PwC, until hall tickets are released, it can't be ported to ERP
 
 @Serializable
 private data class ExamHallTicketRequest(
@@ -127,176 +126,6 @@ private data class ExamHallTicketRequest(
     @SerialName("TermCode") val termCode: String,
 )
 
-/* {
-  "StatusCode": 200,
-  "Message": "Success",
-  "Item": {
-    "GlobalId": "1032233145",
-    "IntegrationData": {
-      "code": 200,
-      "status": "OK",
-      "message": "",
-      "body": {
-        "globalId": "1032233145",
-        "enrollmentNo": "1032233145",
-        "sessionName": "May-June 2025",
-        "ticket": [
-          [
-            {
-              "srNo": 1,
-              "brandName": "Dr. Vishwanath Karad MIT World Peace University",
-              "academicYearName": "2024-25",
-              "schoolName": "School of Computer Science and Engineering",
-              "programName": "B.Tech Computer Science and Engineering",
-              "programCode": "BTECH_CSE",
-              "examTypeCode": "SUPPL",
-              "assessmentGroupCode": "AG34",
-              "examId": 38414,
-              "examName": "External Backlog II",
-              "termId": 10787,
-              "termName": "Semester 1",
-              "termCode": "SEM_1",
-              "examDate": "2025-06-05",
-              "courseName": "Linear Algebra and Differential Calculus",
-              "courseCode": "MST1PF01A",
-              "day": "Thursday",
-              "date": "05-06-2025",
-              "time": "04:00 pm - 05:30 pm",
-              "room_seatno": "",
-              "remarks": null,
-              "eligibility": "Yes"
-            },
-            {
-              "srNo": 2,
-              "brandName": "Dr. Vishwanath Karad MIT World Peace University",
-              "academicYearName": "2024-25",
-              "schoolName": "School of Computer Science and Engineering",
-              "programName": "B.Tech Computer Science and Engineering",
-              "programCode": "BTECH_CSE",
-              "examTypeCode": "SUPPL",
-              "assessmentGroupCode": "AG34",
-              "examId": 37755,
-              "examName": "External Backlog II",
-              "termId": 10458,
-              "termName": "Semester 3",
-              "termCode": "SEM_3",
-              "examDate": "2025-05-19",
-              "courseName": "Differential Equations and Transform Techniques",
-              "courseCode": "MST2PF01A",
-              "day": "Monday",
-              "date": "19-05-2025",
-              "time": "02:00 pm - 03:30 pm",
-              "room_seatno": "",
-              "remarks": null,
-              "eligibility": "Yes"
-            }
-          ],
-          [
-            {
-              "srNo": 3,
-              "brandName": "Dr. Vishwanath Karad MIT World Peace University",
-              "academicYearName": "2024-25",
-              "schoolName": "School of Computer Science and Engineering",
-              "programName": "B.Tech Computer Science and Engineering",
-              "programCode": "BTECH_CSE",
-              "examTypeCode": "REG",
-              "assessmentGroupCode": "AG02",
-              "examId": 37775,
-              "examName": "End Term",
-              "termId": 64843,
-              "termName": "Semester 4",
-              "termCode": "SEM_4",
-              "examDate": "2025-05-26",
-              "courseName": "Probability and Statistics",
-              "courseCode": "MST2PF03A",
-              "day": "Monday",
-              "date": "26-05-2025",
-              "time": "10:30 am - 12:00 pm",
-              "room_seatno": "",
-              "remarks": null,
-              "eligibility": "Yes"
-            },
-            {
-              "srNo": 4,
-              "brandName": "Dr. Vishwanath Karad MIT World Peace University",
-              "academicYearName": "2024-25",
-              "schoolName": "School of Computer Science and Engineering",
-              "programName": "B.Tech Computer Science and Engineering",
-              "programCode": "BTECH_CSE",
-              "examTypeCode": "REG",
-              "assessmentGroupCode": "AG02",
-              "examId": 37779,
-              "examName": "End Term",
-              "termId": 64843,
-              "termName": "Semester 4",
-              "termCode": "SEM_4",
-              "examDate": "2025-05-30",
-              "courseName": "Database Management System",
-              "courseCode": "CSE2PM04A",
-              "day": "Friday",
-              "date": "30-05-2025",
-              "time": "10:30 am - 12:00 pm",
-              "room_seatno": "",
-              "remarks": null,
-              "eligibility": "Yes"
-            },
-            {
-              "srNo": 5,
-              "brandName": "Dr. Vishwanath Karad MIT World Peace University",
-              "academicYearName": "2024-25",
-              "schoolName": "School of Computer Science and Engineering",
-              "programName": "B.Tech Computer Science and Engineering",
-              "programCode": "BTECH_CSE",
-              "examTypeCode": "REG",
-              "assessmentGroupCode": "AG02",
-              "examId": 37786,
-              "examName": "End Term",
-              "termId": 64843,
-              "termName": "Semester 4",
-              "termCode": "SEM_4",
-              "examDate": "2025-06-02",
-              "courseName": "Design and Analysis of Algorithms",
-              "courseCode": "CSE2PM09A",
-              "day": "Monday",
-              "date": "02-06-2025",
-              "time": "10:30 am - 12:00 pm",
-              "room_seatno": "",
-              "remarks": null,
-              "eligibility": "Yes"
-            },
-            {
-              "srNo": 6,
-              "brandName": "Dr. Vishwanath Karad MIT World Peace University",
-              "academicYearName": "2024-25",
-              "schoolName": "School of Computer Science and Engineering",
-              "programName": "B.Tech Computer Science and Engineering",
-              "programCode": "BTECH_CSE",
-              "examTypeCode": "REG",
-              "assessmentGroupCode": "AG02",
-              "examId": 37788,
-              "examName": "End Term",
-              "termId": 64843,
-              "termName": "Semester 4",
-              "termCode": "SEM_4",
-              "examDate": "2025-06-04",
-              "courseName": "Computer Networks",
-              "courseCode": "CSE2PM03A",
-              "day": "Wednesday",
-              "date": "04-06-2025",
-              "time": "10:30 am - 12:00 pm",
-              "room_seatno": "",
-              "remarks": null,
-              "eligibility": "Yes"
-            }
-          ]
-        ]
-      }
-    },
-    "AttendanceData": [],
-    "IsDisciplineIncidentPresent": false,
-    "IsTQMQFeedbackCompleted": false
-  }
-} */
 @Serializable
 private data class ExamHallTicketResponse(@SerialName("Item") val item: ExamHallTicketItem)
 
@@ -323,7 +152,7 @@ suspend fun getExams(
     val response = client.post("apigateway/integratons/api/data/exam-pro") {
         contentType(ContentType.Application.Json)
         header("x-applicationname", "connectportal")
-        header("x-appsecret", CLIENT_SECRET)
+        // header("x-appsecret", CLIENT_SECRET)
         header("x-requestfrom", "web")
         setBody(ExamHallTicketRequest(studentUniqueId, termCode = termCode))
     }

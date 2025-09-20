@@ -54,7 +54,7 @@ object Screens {
         enum class Destinations(val label: String, @get:DrawableRes val icon: Int, val route: Any) {
             HOME("Home", R.drawable.baseline_home_24, Home),
             ATTENDANCE("Attendance", R.drawable.baseline_co_present_24, Attendance),
-            EXAMS("Exams", R.drawable.baseline_book_24, Exams),
+            // TODO: EXAMS("Exams", R.drawable.baseline_book_24, Exams),
             HOLIDAYS("Holidays", R.drawable.baseline_calendar_month_24, Holidays),
             SETTINGS("Settings", R.drawable.baseline_settings_24, Settings),
         }

@@ -2,7 +2,6 @@ package xyz.retrixe.wpustudent.api.erp.entities
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -34,7 +33,6 @@ data class Holiday(
     val endDate: String = startDate,
 ) : Parcelable
 
-// TODO: Everything below needs updating
 @Parcelize
 @Serializable
 data class ExamHallTicket(
