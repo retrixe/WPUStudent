@@ -47,10 +47,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
-import xyz.retrixe.wpustudent.api.pwc.entities.Holiday
+import xyz.retrixe.wpustudent.api.erp.entities.Holiday
 import xyz.retrixe.wpustudent.models.main.holidays.HolidaysViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate
@@ -105,12 +103,8 @@ private fun HolidayCard(holiday: Holiday) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HolidaysScreen(
-    paddingValues: PaddingValues,
-    httpClient: HttpClient,
-    studentBasicInfo: StudentBasicInfo
-) {
-    val holidaysViewModelFactory = HolidaysViewModel.Factory(httpClient, studentBasicInfo)
+fun HolidaysScreen(paddingValues: PaddingValues) {
+    val holidaysViewModelFactory = HolidaysViewModel.Factory()
     val holidaysViewModel: HolidaysViewModel = viewModel(factory = holidaysViewModelFactory)
     val data by holidaysViewModel.data.collectAsState()
 

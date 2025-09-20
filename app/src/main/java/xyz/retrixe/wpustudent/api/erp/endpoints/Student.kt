@@ -16,10 +16,10 @@ import it.skrape.core.htmlDocument
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
+import xyz.retrixe.wpustudent.api.erp.entities.Holiday
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.pwc.CLIENT_SECRET
 import xyz.retrixe.wpustudent.api.pwc.entities.ExamHallTicket
-import xyz.retrixe.wpustudent.api.pwc.entities.Holiday
 
 suspend fun retrieveStudentBasicInfo(
     client: HttpClient,
@@ -94,276 +94,31 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
     }
 }
 
-// TODO: Everything below needs updating
-
-/* [
-  {
-    "Name": "Republic Day",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "National Holiday",
-    "StartDate": "2024-01-26T00:00:00",
-    "EndDate": "2024-01-26T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Independence Day",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "National Holiday",
-    "StartDate": "2024-08-15T00:00:00",
-    "EndDate": "2024-08-15T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Rakshabandhan",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2024-08-19T00:00:00",
-    "EndDate": "2024-08-19T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Krishan Janmashtami",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2024-08-26T00:00:00",
-    "EndDate": "2024-08-26T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Ganesh Chaturthi",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2024-09-07T00:00:00",
-    "EndDate": "2024-09-07T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Gauri Poojan",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2024-09-11T00:00:00",
-    "EndDate": "2024-09-11T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Anant Chaturdashi",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2024-09-18T00:00:00",
-    "EndDate": "2024-09-18T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Gandhi Jayanti",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "National Holiday",
-    "StartDate": "2024-10-02T00:00:00",
-    "EndDate": "2024-10-02T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Vijaya Dashami (Dasera)",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2024-10-12T00:00:00",
-    "EndDate": "2024-10-12T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Diwali Vacation",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2024-10-28T00:00:00",
-    "EndDate": "2024-11-04T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Christmas",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2024-12-25T00:00:00",
-    "EndDate": "2024-12-25T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Shivjayanti",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2025-02-19T00:00:00",
-    "EndDate": "2025-02-19T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Mahashivratri",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2025-02-26T00:00:00",
-    "EndDate": "2025-02-26T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Dhulivandan",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2025-03-14T00:00:00",
-    "EndDate": "2025-03-14T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Gudi Padva",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2025-03-30T00:00:00",
-    "EndDate": "2025-03-30T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Ramzan Eid",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2025-03-31T00:00:00",
-    "EndDate": "2025-03-31T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Dr. Babasaheb Ambedkar Jayanti",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2025-04-14T00:00:00",
-    "EndDate": "2025-04-14T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Maharashtra Day",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2025-05-01T00:00:00",
-    "EndDate": "2025-05-01T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  },
-  {
-    "Name": "Bakari Id",
-    "BatchName": "",
-    "Type": "MANHOL",
-    "SubType": "State Holiday",
-    "StartDate": "2025-06-07T00:00:00",
-    "EndDate": "2025-06-07T00:00:00",
-    "GradeId": 0,
-    "BoardId": 0,
-    "FacultyId": 2,
-    "CourseId": 0,
-    "BatchId": 0
-  }
-] */
-suspend fun getHolidays(client: HttpClient, studentUniqueId: String): List<Holiday> {
-    /*  curl 'https://mymitwpu.integratededucation.pwc.in/apigateway/api/calendareventlist' \
-          -H 'authorization: Bearer TOKEN' \
-          -H 'content-type: application/json' \
-          -H 'x-applicationname: connectportal' \
-          -H 'x-appsecret: hu5UEMnT0sg51gGtC7nC' \
-          -H 'x-requestfrom: web' \
-          --data-raw '{"StudentUniqueId":"c9bef136-396a-441e-9370-876fda382b20"}'
-    */
-    val response = client.post("apigateway/api/calendareventlist") {
-        contentType(ContentType.Application.Json)
-        header("x-applicationname", "connectportal")
-        header("x-appsecret", CLIENT_SECRET)
-        header("x-requestfrom", "web")
-        setBody(mapOf("StudentUniqueID" to studentUniqueId))
-    }
-    val body: List<Holiday> = response.body()
-    return body
+fun getHolidays(): List<Holiday> {
+    return listOf(
+        Holiday("Republic Day", "National Holiday", "2025-01-26T00:00:00"),
+        Holiday("Shivjayanti", "State Holiday", "2025-02-19T00:00:00"),
+        Holiday("Mahashivratri", "State Holiday", "2025-02-26T00:00:00"),
+        Holiday("Dhulivandan (Holi 2nd day)", "State Holiday", "2025-03-14T00:00:00"),
+        Holiday("Gudhi Padva", "State Holiday", "2025-03-30T00:00:00"),
+        Holiday("Ramzan Eid (Eid-Al-Fitr)", "State Holiday", "2025-03-31T00:00:00"),
+        Holiday("Dr. Babasaheb Ambedkar Jayanti", "State Holiday", "2025-04-14T00:00:00"),
+        Holiday("Maharashtra Day", "State Holiday", "2025-05-01T00:00:00"),
+        Holiday("Bakri Id (Eid-Al-Adha)", "State Holiday", "2025-06-07T00:00:00"),
+        Holiday("Ashadhi Ekadashi", "State Holiday", "2025-07-06T00:00:00"),
+        Holiday("Rakshabandhan", "State Holiday", "2025-08-09T00:00:00"),
+        Holiday("Independence Day", "National Holiday", "2025-08-15T00:00:00"),
+        Holiday("Ganesh Chaturthi", "State Holiday", "2025-08-27T00:00:00"),
+        Holiday("Gouri Poojan", "State Holiday", "2025-09-01T00:00:00"),
+        Holiday("Anant Chaturdashi", "State Holiday", "2025-09-06T00:00:00"),
+        Holiday("Gandhi Jayanti", "National Holiday", "2025-10-02T00:00:00"),
+        Holiday("Vijaya Dashmi (Dasara)", "State Holiday", "2025-10-02T00:00:00"),
+        Holiday("Diwali Holidays", "State Holiday", "2025-10-18T00:00:00", "2025-10-25T00:00:00"),
+        Holiday("Christmas", "State Holiday", "2025-12-25T00:00:00"),
+    )
 }
+
+// TODO: Everything below needs updating
 
 @Serializable
 private data class ExamHallTicketRequest(

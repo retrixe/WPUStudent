@@ -25,16 +25,16 @@ data class CourseAttendanceSummary(
     val percentage: Double,
 ) : Parcelable
 
-// TODO: Everything below needs updating
 @Parcelize
 @Serializable
 data class Holiday(
-    @SerialName("Name") val name: String,
-    @SerialName("SubType") val subType: String,
-    @SerialName("StartDate") val startDate: String,
-    @SerialName("EndDate") val endDate: String,
+    val name: String,
+    val subType: String,
+    val startDate: String,
+    val endDate: String = startDate,
 ) : Parcelable
 
+// TODO: Everything below needs updating
 @Parcelize
 @Serializable
 data class ExamHallTicket(
