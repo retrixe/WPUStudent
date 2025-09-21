@@ -12,10 +12,10 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import it.skrape.core.htmlDocument
 import kotlinx.coroutines.delay
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.jsoup.Jsoup
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
 import xyz.retrixe.wpustudent.api.erp.entities.Holiday
@@ -45,14 +45,13 @@ suspend fun retrieveStudentBasicInfo(
     else if (response.request.url.encodedPath != "/ERP_Main.aspx")
         throw ResponseException(response, "Unknown redirect")
 
-    return htmlDocument(response.bodyAsText()) {
-        StudentBasicInfo(
-            document.select("span#span_userid").text().trim(),
-            document.select("h6#span_username").text().trim().replace("- ", ""),
-            document.select("span#span_regular").text().trim(),
-            document.select("span#span_courseyear").text().trim(),
-            document.select("img#imgprofile").attr("src"))
-    }
+    val document = Jsoup.parse(response.bodyAsText())
+    return StudentBasicInfo(
+        document.select("span#span_userid").text().trim(),
+        document.select("h6#span_username").text().trim().replace("- ", ""),
+        document.select("span#span_regular").text().trim(),
+        document.select("span#span_courseyear").text().trim(),
+        document.select("img#imgprofile").attr("src"))
 }
 
 suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSummary> {
@@ -67,31 +66,31 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
     val response = client.get("STUDENT/SelfAttendence.aspx") {
         url.parameters.append("MENU_CODE", "MWEBSTUATTEN_SLF_ATTEN")
     }
-    return htmlDocument(response.bodyAsText()) {
-        val attendanceSummary = arrayListOf<CourseAttendanceSummary>()
-        val rows = document.select("div.infor-table").select("tr")
-        for (row in rows) {
-            if (row.hasClass("tblAltRowStyle") || row.hasClass("tblRowStyle")) {
-                val cells = row.children()
-                if (cells.size != 4 && cells.size != 6) {
-                    continue // We have no idea to handle this situation
-                }
-                val idxStart = if (cells.size == 4) -2 else 0
-                val subjectName =
-                    if (cells.size == 4) attendanceSummary.lastOrNull()?.subjectName ?: "Unknown"
-                    else cells[1].text()
-                attendanceSummary.add(CourseAttendanceSummary(
-                    cells[idxStart + 2].select("a").attr("id"),
-                    subjectName,
-                    cells[idxStart + 2].select("a").text(),
-                    cells[idxStart + 3].text().trim().toInt(),
-                    cells[idxStart + 4].text().trim().toInt(),
-                    cells[idxStart + 3].text().trim().toDouble()
-                ))
+
+    val document = Jsoup.parse(response.bodyAsText())
+    val attendanceSummary = arrayListOf<CourseAttendanceSummary>()
+    val rows = document.select("div.infor-table").select("tr")
+    for (row in rows) {
+        if (row.hasClass("tblAltRowStyle") || row.hasClass("tblRowStyle")) {
+            val cells = row.children()
+            if (cells.size != 4 && cells.size != 6) {
+                continue // We have no idea to handle this situation
             }
+            val idxStart = if (cells.size == 4) -2 else 0
+            val subjectName =
+                if (cells.size == 4) attendanceSummary.lastOrNull()?.subjectName ?: "Unknown"
+                else cells[1].text()
+            attendanceSummary.add(CourseAttendanceSummary(
+                cells[idxStart + 2].select("a").attr("id"),
+                subjectName,
+                cells[idxStart + 2].select("a").text(),
+                cells[idxStart + 3].text().trim().toInt(),
+                cells[idxStart + 4].text().trim().toInt(),
+                cells[idxStart + 3].text().trim().toDouble()
+            ))
         }
-        attendanceSummary
     }
+    return attendanceSummary
 }
 
 suspend fun getHolidays(): List<Holiday> {
