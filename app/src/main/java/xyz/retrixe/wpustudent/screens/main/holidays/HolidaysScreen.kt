@@ -75,7 +75,10 @@ private fun HolidayCard(holiday: Holiday) {
         Column(Modifier.padding(16.dp)) {
             Text(holiday.name, fontSize = 24.sp)
             Spacer(Modifier.height(8.dp))
-            Badge(containerColor = MaterialTheme.colorScheme.primaryContainer) {
+            Badge(containerColor = when (holiday.subType) {
+                "National Holiday" -> MaterialTheme.colorScheme.errorContainer
+                else -> MaterialTheme.colorScheme.primaryContainer
+            }) {
                 Text(holiday.subType, Modifier.padding(2.dp))
             }
             Spacer(Modifier.height(16.dp))

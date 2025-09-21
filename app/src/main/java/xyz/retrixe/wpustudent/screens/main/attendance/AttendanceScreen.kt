@@ -67,7 +67,21 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
 
     OutlinedCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text("${course.subjectName} (${course.subjectType})", fontSize = 20.sp)
+            Text(buildAnnotatedString {
+                append(course.subjectName)
+                append("\n")
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.outline)) {
+                    append("(")
+                    append(when (course.subjectType) {
+                        "PR" -> "Practical"
+                        "PJ" -> "Project"
+                        "TH" -> "Theory"
+                        "TT" -> "Tutorial"
+                        else -> course.subjectType
+                    })
+                    append(")")
+                }
+            }, fontSize = 24.sp)
             Spacer(Modifier.height(16.dp))
             FixedFractionIndicator(Modifier.height(8.dp), rawAttendance, color)
             Spacer(Modifier.height(8.dp))
