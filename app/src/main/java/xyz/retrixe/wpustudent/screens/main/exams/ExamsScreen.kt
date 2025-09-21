@@ -12,8 +12,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Badge
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -80,7 +81,7 @@ private fun ExamsCard(exam: Exam) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ExamsScreen(
     paddingValues: PaddingValues,
@@ -109,7 +110,7 @@ fun ExamsScreen(
         when (data) {
             is ExamsViewModel.Data.Loading -> {
                 Spacer(Modifier.weight(1f))
-                CircularProgressIndicator(Modifier.size(96.dp).align(Alignment.CenterHorizontally))
+                LoadingIndicator(Modifier.size(96.dp).align(Alignment.CenterHorizontally))
                 Spacer(Modifier.weight(1f))
             }
 
@@ -127,7 +128,7 @@ fun ExamsScreen(
                     modifier = Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
                     state = refreshState,
                     indicator = {
-                        PullToRefreshDefaults.Indicator(
+                        PullToRefreshDefaults.LoadingIndicator(
                             modifier = Modifier.align(Alignment.TopCenter),
                             isRefreshing = refreshing,
                             // containerColor = MaterialTheme.colorScheme.primaryContainer,

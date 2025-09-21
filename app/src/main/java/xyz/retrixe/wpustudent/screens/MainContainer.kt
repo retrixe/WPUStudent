@@ -80,6 +80,7 @@ fun MainContainer(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
+    // FIXME: Maybe we should look at the Material 3 Expressive TopAppBar here...
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier.fillMaxSize()
