@@ -12,7 +12,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -47,7 +49,7 @@ import xyz.retrixe.wpustudent.ui.components.PasswordTextField
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.handleKeyEvent
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel) {
     val coroutineScope = rememberCoroutineScope()
@@ -133,7 +135,6 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                 keyboardActions = KeyboardActions(onDone = { login() }),
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Remember Password")
                 Checkbox(
                     modifier = Modifier
                         .focusRequester(rememberPasswordFocus)
@@ -142,14 +143,19 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                     checked = rememberPassword,
                     onCheckedChange = { rememberPassword = it }
                 )
+                Text("Remember Password")
             }
-            Button(
-                onClick = { login() },
-                modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
-                enabled = !loading && !username.isBlank() && !password.isBlank(),
-            ) {
-                Text("Login")
-            }
+            if (loading)
+                // LinearWavyProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 18.dp))
+                CircularWavyProgressIndicator(Modifier.align(Alignment.End))
+            else
+                Button(
+                    onClick = { login() },
+                    modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
+                    enabled = !loading && !username.isBlank() && !password.isBlank(),
+                ) {
+                    Text("Login")
+                }
         }
         Spacer(Modifier.weight(1f))
     }
