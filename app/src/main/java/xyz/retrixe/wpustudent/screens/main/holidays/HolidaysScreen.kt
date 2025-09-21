@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.provider.CalendarContract
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +22,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Badge
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -28,6 +31,7 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -41,6 +45,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -96,7 +103,7 @@ private fun HolidayCard(holiday: Holiday) {
             Spacer(Modifier.height(16.dp))
             Row(
                 Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+                Arrangement.spacedBy(ButtonDefaults.IconSpacing, Alignment.End)
             ) {
                 Text("Open Calendar", fontWeight = FontWeight.Medium)
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Open calendar")
@@ -115,6 +122,9 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
     val coroutineScope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
     var refreshing by remember { mutableStateOf(false) }
+
+    val tabs = listOf("Upcoming", "Past")
+    var selectedTab by remember { mutableStateOf(0) }
 
     fun refresh() = coroutineScope.launch {
         if (data is HolidaysViewModel.Data.Loading) return@launch
@@ -139,6 +149,29 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
 
                 Spacer(Modifier.height(16.dp))
 
+                Row(
+                    Modifier.padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+                ) {
+                    tabs.forEachIndexed { index, label ->
+                        ToggleButton(
+                            checked = selectedTab == index,
+                            onCheckedChange = { selectedTab = index },
+                            modifier = Modifier.weight(1f).semantics { role = Role.Tab },
+                            shapes =
+                                when (index) {
+                                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                    tabs.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                                },
+                        ) {
+                            Text(label)
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
                 PullToRefreshBox(
                     isRefreshing = refreshing,
                     onRefresh = ::refresh,
@@ -154,39 +187,49 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
                         )
                     },
                 ) {
-                    LazyColumn(Modifier.fillMaxSize()) {
-                        val sortedHolidays = holidays.sortedBy { it.startDate }
-                        val pastHolidays = sortedHolidays.takeWhile {
-                            LocalDate
-                                .parse(it.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                                .isBefore(LocalDate.now())
-                        }
-                        val upcomingHolidays = sortedHolidays
-                            .takeLast(sortedHolidays.size - pastHolidays.size)
-
-                        if (upcomingHolidays.isNotEmpty()) {
-                            item {
-                                Text("Upcoming holidays", fontSize = 24.sp)
-                                Spacer(Modifier.height(16.dp))
-                            }
-                        }
-                        items(upcomingHolidays) { holiday ->
-                            HolidayCard(holiday)
-                            Spacer(Modifier.height(16.dp))
-                        }
-
-                        if (pastHolidays.isNotEmpty()) {
-                            item {
-                                if (upcomingHolidays.isNotEmpty()) {
+                    val sortedHolidays = holidays.sortedBy { it.startDate }
+                    val pastHolidays = sortedHolidays.takeWhile {
+                        LocalDate
+                            .parse(it.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                            .isBefore(LocalDate.now())
+                    }
+                    val upcomingHolidays = sortedHolidays
+                        .takeLast(sortedHolidays.size - pastHolidays.size)
+                    Crossfade(targetState = selectedTab, label = "Holidays") {
+                        /* transitionSpec = {
+                            if (targetState > initialState) {
+                                slideInHorizontally { width -> width } + fadeIn() togetherWith
+                                        slideOutHorizontally { width -> -width } + fadeOut()
+                            } else {
+                                slideInHorizontally { width -> -width } + fadeIn() togetherWith
+                                        slideOutHorizontally { height -> height } + fadeOut()
+                            }.using(SizeTransform(clip = false))
+                        } */
+                        LazyColumn(Modifier.fillMaxSize()) {
+                            /* if (upcomingHolidays.isNotEmpty()) {
+                                item {
+                                    Text("Upcoming holidays", fontSize = 24.sp)
                                     Spacer(Modifier.height(16.dp))
                                 }
-                                Text("Past holidays", fontSize = 24.sp)
+                            }
+                            items(upcomingHolidays) { holiday ->
+                                HolidayCard(holiday)
                                 Spacer(Modifier.height(16.dp))
                             }
-                        }
-                        items(pastHolidays) { holiday ->
-                            HolidayCard(holiday)
-                            Spacer(Modifier.height(16.dp))
+
+                            if (pastHolidays.isNotEmpty()) {
+                                item {
+                                    if (upcomingHolidays.isNotEmpty()) {
+                                        Spacer(Modifier.height(16.dp))
+                                    }
+                                    Text("Past holidays", fontSize = 24.sp)
+                                    Spacer(Modifier.height(16.dp))
+                                }
+                            } */
+                            items(if (it == 0) upcomingHolidays else pastHolidays) { holiday ->
+                                HolidayCard(holiday)
+                                Spacer(Modifier.height(16.dp))
+                            }
                         }
                     }
                 }

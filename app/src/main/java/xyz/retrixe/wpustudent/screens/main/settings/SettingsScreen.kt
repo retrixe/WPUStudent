@@ -109,7 +109,7 @@ fun SettingsScreen(
                 painter = painterResource(R.drawable.baseline_logout_24),
                 contentDescription = "Logout"
             )
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
             Text("Logout")
         }
     }
