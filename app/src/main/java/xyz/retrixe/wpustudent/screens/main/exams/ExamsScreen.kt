@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -181,10 +182,13 @@ fun ExamsScreen(
 
             else -> {
                 Spacer(Modifier.weight(1f))
-                Text("Failed to load exams!",
+                Text("Failed to load exams!\n" +
+                        "Try reopening the app, or log out and log back in.\n" +
+                        "If not working, open an issue at: https://github.com/retrixe/WPUStudent/issues",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.error)
                 Spacer(Modifier.weight(1f))
             }
