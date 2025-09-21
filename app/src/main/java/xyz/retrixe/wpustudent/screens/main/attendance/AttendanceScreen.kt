@@ -140,7 +140,7 @@ fun AttendanceScreen(
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
-        Text("Attendance", fontSize = 36.sp, fontWeight = FontWeight.Bold)
+        Text("Attendance", fontSize = 36.sp)
 
         when (data) {
             is AttendanceViewModel.Data.Loading -> {
@@ -155,7 +155,7 @@ fun AttendanceScreen(
                 Spacer(Modifier.height(16.dp))
 
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                    Text("Total", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text("Total", fontSize = 24.sp)
                     if (summary.isNotEmpty()) {
                         // Previously, when we were using PwC:
                         // summary.sumOf { it.presentCount * 100 / it.totalSessions } / summary.size

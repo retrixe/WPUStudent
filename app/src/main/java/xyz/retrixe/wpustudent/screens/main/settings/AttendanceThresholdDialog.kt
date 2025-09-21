@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,8 +50,7 @@ fun AttendanceThresholdDialog(
             tonalElevation = AlertDialogDefaults.TonalElevation
         ) {
             Column(Modifier.padding(24.dp)) {
-                Text("Attendance Threshold",
-                    fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text("Attendance Threshold", fontSize = 24.sp)
                 Spacer(Modifier.height(16.dp))
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth()

@@ -73,7 +73,7 @@ private fun HolidayCard(holiday: Holiday) {
 
     OutlinedCard({ openCalendar(context, startDate) }, Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(holiday.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(holiday.name, fontSize = 24.sp)
             Spacer(Modifier.height(8.dp))
             Badge(containerColor = MaterialTheme.colorScheme.primaryContainer) {
                 Text(holiday.subType, Modifier.padding(2.dp))
@@ -122,7 +122,7 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
-        Text("Holidays", fontSize = 36.sp, fontWeight = FontWeight.Bold)
+        Text("Holidays", fontSize = 36.sp)
 
         when (data) {
             is HolidaysViewModel.Data.Loading -> {
@@ -163,10 +163,7 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
 
                         if (upcomingHolidays.isNotEmpty()) {
                             item {
-                                Text(
-                                    "Upcoming holidays",
-                                    fontSize = 24.sp, fontWeight = FontWeight.Bold
-                                )
+                                Text("Upcoming holidays", fontSize = 24.sp)
                                 Spacer(Modifier.height(16.dp))
                             }
                         }
@@ -180,10 +177,7 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
                                 if (upcomingHolidays.isNotEmpty()) {
                                     Spacer(Modifier.height(16.dp))
                                 }
-                                Text(
-                                    "Past holidays",
-                                    fontSize = 24.sp, fontWeight = FontWeight.Bold
-                                )
+                                Text("Past holidays", fontSize = 24.sp)
                                 Spacer(Modifier.height(16.dp))
                             }
                         }

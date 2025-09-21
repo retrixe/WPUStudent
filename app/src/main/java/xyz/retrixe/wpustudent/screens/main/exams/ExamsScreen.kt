@@ -46,6 +46,8 @@ import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+// TODO: Bold text has been removed from other screens, look at it here when re-enabling it
+
 @Composable
 private fun ExamsCard(exam: Exam) {
     val date = LocalDate.parse(exam.examDate, DateTimeFormatter.ISO_LOCAL_DATE)

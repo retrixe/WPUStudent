@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -78,7 +77,7 @@ fun SettingsScreen(
             Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Settings", fontSize = 36.sp, fontWeight = FontWeight.Bold)
+            Text("Settings", fontSize = 36.sp)
             PlainTooltipBox("Info") {
                 IconButton(onClick = { aboutDialog = true }) {
                     Icon(painter = painterResource(R.drawable.outline_info_24), contentDescription = "Info")
