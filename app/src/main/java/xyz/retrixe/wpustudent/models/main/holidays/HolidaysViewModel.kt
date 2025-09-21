@@ -21,7 +21,7 @@ class HolidaysViewModel(
 
     init { viewModelScope.launch(Dispatchers.IO) { fetchData() } }
 
-    fun fetchData() {
+    suspend fun fetchData() {
         try {
             val data = getHolidays()
             savedStateHandle["data"] = Data.Loaded(data)

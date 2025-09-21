@@ -60,7 +60,7 @@ fun openCalendar(context: Context, date: LocalDate) {
     builder.appendPath("time")
     val calendar = Calendar.getInstance()
     calendar.set(date.year, date.monthValue - 1, date.dayOfMonth)
-    ContentUris.appendId(builder, calendar.getTimeInMillis())
+    ContentUris.appendId(builder, calendar.timeInMillis)
     val intent = Intent(Intent.ACTION_VIEW).setData(builder.build())
     context.startActivity(intent)
 }

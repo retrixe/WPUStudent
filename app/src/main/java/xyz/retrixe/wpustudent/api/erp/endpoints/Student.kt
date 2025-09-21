@@ -13,6 +13,7 @@ import io.ktor.client.statement.request
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import it.skrape.core.htmlDocument
+import kotlinx.coroutines.delay
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
@@ -93,7 +94,8 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
     }
 }
 
-fun getHolidays(): List<Holiday> {
+suspend fun getHolidays(): List<Holiday> {
+    delay(500L)
     return listOf(
         Holiday("Republic Day", "National Holiday", "2025-01-26T00:00:00"),
         Holiday("Shivjayanti", "State Holiday", "2025-02-19T00:00:00"),
