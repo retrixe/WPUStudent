@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -59,14 +60,14 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
 
     var aboutDialog by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val password = rememberTextFieldState()
     var loading by remember { mutableStateOf(false) }
     var rememberPassword by remember { mutableStateOf(true) }
 
     fun login() = coroutineScope.launch(Dispatchers.IO) {
         loading = true
         try {
-            sessionViewModel.login(username, password, rememberPassword)
+            sessionViewModel.login(username, password.text.toString(), rememberPassword)
             loading = false
         } catch (e: ClientRequestException) {
             loading = false
@@ -127,12 +128,11 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                     .focusRequester(passwordFocus)
                     .focusProperties { next = rememberPasswordFocus }
                     .onKeyEvent { handleKeyEvent(it, Key.Enter) { login() } },
-                value = password,
-                onValueChange = { password = it },
+                state = password,
                 label = { Text("Password") },
                 enabled = !loading,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                keyboardActions = KeyboardActions(onDone = { login() }),
+                onKeyboardAction = { login() },
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
@@ -152,7 +152,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                 Button(
                     onClick = { login() },
                     modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
-                    enabled = !loading && !username.isBlank() && !password.isBlank(),
+                    enabled = !loading && !username.isBlank() && !password.toString().isBlank(),
                 ) {
                     Text("Login")
                 }
