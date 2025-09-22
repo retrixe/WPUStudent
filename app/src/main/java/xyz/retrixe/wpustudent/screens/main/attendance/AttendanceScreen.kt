@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -94,12 +95,12 @@ private fun readableSubjectType(type: String) = when (type) {
 }
 
 @Composable
-private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
+private fun LazyItemScope.AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
     val rawAttendance = course.present.toDouble() / course.total
     val attendance = rawAttendance * 100
     val color = getThresholdColor(attendance, threshold)
 
-    OutlinedCard(Modifier.fillMaxWidth()) {
+    OutlinedCard(Modifier.animateItem().fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(course.subjectName, fontSize = 24.sp)
             Text("(" + readableSubjectType(course.subjectType) + ")",
@@ -262,11 +263,12 @@ fun AttendanceScreen(
                         )
                     },
                 ) {
-                    LazyColumn(Modifier.fillMaxSize()) {
-                        items(summary.sortedBy { it.subjectName + it.subjectType }) { course ->
-                            AttendanceCard(course,
-                                attendanceThreshold ?: (THRESHOLD_PERCENTAGE + 5))
-                            Spacer(Modifier.height(16.dp))
+                    LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        items(
+                            summary.sortedBy { it.subjectName + it.subjectType },
+                            key = { it.subjectName + it.subjectType }
+                        ) { course ->
+                            AttendanceCard(course, attendanceThreshold ?: (THRESHOLD_PERCENTAGE + 5))
                         }
                     }
                 }
