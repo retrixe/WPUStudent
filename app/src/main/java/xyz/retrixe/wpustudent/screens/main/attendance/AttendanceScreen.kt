@@ -2,6 +2,7 @@ package xyz.retrixe.wpustudent.screens.main.attendance
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -26,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -60,7 +67,7 @@ private fun getThresholdColor(value: Double, threshold: Double) =
     else if (value >= threshold - 5) Color(0xFFFFCC02)
     else MaterialTheme.colorScheme.error
 
-fun calculateSkippableClasses(present: Double, total: Double, threshold: Double): Int =
+private fun calculateSkippableClasses(present: Double, total: Double, threshold: Double): Int =
     // present / (total + x) = threshold
     // => present = threshold (total + x)
     // => present = threshold * total + threshold * x
@@ -69,7 +76,7 @@ fun calculateSkippableClasses(present: Double, total: Double, threshold: Double)
     // => x = (present / threshold) - total
     ceil((present / threshold) - total).toInt()
 
-fun calculateClassesToThreshold(present: Double, total: Double, threshold: Double): Int =
+private fun calculateClassesToThreshold(present: Double, total: Double, threshold: Double): Int =
     // (present + x) / (total + x) = threshold
     // => (present + x) = threshold (total + x)
     // => present + x = threshold * total + threshold * x
@@ -77,6 +84,14 @@ fun calculateClassesToThreshold(present: Double, total: Double, threshold: Doubl
     // => x (1 - threshold) = threshold * total - present
     // => x = (threshold * total - present) / (1 - threshold)
     floor(((threshold * total) - present) / (1 - threshold)).toInt()
+
+private fun readableSubjectType(type: String) = when (type) {
+    "PR" -> "Practical"
+    "PJ" -> "Project"
+    "TH" -> "Theory"
+    "TT" -> "Tutorial"
+    else -> type
+}
 
 @Composable
 private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
@@ -87,13 +102,8 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
     OutlinedCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(course.subjectName, fontSize = 24.sp)
-            Text("(" + when (course.subjectType) {
-                "PR" -> "Practical"
-                "PJ" -> "Project"
-                "TH" -> "Theory"
-                "TT" -> "Tutorial"
-                else -> course.subjectType
-            } + ")", color = MaterialTheme.colorScheme.outline, fontSize = 24.sp)
+            Text("(" + readableSubjectType(course.subjectType) + ")",
+                color = MaterialTheme.colorScheme.outline, fontSize = 24.sp)
             Spacer(Modifier.height(16.dp))
             FixedFractionIndicator(Modifier.height(8.dp), rawAttendance, color)
             Spacer(Modifier.height(8.dp))
@@ -153,6 +163,8 @@ fun AttendanceScreen(
     val refreshState = rememberPullToRefreshState()
     var refreshing by remember { mutableStateOf(false) }
 
+    val filters = remember { mutableStateSetOf<String>() }
+
     fun refresh() = coroutineScope.launch {
         if (data is AttendanceViewModel.Data.Loading) return@launch
         refreshing = true
@@ -172,7 +184,13 @@ fun AttendanceScreen(
             }
 
             is AttendanceViewModel.Data.Loaded -> {
-                val summary = (data as AttendanceViewModel.Data.Loaded).summary
+                val unfilteredSummary = (data as AttendanceViewModel.Data.Loaded).summary
+                val courseTypes = unfilteredSummary.map { it.subjectType }.toSortedSet {
+                    a, b -> readableSubjectType(a).compareTo(readableSubjectType(b))
+                }
+                val summary =
+                    if (filters.isEmpty()) unfilteredSummary
+                    else unfilteredSummary.filter { it.subjectType in filters }
 
                 Spacer(Modifier.height(16.dp))
 
@@ -197,6 +215,32 @@ fun AttendanceScreen(
                             color = MaterialTheme.colorScheme.outline,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                FlowRow(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
+                    for (type in courseTypes) {
+                        FilterChip(
+                            onClick = {
+                                if (filters.contains(type))
+                                    filters.remove(type)
+                                else
+                                    filters.add(type)
+                            },
+                            label = { Text(readableSubjectType(type)) },
+                            selected = filters.contains(type),
+                            leadingIcon = if (filters.contains(type)) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "${readableSubjectType(type)} icon",
+                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                    )
+                                }
+                            } else null,
                         )
                     }
                 }
