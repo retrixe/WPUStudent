@@ -1,6 +1,7 @@
 package xyz.retrixe.wpustudent.screens
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.Keep
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -41,15 +42,15 @@ import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
 // FIXME: Multi-window and desktop windowing support
 
-object Screens {
-    @Serializable object Loading
-    @Serializable object Login
-    @Serializable object Main {
-        @Serializable object Home
-        @Serializable object Attendance
-        @Serializable object Exams
-        @Serializable object Holidays
-        @Serializable object Settings
+@Keep object Screens {
+    @Keep @Serializable object Loading
+    @Keep @Serializable object Login
+    @Keep @Serializable object Main {
+        @Keep @Serializable object Home
+        @Keep @Serializable object Attendance
+        @Keep @Serializable object Exams
+        @Keep @Serializable object Holidays
+        @Keep @Serializable object Settings
 
         enum class Destinations(val label: String, @get:DrawableRes val icon: Int, val route: Any) {
             HOME("Home", R.drawable.baseline_home_24, Home),
