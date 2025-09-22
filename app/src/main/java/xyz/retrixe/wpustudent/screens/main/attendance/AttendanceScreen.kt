@@ -117,32 +117,32 @@ private fun AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
             })
             Spacer(Modifier.height(16.dp))
             // TODO: Estimate classes left, and how many one should attend
-            if (attendance >= threshold) {
-                val skippableClasses = calculateSkippableClasses(
-                    course.present.toDouble(), course.total.toDouble(), threshold / 100)
-                Text(
-                    "You can skip $skippableClasses classes and stay at ${threshold.toInt()}% threshold."
-                )
-            } else {
-                val classesToThreshold = calculateClassesToThreshold(
-                    course.present.toDouble(), course.total.toDouble(), threshold / 100)
-                Text(
-                    "Attend $classesToThreshold classes to reach ${threshold.toInt()}% threshold."
-                )
-
-            }
             if (attendance >= threshold - 5) {
                 val skippableClassesSub = calculateSkippableClasses(
                     course.present.toDouble(), course.total.toDouble(), (threshold - 5) / 100)
                 Text(
-                    "You can skip $skippableClassesSub classes and stay at ${(threshold - 5).toInt()}% threshold."
+                    "You can skip $skippableClassesSub classes and stay at ${(threshold - 5).toInt()}%."
                 )
             } else {
                 val classesToSubThreshold = calculateClassesToThreshold(
                     course.present.toDouble(), course.total.toDouble(), (threshold - 5) / 100)
                 Text(
-                    "Attend $classesToSubThreshold classes to reach ${(threshold - 5).toInt()}% threshold."
+                    "Attend $classesToSubThreshold classes to reach ${(threshold - 5).toInt()}%."
                 )
+            }
+            if (attendance >= threshold) {
+                val skippableClasses = calculateSkippableClasses(
+                    course.present.toDouble(), course.total.toDouble(), threshold / 100)
+                Text(
+                    "You can skip $skippableClasses classes and stay at ${threshold.toInt()}%."
+                )
+            } else {
+                val classesToThreshold = calculateClassesToThreshold(
+                    course.present.toDouble(), course.total.toDouble(), threshold / 100)
+                Text(
+                    "Attend $classesToThreshold classes to reach ${threshold.toInt()}%."
+                )
+
             }
         }
     }
