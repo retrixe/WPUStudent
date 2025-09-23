@@ -130,7 +130,7 @@ fun SettingsScreen(
                     fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        HorizontalDivider()
+        HorizontalDivider(Modifier.width(512.dp).fillMaxWidth())
         Card(
             { openUrl(context, "https://github.com/retrixe/WPUStudent/blob/${BuildConfig.VERSION_NAME}/LICENSE") },
             Modifier.width(512.dp).fillMaxWidth(),
