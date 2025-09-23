@@ -75,7 +75,7 @@ private fun calculateSkippableClasses(present: Double, total: Double, threshold:
     // => threshold * x = present - threshold * total
     // => x = present - (threshold * total) / threshold
     // => x = (present / threshold) - total
-    ceil((present / threshold) - total).toInt()
+    floor((present / threshold) - total).toInt()
 
 private fun calculateClassesToThreshold(present: Double, total: Double, threshold: Double): Int =
     // (present + x) / (total + x) = threshold
@@ -84,7 +84,7 @@ private fun calculateClassesToThreshold(present: Double, total: Double, threshol
     // => x - x * threshold = threshold * total - present
     // => x (1 - threshold) = threshold * total - present
     // => x = (threshold * total - present) / (1 - threshold)
-    floor(((threshold * total) - present) / (1 - threshold)).toInt()
+    ceil(((threshold * total) - present) / (1 - threshold)).toInt()
 
 private fun readableSubjectType(type: String) = when (type) {
     "PR" -> "Practical"
