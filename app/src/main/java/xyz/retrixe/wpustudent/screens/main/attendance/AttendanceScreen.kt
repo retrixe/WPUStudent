@@ -54,8 +54,7 @@ import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
-import kotlin.math.ceil
-import kotlin.math.floor
+import java.math.RoundingMode
 
 // TODO
 //  - https://m3.material.io/styles/color/advanced/overview
@@ -68,23 +67,33 @@ private fun getThresholdColor(value: Double, threshold: Double) =
     else if (value >= threshold - 5) Color(0xFFFFCC02)
     else MaterialTheme.colorScheme.error
 
-private fun calculateSkippableClasses(present: Double, total: Double, threshold: Double): Int =
+private fun calculateSkippableClasses(present: Int, total: Int, threshold: Double): Int =
     // present / (total + x) = threshold
     // => present = threshold (total + x)
     // => present = threshold * total + threshold * x
     // => threshold * x = present - threshold * total
     // => x = present - (threshold * total) / threshold
     // => x = (present / threshold) - total
-    floor((present / threshold) - total).toInt()
+    if (threshold != 100.0)
+        present.toBigDecimal().divide(threshold.toBigDecimal().movePointLeft(2), RoundingMode.DOWN)
+            .setScale(0, RoundingMode.DOWN) // Just for added safety...
+            .toInt() - total
+    else 0
 
-private fun calculateClassesToThreshold(present: Double, total: Double, threshold: Double): Int =
+private fun calculateClassesToThreshold(present: Int, total: Int, threshold: Double): Int =
     // (present + x) / (total + x) = threshold
     // => (present + x) = threshold (total + x)
     // => present + x = threshold * total + threshold * x
     // => x - x * threshold = threshold * total - present
     // => x (1 - threshold) = threshold * total - present
     // => x = (threshold * total - present) / (1 - threshold)
-    ceil(((threshold * total) - present) / (1 - threshold)).toInt()
+    if (threshold != 100.0)
+        ((threshold * total).toBigDecimal().movePointLeft(2) - present.toBigDecimal())
+            .divide(threshold.toBigDecimal().movePointLeft(2).negate().inc(), RoundingMode.UP)
+            .setScale(0, RoundingMode.UP) // Just for added safety...
+            .toInt()
+    else if (total == present) 0
+    else Int.MAX_VALUE
 
 private fun readableSubjectType(type: String) = when (type) {
     "PR" -> "Practical"
@@ -120,30 +129,21 @@ private fun LazyItemScope.AttendanceCard(course: CourseAttendanceSummary, thresh
             // TODO: Estimate classes left, and how many one should attend
             if (attendance >= threshold - 5) {
                 val skippableClassesSub = calculateSkippableClasses(
-                    course.present.toDouble(), course.total.toDouble(), (threshold - 5) / 100)
-                Text(
-                    "You can skip $skippableClassesSub classes and stay at ${(threshold - 5).toInt()}%."
-                )
+                    course.present, course.total, threshold - 5)
+                Text("You can skip $skippableClassesSub classes and stay at ${(threshold - 5).toInt()}%.")
             } else {
                 val classesToSubThreshold = calculateClassesToThreshold(
-                    course.present.toDouble(), course.total.toDouble(), (threshold - 5) / 100)
-                Text(
-                    "Attend $classesToSubThreshold classes to reach ${(threshold - 5).toInt()}%."
-                )
+                    course.present, course.total, threshold - 5)
+                Text("Attend $classesToSubThreshold classes to reach ${(threshold - 5).toInt()}%.")
             }
             if (attendance >= threshold) {
                 val skippableClasses = calculateSkippableClasses(
-                    course.present.toDouble(), course.total.toDouble(), threshold / 100)
-                Text(
-                    "You can skip $skippableClasses classes and stay at ${threshold.toInt()}%."
-                )
+                    course.present, course.total, threshold)
+                Text("You can skip $skippableClasses classes and stay at ${threshold.toInt()}%.")
             } else {
                 val classesToThreshold = calculateClassesToThreshold(
-                    course.present.toDouble(), course.total.toDouble(), threshold / 100)
-                Text(
-                    "Attend $classesToThreshold classes to reach ${threshold.toInt()}%."
-                )
-
+                    course.present, course.total, threshold)
+                Text("Attend $classesToThreshold classes to reach ${threshold.toInt()}%.")
             }
         }
     }
