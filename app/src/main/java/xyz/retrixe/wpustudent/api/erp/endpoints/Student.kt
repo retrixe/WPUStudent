@@ -3,7 +3,6 @@ package xyz.retrixe.wpustudent.api.erp.endpoints
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
-import io.ktor.client.request.cookie
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -21,10 +20,7 @@ import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
 import xyz.retrixe.wpustudent.api.erp.entities.Holiday
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 
-suspend fun retrieveStudentBasicInfo(
-    client: HttpClient,
-    token: String? = null // This function typically expects such a token where it is used
-): StudentBasicInfo {
+suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
     /*  curl 'https://erp.mitwpu.edu.in/ERP_Main.aspx' \
           -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*SLASH*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
           -H 'accept-language: en-US,en;q=0.9' \
@@ -33,12 +29,7 @@ suspend fun retrieveStudentBasicInfo(
           -H 'referer: https://erp.mitwpu.edu.in/login.aspx' \
           -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
     */
-    val response = client.get("ERP_Main.aspx") {
-        if (token != null) {
-            cookie("AuthToken", token.split("|")[0])
-            cookie("ASP.NET_SessionId", token.split("|")[1])
-        }
-    }
+    val response = client.get("ERP_Main.aspx")
 
     if (response.request.url.encodedPath == "/Login.aspx")
         throw ResponseException(response, "Logged out")

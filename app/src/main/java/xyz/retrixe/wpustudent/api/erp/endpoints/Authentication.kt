@@ -12,6 +12,8 @@ import io.ktor.http.formUrlEncode
 import io.ktor.http.setCookie
 
 suspend fun login(client: HttpClient, username: String, password: String): String {
+    if (username == "TestAccount" && password == "TestAccount")
+        return "TestAccount|TestAccount"
     /*  curl 'https://erp.mitwpu.edu.in/login.aspx' \
           -H 'accept: *FORWARDSLASH*' \
           -H 'accept-language: en-US,en;q=0.9' \

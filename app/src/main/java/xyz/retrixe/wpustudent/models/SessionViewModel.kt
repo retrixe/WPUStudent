@@ -86,7 +86,7 @@ class SessionViewModel(
     suspend fun login(username: String, password: String, saveDetails: Boolean) {
         val httpClient = _vanillaHttpClient
         val authToken = login(httpClient, username, password)
-        val studentBasicInfo = retrieveStudentBasicInfo(httpClient, authToken)
+        val studentBasicInfo = retrieveStudentBasicInfo(createHttpClient(authToken))
         val encryptedAccessToken = encryptToString(SESSION_ACCESS_TOKEN.name, authToken)
         val accountDetails = "$username:$password"
         val encryptedAccountDetails = encryptToString(SESSION_ACCOUNT_DETAILS.name, accountDetails)
