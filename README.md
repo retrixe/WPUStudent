@@ -4,6 +4,14 @@ A useful app for MIT-WPU students with various tools e.g. attendance tracking.
 
 [![Discord server for WPUStudent and other projects](https://dcbadge.vercel.app/api/server/MFSJa9TpPS)](https://discord.gg/MFSJa9TpPS)
 
+## Features
+
+- Viewing user information
+- Tracking attendance, with info on each day
+- Advice on how many classes can be skipped, or must be attended, to meet the attendance requirement
+- Holiday and academic calendar dates
+- Configuring custom attendance requirements
+
 ## Privacy Policy
 
 WPUStudent does not collect any data from its users. The data that is collected and sent to third-parties is required for the app to function, and is as follows:
