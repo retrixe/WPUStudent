@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -65,12 +66,20 @@ fun HomeScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo)
                 )
             }
         } else {
-            val bitmap = BitmapFactory.decodeByteArray(profilePicture, 0, profilePicture.size)
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = "Profile picture",
-                modifier = Modifier.size(192.dp).clip(CircleShape)
-            )
+            if (studentBasicInfo.profilePicture.startsWith("data:image/svg+xml;base64,")) {
+                Image(
+                    imageVector = Icons.Filled.AccountCircle,
+                    contentDescription = "Profile picture",
+                    modifier = Modifier.size(192.dp).clip(CircleShape)
+                )
+            } else {
+                val bitmap = BitmapFactory.decodeByteArray(profilePicture, 0, profilePicture.size)
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "Profile picture",
+                    modifier = Modifier.size(192.dp).clip(CircleShape)
+                )
+            }
         }
         Spacer(Modifier.height(24.dp))
         Text(studentBasicInfo.name,
