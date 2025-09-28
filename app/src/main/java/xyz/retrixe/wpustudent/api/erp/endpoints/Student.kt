@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
-import xyz.retrixe.wpustudent.api.erp.entities.Holiday
+import xyz.retrixe.wpustudent.api.erp.entities.Event
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 
 suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
@@ -84,28 +84,28 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
     return attendanceSummary
 }
 
-suspend fun getHolidays(): List<Holiday> {
+suspend fun getEvents(): List<Event> {
     delay(500L)
     return listOf(
-        Holiday("Republic Day", "National Holiday", "2025-01-26T00:00:00"),
-        Holiday("Shivjayanti", "State Holiday", "2025-02-19T00:00:00"),
-        Holiday("Mahashivratri", "State Holiday", "2025-02-26T00:00:00"),
-        Holiday("Dhulivandan (Holi 2nd day)", "State Holiday", "2025-03-14T00:00:00"),
-        Holiday("Gudhi Padva", "State Holiday", "2025-03-30T00:00:00"),
-        Holiday("Ramzan Eid (Eid-Al-Fitr)", "State Holiday", "2025-03-31T00:00:00"),
-        Holiday("Dr. Babasaheb Ambedkar Jayanti", "State Holiday", "2025-04-14T00:00:00"),
-        Holiday("Maharashtra Day", "State Holiday", "2025-05-01T00:00:00"),
-        Holiday("Bakri Id (Eid-Al-Adha)", "State Holiday", "2025-06-07T00:00:00"),
-        Holiday("Ashadhi Ekadashi", "State Holiday", "2025-07-06T00:00:00"),
-        Holiday("Rakshabandhan", "State Holiday", "2025-08-09T00:00:00"),
-        Holiday("Independence Day", "National Holiday", "2025-08-15T00:00:00"),
-        Holiday("Ganesh Chaturthi", "State Holiday", "2025-08-27T00:00:00"),
-        Holiday("Gouri Poojan", "State Holiday", "2025-09-01T00:00:00"),
-        Holiday("Anant Chaturdashi", "State Holiday", "2025-09-06T00:00:00"),
-        Holiday("Gandhi Jayanti", "National Holiday", "2025-10-02T00:00:00"),
-        Holiday("Vijaya Dashmi (Dasara)", "State Holiday", "2025-10-02T00:00:00"),
-        Holiday("Diwali Holidays", "State Holiday", "2025-10-18T00:00:00", "2025-10-25T00:00:00"),
-        Holiday("Christmas", "State Holiday", "2025-12-25T00:00:00"),
+        Event("Republic Day", "National Holiday", "2025-01-26T00:00:00"),
+        Event("Shivjayanti", "State Holiday", "2025-02-19T00:00:00"),
+        Event("Mahashivratri", "State Holiday", "2025-02-26T00:00:00"),
+        Event("Dhulivandan (Holi 2nd day)", "State Holiday", "2025-03-14T00:00:00"),
+        Event("Gudhi Padva", "State Holiday", "2025-03-30T00:00:00"),
+        Event("Ramzan Eid (Eid-Al-Fitr)", "State Holiday", "2025-03-31T00:00:00"),
+        Event("Dr. Babasaheb Ambedkar Jayanti", "State Holiday", "2025-04-14T00:00:00"),
+        Event("Maharashtra Day", "State Holiday", "2025-05-01T00:00:00"),
+        Event("Bakri Id (Eid-Al-Adha)", "State Holiday", "2025-06-07T00:00:00"),
+        Event("Ashadhi Ekadashi", "State Holiday", "2025-07-06T00:00:00"),
+        Event("Rakshabandhan", "State Holiday", "2025-08-09T00:00:00"),
+        Event("Independence Day", "National Holiday", "2025-08-15T00:00:00"),
+        Event("Ganesh Chaturthi", "State Holiday", "2025-08-27T00:00:00"),
+        Event("Gouri Poojan", "State Holiday", "2025-09-01T00:00:00"),
+        Event("Anant Chaturdashi", "State Holiday", "2025-09-06T00:00:00"),
+        Event("Gandhi Jayanti", "National Holiday", "2025-10-02T00:00:00"),
+        Event("Vijaya Dashmi (Dasara)", "State Holiday", "2025-10-02T00:00:00"),
+        Event("Diwali Holidays", "State Holiday", "2025-10-18T00:00:00", "2025-10-25T00:00:00"),
+        Event("Christmas", "State Holiday", "2025-12-25T00:00:00"),
     )
 }
 

@@ -28,7 +28,7 @@ data class CourseAttendanceSummary(
 
 @Parcelize
 @Serializable
-data class Holiday(
+data class Event(
     val name: String,
     val subType: String,
     val startDate: String,

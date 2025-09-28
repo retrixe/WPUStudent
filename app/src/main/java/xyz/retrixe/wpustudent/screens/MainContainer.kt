@@ -35,7 +35,7 @@ import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
 import xyz.retrixe.wpustudent.screens.login.LoginScreen
 import xyz.retrixe.wpustudent.screens.main.attendance.AttendanceScreen
 import xyz.retrixe.wpustudent.screens.main.exams.ExamsScreen
-import xyz.retrixe.wpustudent.screens.main.holidays.HolidaysScreen
+import xyz.retrixe.wpustudent.screens.main.events.EventsScreen
 import xyz.retrixe.wpustudent.screens.main.home.HomeScreen
 import xyz.retrixe.wpustudent.screens.main.settings.SettingsScreen
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
@@ -49,14 +49,14 @@ import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
         @Keep @Serializable object Home
         @Keep @Serializable object Attendance
         @Keep @Serializable object Exams
-        @Keep @Serializable object Holidays
+        @Keep @Serializable object Events
         @Keep @Serializable object Settings
 
         enum class Destinations(val label: String, @get:DrawableRes val icon: Int, val route: Any) {
             HOME("Home", R.drawable.baseline_home_24, Home),
             ATTENDANCE("Attendance", R.drawable.baseline_co_present_24, Attendance),
             // TODO: EXAMS("Exams", R.drawable.baseline_book_24, Exams),
-            HOLIDAYS("Holidays", R.drawable.baseline_calendar_month_24, Holidays),
+            EVENTS("Events", R.drawable.baseline_calendar_month_24, Events),
             SETTINGS("Settings", R.drawable.baseline_settings_24, Settings),
         }
     }
@@ -142,8 +142,8 @@ fun MainContainer(
                         composable<Screens.Main.Exams> {
                             ExamsScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
-                        composable<Screens.Main.Holidays> {
-                            HolidaysScreen(innerPadding)
+                        composable<Screens.Main.Events> {
+                            EventsScreen(innerPadding)
                         }
                         composable<Screens.Main.Settings> {
                             SettingsScreen(innerPadding, sessionViewModel, settingsViewModel)

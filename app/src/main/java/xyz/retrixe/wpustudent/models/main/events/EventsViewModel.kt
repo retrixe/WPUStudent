@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.models.main.holidays
+package xyz.retrixe.wpustudent.models.main.events
 
 import android.os.Parcelable
 import android.util.Log
@@ -11,10 +11,10 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import xyz.retrixe.wpustudent.api.erp.endpoints.getHolidays
-import xyz.retrixe.wpustudent.api.erp.entities.Holiday
+import xyz.retrixe.wpustudent.api.erp.endpoints.getEvents
+import xyz.retrixe.wpustudent.api.erp.entities.Event
 
-class HolidaysViewModel(
+class EventsViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
@@ -23,10 +23,10 @@ class HolidaysViewModel(
 
     suspend fun fetchData() {
         try {
-            val data = getHolidays()
+            val data = getEvents()
             savedStateHandle["data"] = Data.Loaded(data)
         } catch (e: Exception) {
-            Log.w(this@HolidaysViewModel::class.simpleName, e)
+            Log.w(this@EventsViewModel::class.simpleName, e)
             savedStateHandle["data"] = Data.Error
         }
     }
@@ -37,7 +37,7 @@ class HolidaysViewModel(
 
         object Error : Data
 
-        data class Loaded(val holidays: List<Holiday>) : Data
+        data class Loaded(val events: List<Event>) : Data
     }
 
     class Factory() : ViewModelProvider.Factory {
@@ -46,7 +46,7 @@ class HolidaysViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
             val savedStateHandle = extras.createSavedStateHandle()
 
-            return HolidaysViewModel(
+            return EventsViewModel(
                 savedStateHandle = savedStateHandle
             ) as T
         }

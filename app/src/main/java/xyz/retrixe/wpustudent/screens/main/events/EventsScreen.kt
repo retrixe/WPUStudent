@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.screens.main.holidays
+package xyz.retrixe.wpustudent.screens.main.events
 
 import android.content.ContentUris
 import android.content.Context
@@ -57,8 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.api.erp.entities.Holiday
-import xyz.retrixe.wpustudent.models.main.holidays.HolidaysViewModel
+import xyz.retrixe.wpustudent.api.erp.entities.Event
+import xyz.retrixe.wpustudent.models.main.events.EventsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -74,20 +74,20 @@ fun openCalendar(context: Context, date: LocalDate) {
 }
 
 @Composable
-private fun HolidayCard(holiday: Holiday) {
+private fun EventCard(event: Event) {
     val context = LocalContext.current
-    val startDate = LocalDate.parse(holiday.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-    val endDate = LocalDate.parse(holiday.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    val startDate = LocalDate.parse(event.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    val endDate = LocalDate.parse(event.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
     OutlinedCard({ openCalendar(context, startDate) }, Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(holiday.name, fontSize = 24.sp)
+            Text(event.name, fontSize = 24.sp)
             Spacer(Modifier.height(8.dp))
-            Badge(containerColor = when (holiday.subType) {
+            Badge(containerColor = when (event.subType) {
                 "National Holiday" -> MaterialTheme.colorScheme.errorContainer
                 else -> MaterialTheme.colorScheme.primaryContainer
             }) {
-                Text(holiday.subType, Modifier.padding(2.dp))
+                Text(event.subType, Modifier.padding(2.dp))
             }
             Spacer(Modifier.height(16.dp))
             Text(buildAnnotatedString {
@@ -115,10 +115,10 @@ private fun HolidayCard(holiday: Holiday) {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun HolidaysScreen(paddingValues: PaddingValues) {
-    val holidaysViewModelFactory = HolidaysViewModel.Factory()
-    val holidaysViewModel: HolidaysViewModel = viewModel(factory = holidaysViewModelFactory)
-    val data by holidaysViewModel.data.collectAsState()
+fun EventsScreen(paddingValues: PaddingValues) {
+    val eventsViewModelFactory = EventsViewModel.Factory()
+    val eventsViewModel: EventsViewModel = viewModel(factory = eventsViewModelFactory)
+    val data by eventsViewModel.data.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
@@ -128,25 +128,25 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
     var selectedTab by remember { mutableStateOf(0) }
 
     fun refresh() = coroutineScope.launch {
-        if (data is HolidaysViewModel.Data.Loading) return@launch
+        if (data is EventsViewModel.Data.Loading) return@launch
         refreshing = true
-        holidaysViewModel.fetchData()
+        eventsViewModel.fetchData()
         refreshing = false
     }
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
-        Text("Holidays", fontSize = 36.sp)
+        Text("Events", fontSize = 36.sp)
 
         when (data) {
-            is HolidaysViewModel.Data.Loading -> {
+            is EventsViewModel.Data.Loading -> {
                 Spacer(Modifier.weight(1f))
                 LoadingIndicator(Modifier.size(96.dp).align(Alignment.CenterHorizontally))
                 Spacer(Modifier.weight(1f))
             }
 
-            is HolidaysViewModel.Data.Loaded -> {
-                val holidays = (data as HolidaysViewModel.Data.Loaded).holidays
+            is EventsViewModel.Data.Loaded -> {
+                val events = (data as EventsViewModel.Data.Loaded).events
 
                 Spacer(Modifier.height(16.dp))
 
@@ -188,15 +188,15 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
                         )
                     },
                 ) {
-                    val sortedHolidays = holidays.sortedBy { it.startDate }
-                    val pastHolidays = sortedHolidays.takeWhile {
+                    val sortedEvents = events.sortedBy { it.startDate }
+                    val pastEvents = sortedEvents.takeWhile {
                         LocalDate
                             .parse(it.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                             .isBefore(LocalDate.now())
                     }
-                    val upcomingHolidays = sortedHolidays
-                        .takeLast(sortedHolidays.size - pastHolidays.size)
-                    Crossfade(targetState = selectedTab, label = "Holidays") {
+                    val upcomingEvents = sortedEvents
+                        .takeLast(sortedEvents.size - pastEvents.size)
+                    Crossfade(targetState = selectedTab, label = "Events") {
                         /* transitionSpec = {
                             if (targetState > initialState) {
                                 slideInHorizontally { width -> width } + fadeIn() togetherWith
@@ -207,28 +207,28 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
                             }.using(SizeTransform(clip = false))
                         } */
                         LazyColumn(Modifier.fillMaxSize()) {
-                            /* if (upcomingHolidays.isNotEmpty()) {
+                            /* if (upcomingEvents.isNotEmpty()) {
                                 item {
-                                    Text("Upcoming holidays", fontSize = 24.sp)
+                                    Text("Upcoming events", fontSize = 24.sp)
                                     Spacer(Modifier.height(16.dp))
                                 }
                             }
-                            items(upcomingHolidays) { holiday ->
-                                HolidayCard(holiday)
+                            items(upcomingEvents) { event ->
+                                EventCard(event)
                                 Spacer(Modifier.height(16.dp))
                             }
 
-                            if (pastHolidays.isNotEmpty()) {
+                            if (pastEvents.isNotEmpty()) {
                                 item {
-                                    if (upcomingHolidays.isNotEmpty()) {
+                                    if (upcomingEvents.isNotEmpty()) {
                                         Spacer(Modifier.height(16.dp))
                                     }
-                                    Text("Past holidays", fontSize = 24.sp)
+                                    Text("Past events", fontSize = 24.sp)
                                     Spacer(Modifier.height(16.dp))
                                 }
                             } */
-                            items(if (it == 0) upcomingHolidays else pastHolidays) { holiday ->
-                                HolidayCard(holiday)
+                            items(if (it == 0) upcomingEvents else pastEvents) { event ->
+                                EventCard(event)
                                 Spacer(Modifier.height(16.dp))
                             }
                         }
@@ -238,7 +238,7 @@ fun HolidaysScreen(paddingValues: PaddingValues) {
 
             else -> {
                 Spacer(Modifier.weight(1f))
-                Text("Failed to load holidays!\n" +
+                Text("Failed to load events!\n" +
                         "Try reopening the app, or log out and log back in.\n" +
                         "If not working, open an issue at: https://github.com/retrixe/WPUStudent/issues",
                     fontSize = 24.sp,
