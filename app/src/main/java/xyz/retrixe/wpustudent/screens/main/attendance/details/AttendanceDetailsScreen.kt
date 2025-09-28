@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.screens.main.attendance
+package xyz.retrixe.wpustudent.screens.main.attendance.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -68,11 +68,11 @@ private fun getThresholdColor(value: Double, threshold: Double) =
     else MaterialTheme.colorScheme.error
 
 private fun calculateSkippableClasses(present: Int, total: Int, threshold: Double): Int =
-    // present / (total + x) = threshold
-    // => present = threshold (total + x)
-    // => present = threshold * total + threshold * x
-    // => threshold * x = present - threshold * total
-    // => x = present - (threshold * total) / threshold
+// present / (total + x) = threshold
+// => present = threshold (total + x)
+// => present = threshold * total + threshold * x
+// => threshold * x = present - threshold * total
+// => x = present - (threshold * total) / threshold
     // => x = (present / threshold) - total
     if (threshold != 100.0)
         present.toBigDecimal().divide(threshold.toBigDecimal().movePointLeft(2), RoundingMode.DOWN)
@@ -81,11 +81,11 @@ private fun calculateSkippableClasses(present: Int, total: Int, threshold: Doubl
     else 0
 
 private fun calculateClassesToThreshold(present: Int, total: Int, threshold: Double): Int =
-    // (present + x) / (total + x) = threshold
-    // => (present + x) = threshold (total + x)
-    // => present + x = threshold * total + threshold * x
-    // => x - x * threshold = threshold * total - present
-    // => x (1 - threshold) = threshold * total - present
+// (present + x) / (total + x) = threshold
+// => (present + x) = threshold (total + x)
+// => present + x = threshold * total + threshold * x
+// => x - x * threshold = threshold * total - present
+// => x (1 - threshold) = threshold * total - present
     // => x = (threshold * total - present) / (1 - threshold)
     if (threshold != 100.0)
         ((threshold * total).toBigDecimal().movePointLeft(2) - present.toBigDecimal())
@@ -104,16 +104,15 @@ private fun readableSubjectType(type: String) = when (type) {
 }
 
 @Composable
-private fun LazyItemScope.AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
-    // val navController = LocalNavController.current
+private fun LazyItemScope.AttendanceCard(
+    course: CourseAttendanceSummary,
+    threshold: Double
+) {
     val rawAttendance = course.present.toDouble() / course.total
     val attendance = rawAttendance * 100
     val color = getThresholdColor(attendance, threshold)
 
-    OutlinedCard(/* {
-        val link = Screens.Main.Attendance.Details(course.id)
-        navController.navigate(link)
-    }, */ Modifier.animateItem().fillMaxWidth()) {
+    OutlinedCard(Modifier.animateItem().fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(course.subjectName, fontSize = 24.sp)
             Text("(" + readableSubjectType(course.subjectType) + ")",
@@ -155,11 +154,13 @@ private fun LazyItemScope.AttendanceCard(course: CourseAttendanceSummary, thresh
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun AttendanceScreen(
+fun AttendanceDetailsScreen(
     paddingValues: PaddingValues,
     httpClient: HttpClient,
+    courseId: String,
     attendanceThreshold: Double?,
 ) {
+    // FIXME: Pressing on the Attendance button in the bottom navbar doesn't work
     val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient)
     val attendanceViewModel: AttendanceViewModel = viewModel(factory = attendanceViewModelFactory)
     val data by attendanceViewModel.data.collectAsState()
@@ -179,7 +180,7 @@ fun AttendanceScreen(
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
-        Text("Attendance", fontSize = 36.sp)
+        Text("Attendance Details", fontSize = 36.sp)
 
         when (data) {
             is AttendanceViewModel.Data.Loading -> {
@@ -191,7 +192,7 @@ fun AttendanceScreen(
             is AttendanceViewModel.Data.Loaded -> {
                 val unfilteredSummary = (data as AttendanceViewModel.Data.Loaded).summary
                 val courseTypes = unfilteredSummary.map { it.subjectType }.toSortedSet {
-                    a, b -> readableSubjectType(a).compareTo(readableSubjectType(b))
+                        a, b -> readableSubjectType(a).compareTo(readableSubjectType(b))
                 }
                 val summary =
                     if (filters.isEmpty()) unfilteredSummary

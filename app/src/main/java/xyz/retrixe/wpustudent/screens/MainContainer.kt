@@ -27,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.get
+import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.R
 import xyz.retrixe.wpustudent.models.SessionViewModel
@@ -34,10 +35,12 @@ import xyz.retrixe.wpustudent.models.SettingsViewModel
 import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
 import xyz.retrixe.wpustudent.screens.login.LoginScreen
 import xyz.retrixe.wpustudent.screens.main.attendance.AttendanceScreen
+import xyz.retrixe.wpustudent.screens.main.attendance.details.AttendanceDetailsScreen
 import xyz.retrixe.wpustudent.screens.main.exams.ExamsScreen
 import xyz.retrixe.wpustudent.screens.main.events.EventsScreen
 import xyz.retrixe.wpustudent.screens.main.home.HomeScreen
 import xyz.retrixe.wpustudent.screens.main.settings.SettingsScreen
+import xyz.retrixe.wpustudent.state.LocalNavController
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 
 // FIXME: Multi-window and desktop windowing support
@@ -47,7 +50,9 @@ import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
     @Keep @Serializable object Login
     @Keep @Serializable object Main {
         @Keep @Serializable object Home
-        @Keep @Serializable object Attendance
+        @Keep @Serializable object Attendance {
+            @Keep @Serializable data class Details(val courseId: String)
+        }
         @Keep @Serializable object Exams
         @Keep @Serializable object Events
         @Keep @Serializable object Settings
@@ -87,6 +92,7 @@ fun MainContainer(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         CompositionLocalProvider(
+            LocalNavController provides navController,
             LocalSnackbarHostState provides snackbarHostState,
         ) {
             // https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation
@@ -137,6 +143,13 @@ fun MainContainer(
                         }
                         composable<Screens.Main.Attendance> {
                             AttendanceScreen(innerPadding, httpClient,
+                                attendanceThreshold?.toDouble())
+                        }
+                        composable<Screens.Main.Attendance.Details> { navBackStackEntry ->
+                            val attendanceDetails: Screens.Main.Attendance.Details =
+                                navBackStackEntry.toRoute()
+                            AttendanceDetailsScreen(innerPadding, httpClient,
+                                attendanceDetails.courseId,
                                 attendanceThreshold?.toDouble())
                         }
                         composable<Screens.Main.Exams> {
