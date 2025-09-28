@@ -2,6 +2,7 @@ package xyz.retrixe.wpustudent.api.erp.entities
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,6 +25,17 @@ data class CourseAttendanceSummary(
     val present: Int,
     val total: Int,
     val percentage: Double,
+) : Parcelable
+
+@Parcelize
+@Serializable
+data class CourseAttendanceDetail(
+    @SerialName("ATTENDANCE_DATE") val attendanceDate: String, // DD/MM/YYYY
+    @SerialName("PERIOD_SEQUENCE_NO") val periodSequenceNo: String, // An integer, which period
+    @SerialName("STUDENT_STATUS") val studentStatus: String, // PRESENT or ABSENT
+    @SerialName("PERIOD_TYPE") val periodType: String, // REGULAR (no idea what it means)
+    @SerialName("SUBJECT_DESCRIPTION") val subjectDescription: String, // Subject Name
+    @SerialName("TYPE_DESCRIPTION") val typeDescription: String // Theory/Project/Tutorial/Practical
 ) : Parcelable
 
 @Parcelize

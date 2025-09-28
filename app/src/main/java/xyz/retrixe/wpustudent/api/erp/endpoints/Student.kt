@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
+import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceDetail
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
 import xyz.retrixe.wpustudent.api.erp.entities.Event
@@ -82,6 +83,39 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
         }
     }
     return attendanceSummary
+}
+
+@Serializable
+private data class AttendanceDetailsRequest(
+    val strStudentId: String,
+    val strSemId: String,
+    val strSubDetId: String,
+    val strAppNo: String,
+)
+
+suspend fun getAttendanceDetails(client: HttpClient): List<CourseAttendanceDetail> {
+    /* curl 'https://erp.mitwpu.edu.in/STUDENT/SelfAttendence.aspx/GetAttDtls' \
+         -H 'accept: application/json, text/javascript, *SLASH*; q=0.01' \
+         -H 'accept-language: en-US,en;q=0.9' \
+         -H 'content-type: application/json; charset=UTF-8' \
+         -b 'ASP.NET_SessionId=CENSORED; AuthToken=CENSORED' \
+         -H 'origin: https://erp.mitwpu.edu.in' \
+         -H 'priority: u=0, i' \
+         -H 'referer: https://erp.mitwpu.edu.in/STUDENT/SelfAttendence.aspx?MENU_CODE=MWEBSTUATTEN_SLF_ATTEN' \
+         -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \
+         -H 'x-requested-with: XMLHttpRequest' \
+         --data-raw $'{strStudentId: \'1032233145\',strSemId:\'20\',strSubDetId:\'87844\',strAppNo:\'1\'}'
+    */
+    val response = client.post("STUDENT/SelfAttendence.aspx/GetAttDtls") {
+        contentType(ContentType.Application.Json)
+        header("x-requested-with", "XMLHttpRequest")
+        // FIXME
+        setBody(AttendanceDetailsRequest("", "", "", ""))
+    }
+
+    @Serializable data class Body(val d: List<CourseAttendanceDetail>)
+    val body: Body = response.body()
+    return body.d
 }
 
 suspend fun getEvents(term: String): List<Event> {
