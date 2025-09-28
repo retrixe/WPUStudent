@@ -84,9 +84,43 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
     return attendanceSummary
 }
 
-suspend fun getEvents(): List<Event> {
+suspend fun getEvents(term: String): List<Event> {
     delay(500L)
+    val academicCalendar = if (term.matches(Regex("^SEMESTER-II?\\("))) {
+        arrayOf(
+            Event("Commencement of Term", "Odd Semester", "2025-07-15T00:00:00"),
+            Event("Mid Term Exam", "Odd Semester", "2025-10-06T00:00:00", "2025-10-17T00:00:00"),
+            // Event("Diwali Vacation", "Odd Semester", "2025-10-18T00:00:00", "2025-10-25T00:00:00")
+            Event("Last Instructional Day", "Odd Semester", "2025-12-12T00:00:00"),
+            Event("Term End Exam", "Odd Semester", "2025-12-17T00:00:00", "2025-12-31T00:00:00"),
+            Event("Winter Vacation", "Odd Semester", "2026-01-01T00:00:00", "2026-01-04T00:00:00"),
+            Event("Commencement of Term", "Even Semester", "2026-01-05T00:00:00"),
+            Event("Mid Term Exam", "Even Semester", "2026-03-09T00:00:00", "2026-03-20T00:00:00"),
+            Event("Last Instructional Day", "Even Semester", "2026-05-09T00:00:00"),
+            Event("Term End Exam", "Even Semester", "2026-05-14T00:00:00", "2026-06-15T00:00:00"),
+            Event("Summer Vacation", "Even Semester", "2026-06-16T00:00:00", "2026-07-05T00:00:00"),
+            Event("Commencement of Next Academic Year", "Even Semester", "2026-07-06T00:00:00"),
+        )
+    } else {
+        arrayOf(
+            Event("Commencement of Term", "Odd Semester", "2025-07-07T00:00:00"),
+            Event("Induction", "Odd Semester", "2025-07-07T00:00:00", "2025-07-08T00:00:00"),
+            Event("Mid Term Exam", "Odd Semester", "2025-09-29T00:00:00", "2025-10-10T00:00:00"),
+            // Event("Diwali Vacation", "Odd Semester", "2025-10-18T00:00:00", "2025-10-25T00:00:00")
+            Event("Last Instructional Day", "Odd Semester", "2025-11-18T00:00:00"),
+            Event("Term End Exam (Backlog)", "Odd Semester", "2025-11-19T00:00:00", "2025-11-30T00:00:00"),
+            Event("Term End Exam (Regular)", "Odd Semester", "2025-12-01T00:00:00", "2025-12-22T00:00:00"),
+            Event("Winter Vacation", "Odd Semester", "2025-12-23T00:00:00", "2026-01-04T00:00:00"),
+            Event("Commencement of Term", "Even Semester", "2026-01-05T00:00:00"),
+            Event("Mid Term Exam", "Even Semester", "2026-03-09T00:00:00", "2026-03-20T00:00:00"),
+            Event("Last Instructional Day", "Even Semester", "2026-05-09T00:00:00"),
+            Event("Term End Exam (Regular + Backlog)", "Even Semester", "2026-05-14T00:00:00", "2026-06-15T00:00:00"),
+            Event("Summer Vacation", "Even Semester", "2026-06-16T00:00:00", "2026-07-05T00:00:00"),
+            Event("Commencement of Next Academic Year", "Even Semester", "2026-07-06T00:00:00"),
+        )
+    }
     return listOf(
+        *academicCalendar,
         Event("Republic Day", "National Holiday", "2025-01-26T00:00:00"),
         Event("Shivjayanti", "State Holiday", "2025-02-19T00:00:00"),
         Event("Mahashivratri", "State Holiday", "2025-02-26T00:00:00"),

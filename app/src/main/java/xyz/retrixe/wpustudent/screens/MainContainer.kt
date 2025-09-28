@@ -143,7 +143,7 @@ fun MainContainer(
                             ExamsScreen(innerPadding, httpClient, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Events> {
-                            EventsScreen(innerPadding)
+                            EventsScreen(innerPadding, studentBasicInfo!!)
                         }
                         composable<Screens.Main.Settings> {
                             SettingsScreen(innerPadding, sessionViewModel, settingsViewModel)

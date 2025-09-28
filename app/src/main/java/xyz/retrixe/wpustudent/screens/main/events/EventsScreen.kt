@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import xyz.retrixe.wpustudent.api.erp.entities.Event
+import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.events.EventsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import java.time.LocalDate
@@ -84,8 +85,10 @@ private fun EventCard(event: Event) {
             Text(event.name, fontSize = 24.sp)
             Spacer(Modifier.height(8.dp))
             Badge(containerColor = when (event.subType) {
-                "National Holiday" -> MaterialTheme.colorScheme.errorContainer
-                else -> MaterialTheme.colorScheme.primaryContainer
+                "Odd Semester" -> MaterialTheme.colorScheme.primaryContainer
+                "Even Semester" -> MaterialTheme.colorScheme.primaryContainer
+                "National Holiday" -> MaterialTheme.colorScheme.primaryContainer
+                else -> MaterialTheme.colorScheme.secondaryContainer
             }) {
                 Text(event.subType, Modifier.padding(2.dp))
             }
@@ -115,8 +118,8 @@ private fun EventCard(event: Event) {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun EventsScreen(paddingValues: PaddingValues) {
-    val eventsViewModelFactory = EventsViewModel.Factory()
+fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo) {
+    val eventsViewModelFactory = EventsViewModel.Factory(studentBasicInfo)
     val eventsViewModel: EventsViewModel = viewModel(factory = eventsViewModelFactory)
     val data by eventsViewModel.data.collectAsState()
 

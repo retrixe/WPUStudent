@@ -13,9 +13,11 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import xyz.retrixe.wpustudent.api.erp.endpoints.getEvents
 import xyz.retrixe.wpustudent.api.erp.entities.Event
+import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 
 class EventsViewModel(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val studentBasicInfo: StudentBasicInfo
 ) : ViewModel() {
     var data = savedStateHandle.getStateFlow<Data>("data", Data.Loading)
 
@@ -23,7 +25,7 @@ class EventsViewModel(
 
     suspend fun fetchData() {
         try {
-            val data = getEvents()
+            val data = getEvents(studentBasicInfo.term)
             savedStateHandle["data"] = Data.Loaded(data)
         } catch (e: Exception) {
             Log.w(this@EventsViewModel::class.simpleName, e)
@@ -40,14 +42,17 @@ class EventsViewModel(
         data class Loaded(val events: List<Event>) : Data
     }
 
-    class Factory() : ViewModelProvider.Factory {
+    class Factory(
+        private val studentBasicInfo: StudentBasicInfo
+    ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
             val savedStateHandle = extras.createSavedStateHandle()
 
             return EventsViewModel(
-                savedStateHandle = savedStateHandle
+                savedStateHandle = savedStateHandle,
+                studentBasicInfo = studentBasicInfo
             ) as T
         }
     }
