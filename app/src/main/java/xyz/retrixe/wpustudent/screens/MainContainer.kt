@@ -145,11 +145,8 @@ fun MainContainer(
                             AttendanceScreen(innerPadding, httpClient,
                                 attendanceThreshold?.toDouble())
                         }
-                        composable<Screens.Main.Attendance.Details> { navBackStackEntry ->
-                            val attendanceDetails: Screens.Main.Attendance.Details =
-                                navBackStackEntry.toRoute()
-                            AttendanceDetailsScreen(innerPadding, httpClient,
-                                attendanceDetails.courseId,
+                        composable<Screens.Main.Attendance.Details> {
+                            AttendanceDetailsScreen(innerPadding, httpClient, studentBasicInfo!!,
                                 attendanceThreshold?.toDouble())
                         }
                         composable<Screens.Main.Exams> {
