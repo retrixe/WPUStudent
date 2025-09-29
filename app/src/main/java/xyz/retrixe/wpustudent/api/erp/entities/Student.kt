@@ -27,6 +27,14 @@ data class CourseAttendanceSummary(
     val percentage: Double,
 ) : Parcelable
 
+fun readableSubjectType(type: String) = when (type) {
+    "PR" -> "Practical"
+    "PJ" -> "Project"
+    "TH" -> "Theory"
+    "TT" -> "Tutorial"
+    else -> type
+}
+
 @Parcelize
 @Serializable
 data class CourseAttendanceDetail(

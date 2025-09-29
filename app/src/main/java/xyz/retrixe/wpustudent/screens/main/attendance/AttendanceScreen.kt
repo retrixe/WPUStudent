@@ -39,7 +39,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -52,56 +51,12 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
+import xyz.retrixe.wpustudent.api.erp.entities.readableSubjectType
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
-import java.math.RoundingMode
-
-// TODO
-//  - https://m3.material.io/styles/color/advanced/overview
-//  - https://github.com/material-foundation/material-color-utilities
-//  - https://material-foundation.github.io/material-theme-builder/
-//  - https://developer.android.com/develop/ui/compose/designsystems/custom
-@Composable
-private fun getThresholdColor(value: Double, threshold: Double) =
-    if (value >= threshold) Color(0xFF00BB90)
-    else if (value >= threshold - 5) Color(0xFFFFCC02)
-    else MaterialTheme.colorScheme.error
-
-private fun calculateSkippableClasses(present: Int, total: Int, threshold: Double): Int =
-    // present / (total + x) = threshold
-    // => present = threshold (total + x)
-    // => present = threshold * total + threshold * x
-    // => threshold * x = present - threshold * total
-    // => x = present - (threshold * total) / threshold
-    // => x = (present / threshold) - total
-    if (threshold != 100.0)
-        present.toBigDecimal().divide(threshold.toBigDecimal().movePointLeft(2), RoundingMode.DOWN)
-            .setScale(0, RoundingMode.DOWN) // Just for added safety...
-            .toInt() - total
-    else 0
-
-private fun calculateClassesToThreshold(present: Int, total: Int, threshold: Double): Int =
-    // (present + x) / (total + x) = threshold
-    // => (present + x) = threshold (total + x)
-    // => present + x = threshold * total + threshold * x
-    // => x - x * threshold = threshold * total - present
-    // => x (1 - threshold) = threshold * total - present
-    // => x = (threshold * total - present) / (1 - threshold)
-    if (threshold != 100.0)
-        ((threshold * total).toBigDecimal().movePointLeft(2) - present.toBigDecimal())
-            .divide(threshold.toBigDecimal().movePointLeft(2).negate().inc(), RoundingMode.UP)
-            .setScale(0, RoundingMode.UP) // Just for added safety...
-            .toInt()
-    else if (total == present) 0
-    else Int.MAX_VALUE
-
-private fun readableSubjectType(type: String) = when (type) {
-    "PR" -> "Practical"
-    "PJ" -> "Project"
-    "TH" -> "Theory"
-    "TT" -> "Tutorial"
-    else -> type
-}
+import xyz.retrixe.wpustudent.utils.calculateClassesToThreshold
+import xyz.retrixe.wpustudent.utils.calculateSkippableClasses
+import xyz.retrixe.wpustudent.utils.getThresholdColor
 
 @Composable
 private fun LazyItemScope.AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
