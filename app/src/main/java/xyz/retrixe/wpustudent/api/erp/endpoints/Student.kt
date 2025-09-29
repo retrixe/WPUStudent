@@ -58,8 +58,10 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
     val response = client.get("STUDENT/SelfAttendence.aspx") {
         url.parameters.append("MENU_CODE", "MWEBSTUATTEN_SLF_ATTEN")
     }
+    val body = response.bodyAsText()
 
-    val document = Jsoup.parse(response.bodyAsText())
+    val semId = Regex("var varSemId = '(\\d+)';").find(body)?.groupValues?.getOrNull(1) ?: "FAIL"
+    val document = Jsoup.parse(body)
     val attendanceSummary = arrayListOf<CourseAttendanceSummary>()
     val rows = document.select("div.infor-table").select("tr")
     for (row in rows) {
@@ -73,7 +75,7 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
                 if (cells.size == 4) attendanceSummary.lastOrNull()?.subjectName ?: "Unknown"
                 else cells[1].text()
             attendanceSummary.add(CourseAttendanceSummary(
-                cells[idxStart + 2].select("a").attr("id"),
+                semId + "#" + cells[idxStart + 2].select("a").attr("id"),
                 subjectName,
                 cells[idxStart + 2].select("a").text(),
                 cells[idxStart + 3].text().trim().toInt(),
@@ -93,7 +95,9 @@ private data class AttendanceDetailsRequest(
     val strAppNo: String,
 )
 
-suspend fun getAttendanceDetails(client: HttpClient): List<CourseAttendanceDetail> {
+suspend fun getAttendanceDetails(
+    client: HttpClient, prn: String, courseId: String
+): List<CourseAttendanceDetail> {
     /* curl 'https://erp.mitwpu.edu.in/STUDENT/SelfAttendence.aspx/GetAttDtls' \
          -H 'accept: application/json, text/javascript, *SLASH*; q=0.01' \
          -H 'accept-language: en-US,en;q=0.9' \
@@ -109,8 +113,8 @@ suspend fun getAttendanceDetails(client: HttpClient): List<CourseAttendanceDetai
     val response = client.post("STUDENT/SelfAttendence.aspx/GetAttDtls") {
         contentType(ContentType.Application.Json)
         header("x-requested-with", "XMLHttpRequest")
-        // FIXME
-        setBody(AttendanceDetailsRequest("", "", "", ""))
+        val (strSemId, strAppNo, strSubDetId) = courseId.split("#")
+        setBody(AttendanceDetailsRequest(prn, strSemId, strSubDetId, strAppNo))
     }
 
     @Serializable data class Body(val d: List<CourseAttendanceDetail>)

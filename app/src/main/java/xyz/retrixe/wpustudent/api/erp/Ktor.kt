@@ -27,7 +27,6 @@ val json = Json {
 fun createHttpClient(token: String?): HttpClient = HttpClient(
     if (token == "TestAccount|TestAccount") MockEngineFactory else Android
 ) {
-    println(token)
     expectSuccess = true
     BrowserUserAgent()
     install(Logging) {
@@ -76,6 +75,9 @@ data object MockEngineFactory : HttpClientEngineFactory<MockEngineConfig> {
                             """
                                     <html>
                                     <body>
+                                    <script>
+                                    var varSemId = '20';
+                                    </script>
                                     <div class="infor-table">
                                     <div id="divMain" class="table table-responsive">
                                       <div>
