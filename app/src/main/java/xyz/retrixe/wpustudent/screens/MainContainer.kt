@@ -27,7 +27,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.get
-import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import xyz.retrixe.wpustudent.R
 import xyz.retrixe.wpustudent.models.SessionViewModel

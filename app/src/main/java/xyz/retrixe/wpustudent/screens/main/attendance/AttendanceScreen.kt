@@ -53,6 +53,8 @@ import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.api.erp.entities.readableSubjectType
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
+import xyz.retrixe.wpustudent.screens.Screens
+import xyz.retrixe.wpustudent.state.LocalNavController
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
 import xyz.retrixe.wpustudent.utils.calculateClassesToThreshold
 import xyz.retrixe.wpustudent.utils.calculateSkippableClasses
@@ -60,15 +62,15 @@ import xyz.retrixe.wpustudent.utils.getThresholdColor
 
 @Composable
 private fun LazyItemScope.AttendanceCard(course: CourseAttendanceSummary, threshold: Double) {
-    // val navController = LocalNavController.current
+    val navController = LocalNavController.current
     val rawAttendance = course.present.toDouble() / course.total
     val attendance = rawAttendance * 100
     val color = getThresholdColor(attendance, threshold)
 
-    OutlinedCard(/* {
+    OutlinedCard({
         val link = Screens.Main.Attendance.Details(course.id)
         navController.navigate(link)
-    }, */ Modifier.animateItem().fillMaxWidth()) {
+    }, Modifier.animateItem().fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(course.subjectName, fontSize = 24.sp)
             Text("(" + readableSubjectType(course.subjectType) + ")",

@@ -13,16 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -48,9 +49,10 @@ import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.models.main.attendance.details.AttendanceDetailsViewModel
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
-import xyz.retrixe.wpustudent.utils.calculateClassesToThreshold
-import xyz.retrixe.wpustudent.utils.calculateSkippableClasses
+import xyz.retrixe.wpustudent.utils.DD_MM_YYYY_DATE
+import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import xyz.retrixe.wpustudent.utils.getThresholdColor
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -122,7 +124,8 @@ fun AttendanceDetailsScreen(
                 Text("$present / $total sessions", Modifier.align(Alignment.End))
                 Spacer(Modifier.height(24.dp))
                 // TODO: Estimate classes left, and how many one should attend
-                if (attendance >= threshold - 5) {
+                // TODO: Does this even look good here? You can see this in the summary.
+                /* if (attendance >= threshold - 5) {
                     val skippableClassesSub = calculateSkippableClasses(
                         present, total, threshold - 5)
                     Text("You can skip $skippableClassesSub classes and stay at ${(threshold - 5).toInt()}%.")
@@ -143,24 +146,25 @@ fun AttendanceDetailsScreen(
 
                 Spacer(Modifier.height(16.dp))
                 HorizontalDivider()
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(16.dp)) */
 
                 FlowRow(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-                    for (type in arrayOf("Present", "Absent")) {
+                    for (filterName in arrayOf("Present", "Absent")) {
+                        val filterId = filterName.uppercase()
                         FilterChip(
                             onClick = {
-                                if (filters.contains(type))
-                                    filters.remove(type)
+                                if (filters.contains(filterId))
+                                    filters.remove(filterId)
                                 else
-                                    filters.add(type)
+                                    filters.add(filterId)
                             },
-                            label = { Text(type) },
-                            selected = filters.contains(type),
-                            leadingIcon = if (filters.contains(type)) {
+                            label = { Text(filterName) },
+                            selected = filters.contains(filterId),
+                            leadingIcon = if (filters.contains(filterId)) {
                                 {
                                     Icon(
                                         imageVector = Icons.Filled.Done,
-                                        contentDescription = "$type icon",
+                                        contentDescription = "$filterName icon",
                                         modifier = Modifier.size(FilterChipDefaults.IconSize)
                                     )
                                 }
@@ -186,17 +190,35 @@ fun AttendanceDetailsScreen(
                         )
                     },
                 ) {
-                    LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        // FIXME We're ALMOST there!!!
-                        item {
-                            Text("goon")
+                    LazyColumn(
+                        Modifier.fillMaxSize().padding(16.dp, 0.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        val filteredDetails = (if (filters.isEmpty()) details
+                                else details.filter { filters.contains(it.studentStatus) })
+                            .sortedByDescending {
+                                LocalDate.parse(it.attendanceDate, DD_MM_YYYY_DATE)
+                            }
+                        items(filteredDetails, key = { it }) { detail ->
+                            OutlinedCard(Modifier.animateItem().fillMaxWidth()) {
+                                Row(
+                                    Modifier.padding(16.dp).fillMaxWidth(),
+                                    Arrangement.SpaceBetween,
+                                    Alignment.CenterVertically
+                                ) {
+                                    val date = LocalDate.parse(detail.attendanceDate, DD_MM_YYYY_DATE)
+                                    val status = detail.studentStatus[0].uppercase() +
+                                            detail.studentStatus.substring(1).lowercase()
+                                    val color =
+                                        if (status == "Present") MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.error
+
+                                    Text(RFC_1123_DATE.format(date),
+                                        Modifier.weight(1f), fontSize = 20.sp, softWrap = true)
+                                    Text(status, color = color, fontSize = 16.sp, softWrap = false)
+                                }
+                            }
                         }
-                        /* items(
-                            summary.sortedBy { it.subjectName + it.subjectType },
-                            key = { it.subjectName + it.subjectType }
-                        ) { course ->
-                            AttendanceCard(course, attendanceThreshold ?: (THRESHOLD_PERCENTAGE + 5))
-                        } */
                     }
                 }
             }
