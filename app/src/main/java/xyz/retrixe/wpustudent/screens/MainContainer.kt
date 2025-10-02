@@ -109,7 +109,9 @@ fun MainContainer(
                         item(
                             icon = { Icon(painterResource(it.icon), it.label) },
                             label = { Text(it.label) },
-                            selected = mainGraph[it.route] == currentDestination,
+                            // selected = mainGraph[it.route] == currentDestination,
+                            selected = currentDestination?.route
+                                ?.startsWith(it.route::class.qualifiedName!!) == true,
                             onClick = {
                                 navController.navigate(it.route) {
                                     // Pop up to the start destination of the graph to

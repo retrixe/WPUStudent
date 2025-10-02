@@ -66,7 +66,6 @@ fun AttendanceDetailsScreen(
     studentBasicInfo: StudentBasicInfo,
     attendanceThreshold: Double?,
 ) {
-    // FIXME: Pressing on the Attendance button in the bottom navbar doesn't work
     val attendanceDetailsViewModelFactory = AttendanceDetailsViewModel.Factory(httpClient, studentBasicInfo)
     val attendanceDetailsViewModel: AttendanceDetailsViewModel = viewModel(factory = attendanceDetailsViewModelFactory)
     val data by attendanceDetailsViewModel.data.collectAsState()
