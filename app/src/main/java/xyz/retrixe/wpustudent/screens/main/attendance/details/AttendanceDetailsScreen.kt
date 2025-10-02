@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -48,7 +50,9 @@ import kotlinx.coroutines.launch
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.models.main.attendance.details.AttendanceDetailsViewModel
+import xyz.retrixe.wpustudent.state.LocalNavController
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
+import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.DD_MM_YYYY_DATE
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import xyz.retrixe.wpustudent.utils.getThresholdColor
@@ -67,6 +71,8 @@ fun AttendanceDetailsScreen(
     val attendanceDetailsViewModel: AttendanceDetailsViewModel = viewModel(factory = attendanceDetailsViewModelFactory)
     val data by attendanceDetailsViewModel.data.collectAsState()
 
+    val navController = LocalNavController.current
+
     val coroutineScope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
     var refreshing by remember { mutableStateOf(false) }
@@ -82,8 +88,20 @@ fun AttendanceDetailsScreen(
 
     Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(16.dp))
-        // FIXME: Add Back button
-        Text("Attendance Details", fontSize = 36.sp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            PlainTooltipBox("Back to Attendance") {
+                FilledTonalIconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = "Back to Attendance"
+                    )
+                }
+            }
+            Text("Attendance Details", fontSize = 32.sp)
+        }
 
         when (data) {
             is AttendanceDetailsViewModel.Data.Loading -> {
