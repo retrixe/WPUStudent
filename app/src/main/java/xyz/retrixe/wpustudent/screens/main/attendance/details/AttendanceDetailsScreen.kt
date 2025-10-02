@@ -178,7 +178,6 @@ fun AttendanceDetailsScreen(
                 PullToRefreshBox(
                     isRefreshing = refreshing,
                     onRefresh = ::refresh,
-                    modifier = Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
                     state = refreshState,
                     indicator = {
                         PullToRefreshDefaults.LoadingIndicator(
@@ -192,6 +191,7 @@ fun AttendanceDetailsScreen(
                 ) {
                     LazyColumn(
                         Modifier.fillMaxSize().padding(16.dp, 0.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         val filteredDetails = (if (filters.isEmpty()) details
@@ -200,7 +200,7 @@ fun AttendanceDetailsScreen(
                                 LocalDate.parse(it.attendanceDate, DD_MM_YYYY_DATE)
                             }
                         items(filteredDetails, key = { it }) { detail ->
-                            OutlinedCard(Modifier.animateItem().fillMaxWidth()) {
+                            OutlinedCard(Modifier.animateItem().width(512.dp)) {
                                 Row(
                                     Modifier.padding(16.dp).fillMaxWidth(),
                                     Arrangement.SpaceBetween,

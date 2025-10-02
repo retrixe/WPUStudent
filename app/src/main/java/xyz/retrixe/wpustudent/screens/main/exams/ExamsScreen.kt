@@ -1,10 +1,10 @@
 package xyz.retrixe.wpustudent.screens.main.exams
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -52,7 +52,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 private fun ExamsCard(exam: Exam) {
     val date = LocalDate.parse(exam.examDate, DateTimeFormatter.ISO_LOCAL_DATE)
-    OutlinedCard(Modifier.fillMaxWidth()) {
+    OutlinedCard(Modifier.width(512.dp)) {
         Column(Modifier.padding(16.dp)) {
             Text(exam.courseName, fontSize = 24.sp, fontWeight = FontWeight.Bold)
             Text(exam.courseCode, color = MaterialTheme.colorScheme.outline, fontSize = 24.sp)
@@ -128,7 +128,6 @@ fun ExamsScreen(
                 PullToRefreshBox(
                     isRefreshing = refreshing,
                     onRefresh = ::refresh,
-                    modifier = Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
                     state = refreshState,
                     indicator = {
                         PullToRefreshDefaults.LoadingIndicator(
@@ -140,7 +139,11 @@ fun ExamsScreen(
                         )
                     },
                 ) {
-                    LazyColumn(Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
                         val sortedExams = data.ticket.flatten().sortedBy { it.examDate }
                         val completedExams = sortedExams.takeWhile {
                             LocalDate
@@ -150,32 +153,21 @@ fun ExamsScreen(
                         val upcomingExams = sortedExams
                             .takeLast(sortedExams.size - completedExams.size)
 
-                        item {
-                            if (upcomingExams.isNotEmpty()) {
+                        if (upcomingExams.isNotEmpty()) {
+                            item {
                                 Text("Upcoming exams",
                                     fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                                Spacer(Modifier.height(16.dp))
                             }
                         }
-                        items(upcomingExams) { exam ->
-                            ExamsCard(exam)
-                            Spacer(Modifier.height(16.dp))
-                        }
+                        items(upcomingExams) { exam -> ExamsCard(exam) }
 
-                        item {
-                            if (completedExams.isNotEmpty()) {
-                                if (upcomingExams.isNotEmpty()) {
-                                    Spacer(Modifier.height(16.dp))
-                                }
+                        if (completedExams.isNotEmpty()) {
+                            item {
                                 Text("Completed exams",
                                     fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                                Spacer(Modifier.height(16.dp))
                             }
                         }
-                        items(completedExams) { exam ->
-                            ExamsCard(exam)
-                            Spacer(Modifier.height(16.dp))
-                        }
+                        items(completedExams) { exam -> ExamsCard(exam) }
                     }
                 }
             }

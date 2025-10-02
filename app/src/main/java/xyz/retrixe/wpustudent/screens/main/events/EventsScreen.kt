@@ -38,6 +38,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -80,7 +81,7 @@ private fun EventCard(event: Event) {
     val startDate = LocalDate.parse(event.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     val endDate = LocalDate.parse(event.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
-    OutlinedCard({ openCalendar(context, startDate) }, Modifier.fillMaxWidth()) {
+    OutlinedCard({ openCalendar(context, startDate) }, Modifier.width(512.dp)) {
         Column(Modifier.padding(16.dp)) {
             Text(event.name, fontSize = 24.sp)
             Spacer(Modifier.height(8.dp))
@@ -128,7 +129,7 @@ fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInf
     var refreshing by remember { mutableStateOf(false) }
 
     val tabs = listOf("Upcoming", "Past")
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(0) }
 
     fun refresh() = coroutineScope.launch {
         if (data is EventsViewModel.Data.Loading) return@launch
@@ -179,7 +180,6 @@ fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInf
                 PullToRefreshBox(
                     isRefreshing = refreshing,
                     onRefresh = ::refresh,
-                    modifier = Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
                     state = refreshState,
                     indicator = {
                         PullToRefreshDefaults.LoadingIndicator(
@@ -209,30 +209,25 @@ fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInf
                                         slideOutHorizontally { height -> height } + fadeOut()
                             }.using(SizeTransform(clip = false))
                         } */
-                        LazyColumn(Modifier.fillMaxSize()) {
+                        LazyColumn(
+                            Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
                             /* if (upcomingEvents.isNotEmpty()) {
                                 item {
                                     Text("Upcoming events", fontSize = 24.sp)
-                                    Spacer(Modifier.height(16.dp))
                                 }
                             }
-                            items(upcomingEvents) { event ->
-                                EventCard(event)
-                                Spacer(Modifier.height(16.dp))
-                            }
+                            items(upcomingEvents) { event -> EventCard(event) }
 
                             if (pastEvents.isNotEmpty()) {
                                 item {
-                                    if (upcomingEvents.isNotEmpty()) {
-                                        Spacer(Modifier.height(16.dp))
-                                    }
                                     Text("Past events", fontSize = 24.sp)
-                                    Spacer(Modifier.height(16.dp))
                                 }
                             } */
                             items(if (it == 0) upcomingEvents else pastEvents) { event ->
                                 EventCard(event)
-                                Spacer(Modifier.height(16.dp))
                             }
                         }
                     }

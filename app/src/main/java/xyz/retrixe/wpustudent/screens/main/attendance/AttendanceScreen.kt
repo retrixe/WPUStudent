@@ -70,7 +70,7 @@ private fun LazyItemScope.AttendanceCard(course: CourseAttendanceSummary, thresh
     OutlinedCard({
         val link = Screens.Main.Attendance.Details(course.id)
         navController.navigate(link)
-    }, Modifier.animateItem().fillMaxWidth()) {
+    }, Modifier.animateItem().width(512.dp)) {
         Column(Modifier.padding(16.dp)) {
             Text(course.subjectName, fontSize = 24.sp)
             Text("(" + readableSubjectType(course.subjectType) + ")",
@@ -212,7 +212,6 @@ fun AttendanceScreen(
                 PullToRefreshBox(
                     isRefreshing = refreshing,
                     onRefresh = ::refresh,
-                    modifier = Modifier.width(512.dp).fillMaxWidth().align(Alignment.CenterHorizontally),
                     state = refreshState,
                     indicator = {
                         PullToRefreshDefaults.LoadingIndicator(
@@ -224,7 +223,11 @@ fun AttendanceScreen(
                         )
                     },
                 ) {
-                    LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    LazyColumn(
+                        Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
                         items(
                             summary.sortedBy { it.subjectName + it.subjectType },
                             key = { it.subjectName + it.subjectType }
