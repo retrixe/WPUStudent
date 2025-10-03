@@ -34,8 +34,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.plugins.ClientRequestException
@@ -110,7 +113,11 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Modifier.padding(horizontal = 16.dp).width(512.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("Enter your MIT-WPU ERP login details:")
+            Text(buildAnnotatedString {
+                append("Enter your ")
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("MIT-WPU ERP") }
+                append(" login details:")
+            })
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth()
                     .focusProperties { next = passwordFocus }
