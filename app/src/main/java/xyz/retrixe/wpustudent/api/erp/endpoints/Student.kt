@@ -88,7 +88,7 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
 }
 
 @Serializable
-private data class AttendanceDetailsRequest(
+data class AttendanceDetailsRequest(
     val strStudentId: String,
     val strSemId: String,
     val strSubDetId: String,
