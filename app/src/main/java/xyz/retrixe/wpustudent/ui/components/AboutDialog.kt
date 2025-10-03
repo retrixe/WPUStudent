@@ -42,7 +42,7 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
                 Text("WPUStudent", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Text("v" + BuildConfig.VERSION_NAME)
                 Spacer(Modifier.height(16.dp))
-                Text("A useful app for MIT-WPU students with various tools e.g. attendance tracking.")
+                Text("A useful app for WPU students with various tools like attendance tracking.")
                 TextButton(
                     onClick = { onDismissRequest() },
                     modifier = Modifier.align(Alignment.End)

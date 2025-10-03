@@ -1,6 +1,6 @@
 # WPUStudent
 
-A useful app for MIT-WPU students with various tools e.g. attendance tracking.
+A useful app for MIT-WPU students with various tools like attendance tracking.
 
 [![Discord server for WPUStudent and other projects](https://dcbadge.vercel.app/api/server/MFSJa9TpPS)](https://discord.gg/MFSJa9TpPS)
 
