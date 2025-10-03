@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,7 +77,7 @@ fun AttendanceDetailsScreen(
     val refreshState = rememberPullToRefreshState()
     var refreshing by remember { mutableStateOf(false) }
 
-    val filters = remember { mutableStateSetOf<String>() }
+    val filters = rememberSaveable { mutableStateSetOf<String>() }
 
     fun refresh() = coroutineScope.launch {
         if (data is AttendanceDetailsViewModel.Data.Loading) return@launch
