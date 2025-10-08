@@ -58,7 +58,7 @@ class SessionViewModel(
                 .firstOrNull()
             val accountDetails = sessionDataStore.data
                 .map { it[SESSION_ACCOUNT_DETAILS] }
-                .map { it?.let { decryptFromString(SESSION_ACCOUNT_DETAILS.name, it).split(":") } }
+                .map { it?.let { decryptFromString(SESSION_ACCOUNT_DETAILS.name, it)?.split(":") } }
                 .firstOrNull()
 
             // If no access token, we're done here.

@@ -39,7 +39,7 @@ private fun generateSecretKey(keyAlias: String): SecretKey {
 }
 
 private fun getSecretKey(keyAlias: String) =
-    (keyStore.getEntry(keyAlias, null) as KeyStore.SecretKeyEntry).secretKey
+    (keyStore.getEntry(keyAlias, null) as KeyStore.SecretKeyEntry?)?.secretKey
 
 fun encryptData(keyAlias: String, text: String): Pair<ByteArray, ByteArray> {
     val secretKey = generateSecretKey(keyAlias)
@@ -57,17 +57,17 @@ fun encryptToString(keyAlias: String, text: String): String {
     return ivString + encryptedDataString
 }
 
-fun decryptData(keyAlias: String, iv: ByteArray, encryptedData: ByteArray): String {
-    val secretKey = getSecretKey(keyAlias)
+fun decryptData(keyAlias: String, iv: ByteArray, encryptedData: ByteArray): String? {
+    val secretKey = getSecretKey(keyAlias) ?: return null
     val gcmParameterSpec = GCMParameterSpec(128, iv)
     val cipher = Cipher.getInstance(CIPHER_ALGORITHM)
     cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmParameterSpec)
     return cipher.doFinal(encryptedData).toString(CHARSET)
 }
 
-fun decryptFromString(keyAlias: String, encryptedText: String): String {
+fun decryptFromString(keyAlias: String, encryptedText: String): String? {
     val iv =
-        encryptedText.substring(0, 24).chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+        encryptedText.take(24).chunked(2).map { it.toInt(16).toByte() }.toByteArray()
     val encryptedData =
         encryptedText.substring(24).chunked(2).map { it.toInt(16).toByte() }.toByteArray()
     return decryptData(keyAlias, iv, encryptedData)
