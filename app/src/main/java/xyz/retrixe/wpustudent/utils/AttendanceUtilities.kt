@@ -5,6 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import java.math.RoundingMode
 
+val SUCCESS_COLOR = Color(0xFF00BB90)
+val WARNING_COLOR = Color(0xFFFFCC02)
+
 // TODO
 //  - https://m3.material.io/styles/color/advanced/overview
 //  - https://github.com/material-foundation/material-color-utilities
@@ -12,8 +15,8 @@ import java.math.RoundingMode
 //  - https://developer.android.com/develop/ui/compose/designsystems/custom
 @Composable
 fun getThresholdColor(value: Double, threshold: Double) =
-    if (value >= threshold) Color(0xFF00BB90)
-    else if (value >= threshold - 5) Color(0xFFFFCC02)
+    if (value >= threshold) SUCCESS_COLOR
+    else if (value >= threshold - 5) WARNING_COLOR
     else MaterialTheme.colorScheme.error
 
 fun calculateSkippableClasses(present: Int, total: Int, threshold: Double): Int =

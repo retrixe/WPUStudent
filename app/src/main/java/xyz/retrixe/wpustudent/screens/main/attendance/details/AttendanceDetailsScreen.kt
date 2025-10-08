@@ -56,6 +56,7 @@ import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.DD_MM_YYYY_DATE
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
+import xyz.retrixe.wpustudent.utils.SUCCESS_COLOR
 import xyz.retrixe.wpustudent.utils.getThresholdColor
 import java.time.LocalDate
 
@@ -228,7 +229,7 @@ fun AttendanceDetailsScreen(
                                     val status = detail.studentStatus[0].uppercase() +
                                             detail.studentStatus.substring(1).lowercase()
                                     val color =
-                                        if (status == "Present") MaterialTheme.colorScheme.primary
+                                        if (status == "Present") SUCCESS_COLOR
                                         else MaterialTheme.colorScheme.error
 
                                     Text(RFC_1123_DATE.format(date),
