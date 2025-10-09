@@ -74,7 +74,7 @@ fun AttendanceThresholdDialog(
                         Text("Close")
                     }
                     Button({ onSubmit(newValue) }) {
-                        Text("Submit")
+                        Text("Apply")
                     }
                 }
             }
