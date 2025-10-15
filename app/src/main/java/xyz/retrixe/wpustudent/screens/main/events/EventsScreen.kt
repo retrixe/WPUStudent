@@ -195,7 +195,7 @@ fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInf
                     val sortedEvents = events.sortedBy { it.startDate }
                     val pastEvents = sortedEvents.takeWhile {
                         LocalDate
-                            .parse(it.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                            .parse(it.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                             .isBefore(LocalDate.now())
                     }
                     val upcomingEvents = sortedEvents
