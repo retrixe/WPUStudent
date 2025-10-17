@@ -78,7 +78,7 @@ fun AttendanceDetailsScreen(
     val refreshState = rememberPullToRefreshState()
     var refreshing by remember { mutableStateOf(false) }
 
-    val filters = rememberSaveable { mutableStateSetOf<String>() }
+    val filters = rememberSaveable { mutableStateSetOf("ABSENT") }
 
     fun refresh() = coroutineScope.launch {
         if (data is AttendanceDetailsViewModel.Data.Loading) return@launch
