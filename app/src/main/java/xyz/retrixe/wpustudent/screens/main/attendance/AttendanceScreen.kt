@@ -22,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -40,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
+import xyz.retrixe.wpustudent.R
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.api.erp.entities.readableSubjectType
@@ -57,6 +60,7 @@ import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.screens.Screens
 import xyz.retrixe.wpustudent.state.LocalNavController
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
+import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.calculateClassesToThreshold
 import xyz.retrixe.wpustudent.utils.calculateSkippableClasses
 import xyz.retrixe.wpustudent.utils.getThresholdColor
@@ -127,6 +131,7 @@ fun AttendanceScreen(
     var refreshing by remember { mutableStateOf(false) }
 
     val filters = rememberSaveable { mutableStateSetOf<String>() }
+    var sortedByAttendance by rememberSaveable { mutableStateOf(true) }
 
     fun refresh() = coroutineScope.launch {
         if (data is AttendanceViewModel.Data.Loading) return@launch
@@ -185,6 +190,17 @@ fun AttendanceScreen(
                 Spacer(Modifier.height(16.dp))
 
                 FlowRow(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
+                    val sortDesc =
+                        if (sortedByAttendance) "Sort by Attendance" else "Sort Alphabetically"
+                    PlainTooltipBox(sortDesc) {
+                        IconButton(onClick = { sortedByAttendance = !sortedByAttendance }) {
+                            Icon(painter = painterResource(
+                                if (sortedByAttendance) R.drawable.baseline_sort_24
+                                else R.drawable.baseline_sort_by_alpha_24
+                            ), contentDescription = sortDesc)
+                        }
+                    }
+
                     for (type in courseTypes) {
                         FilterChip(
                             onClick = {
@@ -229,9 +245,14 @@ fun AttendanceScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
+                        val sortedItems =
+                            if (sortedByAttendance)
+                                summary.sortedBy { it.present.toDouble() / it.total }
+                            else
+                                summary.sortedBy { it.subjectName + it.subjectType }
                         items(
-                            summary.sortedBy { it.subjectName + it.subjectType },
-                            key = { it.subjectName + it.subjectType }
+                            sortedItems,
+                            key = { it.subjectName + it.subjectType + sortedByAttendance }
                         ) { course ->
                             AttendanceCard(course, attendanceThreshold ?: (THRESHOLD_PERCENTAGE + 5))
                         }
