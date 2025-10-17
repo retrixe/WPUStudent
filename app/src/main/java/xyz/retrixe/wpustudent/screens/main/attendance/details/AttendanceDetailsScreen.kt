@@ -234,6 +234,7 @@ fun AttendanceDetailsScreen(
 
                                     Text(RFC_1123_DATE.format(date),
                                         Modifier.weight(1f), fontSize = 20.sp, softWrap = true)
+                                    Spacer(Modifier.width(16.dp))
                                     Text(status, color = color, fontSize = 16.sp, softWrap = false)
                                 }
                             }
