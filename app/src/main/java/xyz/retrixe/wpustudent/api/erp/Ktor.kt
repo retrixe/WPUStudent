@@ -18,7 +18,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import xyz.retrixe.wpustudent.api.erp.mocks.MOCKS
 
-const val BASE_URL = "https://erp.mitwpu.edu.in/"
+const val BASE_URL = "https://cas.mitwpu.edu.in/"
 
 val json = Json {
     encodeDefaults = true
