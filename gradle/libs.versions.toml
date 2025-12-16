@@ -1,18 +1,18 @@
 [versions]
 agp = "8.12.3"
-kotlin = "2.2.20"
+kotlin = "2.3.0"
 coreKtx = "1.17.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-lifecycle = "2.9.4"
-activityCompose = "1.11.0"
-composeBom = "2025.09.00"
-ktor = "3.3.0"
+lifecycle = "2.10.0"
+activityCompose = "1.12.1"
+composeBom = "2025.12.00"
+ktor = "3.3.3"
 kotlinxSerialization = "1.9.0"
 slf4j = "2.0.17"
-datastore = "1.1.7"
-navigation = "2.9.4"
+datastore = "1.2.0"
+navigation = "2.9.6"
 jsoup = "1.21.2"
 
 [libraries]
@@ -29,7 +29,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3", version = "1.5.0-alpha04" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version = "1.5.0-alpha10" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
