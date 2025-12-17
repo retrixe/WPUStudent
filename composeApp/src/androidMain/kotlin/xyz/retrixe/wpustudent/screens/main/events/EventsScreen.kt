@@ -57,6 +57,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.painterResource
 import wpustudent.composeapp.generated.resources.Res
 import wpustudent.composeapp.generated.resources.baseline_arrow_forward_24
@@ -64,14 +69,14 @@ import xyz.retrixe.wpustudent.api.erp.entities.Event
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.events.EventsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 fun openCalendar(context: Context, date: LocalDate) {
     val builder = CalendarContract.CONTENT_URI.buildUpon()
     builder.appendPath("time")
     val calendar = Calendar.getInstance()
-    calendar.set(date.year, date.monthValue - 1, date.dayOfMonth)
+    calendar.set(date.year, date.month.number - 1, date.day)
     ContentUris.appendId(builder, calendar.timeInMillis)
     val intent = Intent(Intent.ACTION_VIEW).setData(builder.build())
     context.startActivity(intent)
@@ -80,8 +85,8 @@ fun openCalendar(context: Context, date: LocalDate) {
 @Composable
 private fun EventCard(event: Event) {
     val context = LocalContext.current
-    val startDate = LocalDate.parse(event.startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-    val endDate = LocalDate.parse(event.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    val startDate = LocalDateTime.parse(event.startDate, LocalDateTime.Formats.ISO).date
+    val endDate = LocalDateTime.parse(event.endDate, LocalDateTime.Formats.ISO).date
 
     OutlinedCard({ openCalendar(context, startDate) }, Modifier.width(512.dp)) {
         Column(Modifier.padding(16.dp)) {
@@ -119,7 +124,7 @@ private fun EventCard(event: Event) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class)
 @Composable
 fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo) {
     val eventsViewModelFactory = EventsViewModel.Factory(studentBasicInfo)
@@ -195,9 +200,8 @@ fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInf
                 ) {
                     val sortedEvents = events.sortedBy { it.startDate }
                     val pastEvents = sortedEvents.takeWhile {
-                        LocalDate
-                            .parse(it.endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                            .isBefore(LocalDate.now())
+                        LocalDateTime.parse(it.endDate, LocalDateTime.Formats.ISO).date <
+                                Clock.System.todayIn(TimeZone.currentSystemDefault())
                     }
                     val upcomingEvents = sortedEvents
                         .takeLast(sortedEvents.size - pastEvents.size)

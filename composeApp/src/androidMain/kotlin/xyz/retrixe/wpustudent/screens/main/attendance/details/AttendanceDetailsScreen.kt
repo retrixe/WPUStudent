@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.painterResource
 import wpustudent.composeapp.generated.resources.Res
 import wpustudent.composeapp.generated.resources.baseline_arrow_back_24
@@ -59,7 +60,6 @@ import xyz.retrixe.wpustudent.utils.DD_MM_YYYY_DATE
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import xyz.retrixe.wpustudent.utils.SUCCESS_COLOR
 import xyz.retrixe.wpustudent.utils.getThresholdColor
-import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable

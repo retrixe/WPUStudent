@@ -40,18 +40,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import xyz.retrixe.wpustudent.api.erp.entities.Exam
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.exams.ExamsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 // TODO: Bold text has been removed from other screens, look at it here when re-enabling it
 
 @Composable
 private fun ExamsCard(exam: Exam) {
-    val date = LocalDate.parse(exam.examDate, DateTimeFormatter.ISO_LOCAL_DATE)
+    val date = LocalDate.parse(exam.examDate, LocalDate.Formats.ISO)
     OutlinedCard(Modifier.width(512.dp)) {
         Column(Modifier.padding(16.dp)) {
             Text(exam.courseName, fontSize = 24.sp, fontWeight = FontWeight.Bold)
@@ -84,7 +87,7 @@ private fun ExamsCard(exam: Exam) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class)
 @Composable
 fun ExamsScreen(
     paddingValues: PaddingValues,
@@ -146,9 +149,8 @@ fun ExamsScreen(
                     ) {
                         val sortedExams = data.ticket.flatten().sortedBy { it.examDate }
                         val completedExams = sortedExams.takeWhile {
-                            LocalDate
-                                .parse(it.examDate, DateTimeFormatter.ISO_LOCAL_DATE)
-                                .isBefore(LocalDate.now())
+                            LocalDate.parse(it.examDate, LocalDate.Formats.ISO) <
+                                    Clock.System.todayIn(TimeZone.currentSystemDefault())
                         }
                         val upcomingExams = sortedExams
                             .takeLast(sortedExams.size - completedExams.size)
