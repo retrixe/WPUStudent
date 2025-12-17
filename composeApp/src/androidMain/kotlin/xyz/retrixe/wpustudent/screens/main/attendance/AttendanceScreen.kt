@@ -39,7 +39,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -53,7 +52,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import wpustudent.composeapp.generated.resources.Res
 import wpustudent.composeapp.generated.resources.baseline_done_24
-import xyz.retrixe.wpustudent.R
+import wpustudent.composeapp.generated.resources.baseline_sort_24
+import wpustudent.composeapp.generated.resources.baseline_sort_by_alpha_24
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.api.erp.entities.readableSubjectType
@@ -196,8 +196,8 @@ fun AttendanceScreen(
                     PlainTooltipBox(sortDesc) {
                         IconButton(onClick = { sortedByAttendance = !sortedByAttendance }) {
                             Icon(painter = painterResource(
-                                if (sortedByAttendance) R.drawable.baseline_sort_24
-                                else R.drawable.baseline_sort_by_alpha_24
+                                if (sortedByAttendance) Res.drawable.baseline_sort_24
+                                else Res.drawable.baseline_sort_by_alpha_24
                             ), contentDescription = sortDesc)
                         }
                     }

@@ -10,8 +10,10 @@ import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.TextFieldLabelScope
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import xyz.retrixe.wpustudent.R
+import org.jetbrains.compose.resources.painterResource
+import wpustudent.composeapp.generated.resources.Res
+import wpustudent.composeapp.generated.resources.baseline_visibility_24
+import wpustudent.composeapp.generated.resources.baseline_visibility_off_24
 
 @Composable
 fun PasswordTextField(
@@ -36,8 +38,8 @@ fun PasswordTextField(
         modifier = modifier,
         trailingIcon = {
             val image =
-                if (passwordVisible) R.drawable.baseline_visibility_24
-                else R.drawable.baseline_visibility_off_24
+                if (passwordVisible) Res.drawable.baseline_visibility_24
+                else Res.drawable.baseline_visibility_off_24
             val description = if (passwordVisible) "Hide password" else "Show password"
             PlainTooltipBox(description) {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {

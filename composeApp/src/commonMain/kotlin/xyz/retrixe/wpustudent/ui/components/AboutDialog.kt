@@ -17,12 +17,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
+import wpustudent.composeapp.generated.resources.Res
+import wpustudent.composeapp.generated.resources.outline_info_24
 import xyz.retrixe.wpustudent.BuildKonfig
-import xyz.retrixe.wpustudent.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +38,7 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(painter = painterResource(R.drawable.outline_info_24), contentDescription = "Info")
+                Icon(painter = painterResource(Res.drawable.outline_info_24), contentDescription = "Info")
                 Spacer(Modifier.height(16.dp))
                 Text("WPUStudent", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Text("v" + BuildKonfig.VERSION_NAME)

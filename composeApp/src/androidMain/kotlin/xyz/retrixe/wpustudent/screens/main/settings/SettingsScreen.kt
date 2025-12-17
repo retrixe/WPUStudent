@@ -33,17 +33,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.R
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.models.SettingsViewModel
 import xyz.retrixe.wpustudent.ui.components.AboutDialog
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import androidx.core.net.toUri
+import org.jetbrains.compose.resources.painterResource
+import wpustudent.composeapp.generated.resources.Res
+import wpustudent.composeapp.generated.resources.baseline_logout_24
+import wpustudent.composeapp.generated.resources.outline_info_24
 import xyz.retrixe.wpustudent.BuildKonfig
 
 fun openUrl(context: Context, url: String) {
@@ -95,7 +97,7 @@ fun SettingsScreen(
             Text("Settings", fontSize = 36.sp)
             PlainTooltipBox("Info") {
                 IconButton(onClick = { aboutDialog = true }) {
-                    Icon(painter = painterResource(R.drawable.outline_info_24), contentDescription = "Info")
+                    Icon(painter = painterResource(Res.drawable.outline_info_24), contentDescription = "Info")
                 }
             }
         }
@@ -153,7 +155,7 @@ fun SettingsScreen(
             ),
         ) {
             Icon(
-                painter = painterResource(R.drawable.baseline_logout_24),
+                painter = painterResource(Res.drawable.baseline_logout_24),
                 contentDescription = "Logout"
             )
             Spacer(Modifier.width(ButtonDefaults.IconSpacing))

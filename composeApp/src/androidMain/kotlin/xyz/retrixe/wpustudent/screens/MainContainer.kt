@@ -1,6 +1,5 @@
 package xyz.retrixe.wpustudent.screens
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.Keep
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
@@ -18,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph
 import androidx.navigation.compose.NavHost
@@ -28,7 +26,13 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.get
 import kotlinx.serialization.Serializable
-import xyz.retrixe.wpustudent.R
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import wpustudent.composeapp.generated.resources.Res
+import wpustudent.composeapp.generated.resources.baseline_calendar_month_24
+import wpustudent.composeapp.generated.resources.baseline_co_present_24
+import wpustudent.composeapp.generated.resources.baseline_home_24
+import wpustudent.composeapp.generated.resources.baseline_settings_24
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.models.SettingsViewModel
 import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
@@ -56,12 +60,12 @@ import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
         @Keep @Serializable object Events
         @Keep @Serializable object Settings
 
-        enum class Destinations(val label: String, @get:DrawableRes val icon: Int, val route: Any) {
-            HOME("Home", R.drawable.baseline_home_24, Home),
-            ATTENDANCE("Attendance", R.drawable.baseline_co_present_24, Attendance),
-            // TODO: EXAMS("Exams", R.drawable.baseline_book_24, Exams),
-            EVENTS("Events", R.drawable.baseline_calendar_month_24, Events),
-            SETTINGS("Settings", R.drawable.baseline_settings_24, Settings),
+        enum class Destinations(val label: String, val icon: DrawableResource, val route: Any) {
+            HOME("Home", Res.drawable.baseline_home_24, Home),
+            ATTENDANCE("Attendance", Res.drawable.baseline_co_present_24, Attendance),
+            // TODO: EXAMS("Exams", Res.drawable.baseline_book_24, Exams),
+            EVENTS("Events", Res.drawable.baseline_calendar_month_24, Events),
+            SETTINGS("Settings", Res.drawable.baseline_settings_24, Settings),
         }
     }
 }

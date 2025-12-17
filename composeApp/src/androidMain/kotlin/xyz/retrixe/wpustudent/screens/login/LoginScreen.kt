@@ -33,7 +33,6 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -45,7 +44,9 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import xyz.retrixe.wpustudent.R
+import org.jetbrains.compose.resources.painterResource
+import wpustudent.composeapp.generated.resources.Res
+import wpustudent.composeapp.generated.resources.outline_info_24
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 import xyz.retrixe.wpustudent.ui.components.AboutDialog
@@ -104,7 +105,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             Text("WPUStudent // Login", fontSize = 24.sp, fontWeight = FontWeight.Bold)
             PlainTooltipBox("Info") {
                 IconButton(onClick = { aboutDialog = true }) {
-                    Icon(painter = painterResource(R.drawable.outline_info_24), contentDescription = "Info")
+                    Icon(painter = painterResource(Res.drawable.outline_info_24), contentDescription = "Info")
                 }
             }
         }
