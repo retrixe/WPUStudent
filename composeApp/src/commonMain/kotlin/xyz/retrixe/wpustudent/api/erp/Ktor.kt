@@ -3,7 +3,6 @@ package xyz.retrixe.wpustudent.api.erp
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.engine.android.Android
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockEngineConfig
 import io.ktor.client.engine.mock.respond
@@ -25,8 +24,10 @@ val json = Json {
     ignoreUnknownKeys = true
 }
 
+expect val PlatformHttpClientEngineFactory: HttpClientEngineFactory<*>
+
 fun createHttpClient(token: String?): HttpClient = HttpClient(
-    if (token == "TestAccount|TestAccount") MockEngineFactory else Android
+    if (token == "TestAccount|TestAccount") MockEngineFactory else PlatformHttpClientEngineFactory
 ) {
     expectSuccess = true
     BrowserUserAgent()

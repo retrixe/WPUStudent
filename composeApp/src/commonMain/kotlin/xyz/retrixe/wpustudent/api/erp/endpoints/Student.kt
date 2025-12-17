@@ -1,5 +1,6 @@
 package xyz.retrixe.wpustudent.api.erp.endpoints
 
+import com.fleeksoft.ksoup.Ksoup
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
@@ -14,7 +15,6 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.delay
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.jsoup.Jsoup
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceDetail
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
@@ -37,7 +37,7 @@ suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
     else if (response.request.url.encodedPath != "/ERP_Main.aspx")
         throw ResponseException(response, "Unknown redirect")
 
-    val document = Jsoup.parse(response.bodyAsText())
+    val document = Ksoup.parse(response.bodyAsText())
     return StudentBasicInfo(
         document.select("span#span_userid").text().trim(),
         document.select("h6#span_username").text().trim().replace("- ", ""),
@@ -61,7 +61,7 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
     val body = response.bodyAsText()
 
     val semId = Regex("var varSemId = '(\\d+)';").find(body)?.groupValues?.getOrNull(1) ?: "FAIL"
-    val document = Jsoup.parse(body)
+    val document = Ksoup.parse(body)
     val attendanceSummary = arrayListOf<CourseAttendanceSummary>()
     val rows = document.select("div.infor-table").select("tr")
     for (row in rows) {

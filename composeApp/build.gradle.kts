@@ -36,6 +36,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            // Custom dependencies
             implementation(libs.ktor.client.android)
         }
         commonMain.dependencies {
@@ -60,7 +61,7 @@ kotlin {
             implementation(libs.androidx.datastore.preferences)
             implementation(compose.material3AdaptiveNavigationSuite)
             implementation(libs.androidx.navigation.compose)
-            implementation(libs.jsoup)
+            implementation(libs.ksoup)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -72,9 +73,14 @@ kotlin {
             // debugImplementation(libs.androidx.ui.tooling)
             // debugImplementation(libs.androidx.ui.test.manifest)
         }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            // Custom dependencies
+            implementation(libs.ktor.client.java)
         }
     }
 }
