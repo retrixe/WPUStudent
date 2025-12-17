@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Badge
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
@@ -59,6 +57,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
+import wpustudent.composeapp.generated.resources.Res
+import wpustudent.composeapp.generated.resources.baseline_arrow_forward_24
 import xyz.retrixe.wpustudent.api.erp.entities.Event
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.models.main.events.EventsViewModel
@@ -112,7 +113,7 @@ private fun EventCard(event: Event) {
                 Arrangement.spacedBy(ButtonDefaults.IconSpacing, Alignment.End)
             ) {
                 Text("Open Calendar", fontWeight = FontWeight.Medium)
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Open calendar")
+                Icon(painterResource(Res.drawable.baseline_arrow_forward_24), contentDescription = "Open calendar")
             }
         }
     }

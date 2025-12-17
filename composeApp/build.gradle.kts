@@ -41,8 +41,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            // FIXME: implementation(compose.material3)
-            implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha05")
+            implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha05") // TODO
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -58,20 +57,19 @@ kotlin {
             implementation(libs.slf4j.api)
             implementation(libs.slf4j.android)
             implementation(libs.androidx.datastore.preferences)
-            implementation(libs.androidx.material.icons.core) // FIXME Are we supposed to use compose icons extended
             implementation(compose.material3AdaptiveNavigationSuite)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.jsoup)
-            /*FIXME testImplementation(libs.junit)
-            androidTestImplementation(libs.androidx.junit)
-            androidTestImplementation(libs.androidx.espresso.core)
-            androidTestImplementation(platform(libs.androidx.compose.bom))
-            androidTestImplementation(libs.androidx.ui.test.junit4)
-            debugImplementation(libs.androidx.ui.tooling)
-            debugImplementation(libs.androidx.ui.test.manifest)*/
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            // implementation(libs.junit)
+            // androidTestImplementation(libs.androidx.junit)
+            // androidTestImplementation(libs.androidx.espresso.core)
+            // androidTestImplementation(platform(libs.androidx.compose.bom))
+            // androidTestImplementation(libs.androidx.ui.test.junit4)
+            // debugImplementation(libs.androidx.ui.tooling)
+            // debugImplementation(libs.androidx.ui.test.manifest)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)

@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
@@ -48,6 +45,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
+import wpustudent.composeapp.generated.resources.Res
+import wpustudent.composeapp.generated.resources.baseline_arrow_back_24
+import wpustudent.composeapp.generated.resources.baseline_done_24
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.models.main.attendance.details.AttendanceDetailsViewModel
@@ -96,7 +97,7 @@ fun AttendanceDetailsScreen(
             PlainTooltipBox("Back to Attendance") {
                 FilledTonalIconButton(onClick = { navController.navigateUp() }) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        painterResource(Res.drawable.baseline_arrow_back_24),
                         contentDescription = "Back to Attendance"
                     )
                 }
@@ -182,7 +183,7 @@ fun AttendanceDetailsScreen(
                             leadingIcon = if (filters.contains(filterId)) {
                                 {
                                     Icon(
-                                        imageVector = Icons.Filled.Done,
+                                        painterResource(Res.drawable.baseline_done_24),
                                         contentDescription = "$filterName icon",
                                         modifier = Modifier.size(FilterChipDefaults.IconSize)
                                     )

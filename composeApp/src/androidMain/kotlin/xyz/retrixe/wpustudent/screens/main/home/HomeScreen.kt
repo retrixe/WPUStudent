@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,11 +21,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
+import wpustudent.composeapp.generated.resources.Res
+import wpustudent.composeapp.generated.resources.baseline_account_circle_24
+import wpustudent.composeapp.generated.resources.baseline_warning_24
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import kotlin.io.encoding.Base64
 
@@ -60,7 +62,7 @@ fun HomeScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo)
                     .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
             ) {
                 Icon(
-                    Icons.Default.Warning,
+                    painterResource(Res.drawable.baseline_warning_24),
                     contentDescription = "Error loading profile picture",
                     modifier = Modifier.size(96.dp).align(Alignment.Center)
                 )
@@ -68,9 +70,10 @@ fun HomeScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo)
         } else {
             if (studentBasicInfo.profilePicture.startsWith("data:image/svg+xml;base64,")) {
                 Image(
-                    imageVector = Icons.Filled.AccountCircle,
+                    painterResource(Res.drawable.baseline_account_circle_24),
                     contentDescription = "Profile picture",
-                    modifier = Modifier.size(192.dp).clip(CircleShape)
+                    modifier = Modifier.size(192.dp).clip(CircleShape),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
             } else {
                 val bitmap = BitmapFactory.decodeByteArray(profilePicture, 0, profilePicture.size)
