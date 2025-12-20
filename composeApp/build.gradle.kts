@@ -73,6 +73,7 @@ kotlin {
             // debugImplementation(libs.androidx.ui.tooling)
             // debugImplementation(libs.androidx.ui.test.manifest)
         }
+        // Custom dependencies
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
@@ -82,6 +83,12 @@ kotlin {
             // Custom dependencies
             implementation(libs.ktor.client.java)
         }
+    }
+
+    // Custom
+    compilerOptions {
+        // Common compiler options applied to all Kotlin source sets
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 
