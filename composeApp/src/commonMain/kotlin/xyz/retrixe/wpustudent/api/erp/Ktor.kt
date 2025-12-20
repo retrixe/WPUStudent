@@ -16,6 +16,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import xyz.retrixe.wpustudent.api.erp.mocks.MOCKS
+import xyz.retrixe.wpustudent.kmp.PlatformHttpClientEngineFactory
 
 const val BASE_URL = "https://cas.mitwpu.edu.in/"
 
@@ -23,8 +24,6 @@ val json = Json {
     encodeDefaults = true
     ignoreUnknownKeys = true
 }
-
-expect val PlatformHttpClientEngineFactory: HttpClientEngineFactory<*>
 
 fun createHttpClient(token: String?): HttpClient = HttpClient(
     if (token == "TestAccount|TestAccount") MockEngineFactory else PlatformHttpClientEngineFactory

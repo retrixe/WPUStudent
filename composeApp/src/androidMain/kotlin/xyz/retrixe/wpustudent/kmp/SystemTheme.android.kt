@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.ui.theme
+package xyz.retrixe.wpustudent.kmp
 
 import android.os.Build
 import androidx.annotation.RequiresApi

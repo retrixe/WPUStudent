@@ -1,4 +1,4 @@
-package xyz.retrixe.wpustudent.api.erp
+package xyz.retrixe.wpustudent.kmp
 
 import io.ktor.client.engine.android.Android
 import io.ktor.client.engine.HttpClientEngineFactory

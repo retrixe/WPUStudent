@@ -7,6 +7,8 @@ import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import xyz.retrixe.wpustudent.kmp.platformColorScheme
+import xyz.retrixe.wpustudent.kmp.platformColorSchemeAvailable
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -29,11 +31,6 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
-
-expect val platformColorSchemeAvailable: Boolean
-
-@Composable
-expect fun platformColorScheme(darkTheme: Boolean): ColorScheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
