@@ -64,6 +64,7 @@ kotlin {
             implementation(compose.material3AdaptiveNavigationSuite)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.ksoup)
+            implementation(libs.kermit)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

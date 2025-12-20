@@ -11,8 +11,9 @@ operator fun BigDecimal.minus(other: BigDecimal): BigDecimal = subtract(other)
 expect val BigDecimalONE: BigDecimal
 
 expect enum class RoundingMode {
-    UP,
     DOWN,
+    HALF_EVEN,
+    UP,
 }
 
 expect class BigDecimal {
@@ -23,4 +24,5 @@ expect class BigDecimal {
     fun setScale(scale: Int, roundingMode: RoundingMode): BigDecimal
     fun subtract(other: BigDecimal): BigDecimal
     fun toInt(): Int
+    fun toPlainString(): String
 }

@@ -1,19 +1,21 @@
 package xyz.retrixe.wpustudent.models.main.attendance
 
-import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import xyz.retrixe.wpustudent.api.erp.endpoints.getAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
+import xyz.retrixe.wpustudent.kmp.Parcelable
+import xyz.retrixe.wpustudent.kmp.Parcelize
+import kotlin.reflect.KClass
 
 class AttendanceViewModel(
     private val httpClient: HttpClient,
@@ -28,7 +30,7 @@ class AttendanceViewModel(
             val summary = getAttendanceSummary(httpClient)
             savedStateHandle["data"] = Data.Loaded(summary)
         } catch (e: Exception) {
-            Log.w(this@AttendanceViewModel::class.simpleName, e)
+            Logger.w("", e, this@AttendanceViewModel::class.simpleName!!)
             savedStateHandle["data"] = Data.Error
         }
     }
@@ -49,7 +51,7 @@ class AttendanceViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+        override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
             val savedStateHandle = extras.createSavedStateHandle()
 
             return AttendanceViewModel(

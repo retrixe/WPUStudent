@@ -57,6 +57,7 @@ import wpustudent.composeapp.generated.resources.baseline_sort_by_alpha_24
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.api.erp.entities.readableSubjectType
+import xyz.retrixe.wpustudent.kmp.toFixedString
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.screens.Screens
 import xyz.retrixe.wpustudent.state.LocalNavController
@@ -86,7 +87,7 @@ private fun LazyItemScope.AttendanceCard(course: CourseAttendanceSummary, thresh
             Spacer(Modifier.height(8.dp))
             Text(buildAnnotatedString {
                 withStyle(style = SpanStyle(color = color, fontWeight = FontWeight.Bold)) {
-                    append("%.2f".format(attendance) + "%")
+                    append(attendance.toFixedString(2) + "%")
                 }
                 val presentCount = course.present
                 val totalSessions = course.total
@@ -154,9 +155,10 @@ fun AttendanceScreen(
 
             is AttendanceViewModel.Data.Loaded -> {
                 val unfilteredSummary = (data as AttendanceViewModel.Data.Loaded).summary
-                val courseTypes = unfilteredSummary.map { it.subjectType }.toSortedSet {
+                val courseTypes = unfilteredSummary.map { it.subjectType }.sortedWith {
+                    // KMP could benefit from a native SortedSet, but what do I know...
                     a, b -> readableSubjectType(a).compareTo(readableSubjectType(b))
-                }
+                }.toSet()
                 val summary =
                     if (filters.isEmpty()) unfilteredSummary
                     else unfilteredSummary.filter { it.subjectType in filters }
@@ -173,7 +175,7 @@ fun AttendanceScreen(
                         val lowestThreshold =
                             attendanceThreshold ?: summary.minOf { THRESHOLD_PERCENTAGE + 5 }
                         Text(
-                            "%.2f".format(totalAttendance) + "%",
+                            totalAttendance.toFixedString(2) + "%",
                             color = getThresholdColor(totalAttendance, lowestThreshold),
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold

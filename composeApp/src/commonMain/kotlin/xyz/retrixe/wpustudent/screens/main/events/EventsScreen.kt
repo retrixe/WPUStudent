@@ -1,10 +1,5 @@
 package xyz.retrixe.wpustudent.screens.main.events
 
-import android.content.ContentUris
-import android.content.Context
-import android.content.Intent
-import android.icu.util.Calendar
-import android.provider.CalendarContract
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +39,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -57,34 +51,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.painterResource
 import wpustudent.composeapp.generated.resources.Res
 import wpustudent.composeapp.generated.resources.baseline_arrow_forward_24
 import xyz.retrixe.wpustudent.api.erp.entities.Event
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.kmp.getAndroidContext
+import xyz.retrixe.wpustudent.kmp.openCalendar
 import xyz.retrixe.wpustudent.models.main.events.EventsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-fun openCalendar(context: Context, date: LocalDate) {
-    val builder = CalendarContract.CONTENT_URI.buildUpon()
-    builder.appendPath("time")
-    val calendar = Calendar.getInstance()
-    calendar.set(date.year, date.month.number - 1, date.day)
-    ContentUris.appendId(builder, calendar.timeInMillis)
-    val intent = Intent(Intent.ACTION_VIEW).setData(builder.build())
-    context.startActivity(intent)
-}
-
 @Composable
 private fun EventCard(event: Event) {
-    val context = LocalContext.current
+    val context = getAndroidContext()
     val startDate = LocalDateTime.parse(event.startDate, LocalDateTime.Formats.ISO).date
     val endDate = LocalDateTime.parse(event.endDate, LocalDateTime.Formats.ISO).date
 

@@ -44,9 +44,14 @@ actual class BigDecimal {
     actual fun toInt(): Int {
         TODO("Not yet implemented")
     }
+
+    actual fun toPlainString(): String {
+        TODO("Not yet implemented")
+    }
 }
 
 actual enum class RoundingMode {
-    UP,
     DOWN,
+    HALF_EVEN,
+    UP,
 }

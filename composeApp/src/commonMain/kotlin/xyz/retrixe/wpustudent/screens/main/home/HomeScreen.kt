@@ -1,6 +1,5 @@
 package xyz.retrixe.wpustudent.screens.main.home
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,6 +30,7 @@ import wpustudent.composeapp.generated.resources.Res
 import wpustudent.composeapp.generated.resources.baseline_account_circle_24
 import wpustudent.composeapp.generated.resources.baseline_warning_24
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.kmp.decodeBytesToImageBitmap
 import kotlin.io.encoding.Base64
 
 @Composable
@@ -76,9 +75,9 @@ fun HomeScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo)
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
             } else {
-                val bitmap = BitmapFactory.decodeByteArray(profilePicture, 0, profilePicture.size)
+                val bitmap = decodeBytesToImageBitmap(profilePicture)
                 Image(
-                    bitmap = bitmap.asImageBitmap(),
+                    bitmap = bitmap,
                     contentDescription = "Profile picture",
                     modifier = Modifier.size(192.dp).clip(CircleShape)
                 )

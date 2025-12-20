@@ -52,6 +52,7 @@ import wpustudent.composeapp.generated.resources.baseline_arrow_back_24
 import wpustudent.composeapp.generated.resources.baseline_done_24
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
+import xyz.retrixe.wpustudent.kmp.toFixedString
 import xyz.retrixe.wpustudent.models.main.attendance.details.AttendanceDetailsViewModel
 import xyz.retrixe.wpustudent.state.LocalNavController
 import xyz.retrixe.wpustudent.ui.components.FixedFractionIndicator
@@ -132,7 +133,7 @@ fun AttendanceDetailsScreen(
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                     Text("Total", fontSize = 24.sp)
                     Text(
-                        "%.2f".format(attendance) + "%",
+                        attendance.toFixedString(2) + "%",
                         color = getThresholdColor(attendance, threshold),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
