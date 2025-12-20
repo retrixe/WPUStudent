@@ -17,6 +17,8 @@ kotlin {
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+            // Custom
+            freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=xyz.retrixe.wpustudent.kmp.Parcelize")
         }
     }
 

@@ -1,9 +1,9 @@
 package xyz.retrixe.wpustudent.api.erp.entities
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import xyz.retrixe.wpustudent.kmp.Parcelable
+import xyz.retrixe.wpustudent.kmp.Parcelize
 
 @Serializable
 data class StudentBasicInfo(
