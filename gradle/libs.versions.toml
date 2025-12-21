@@ -24,6 +24,7 @@ navigation = "2.9.1"
 ksoup = "0.2.5" #jsoup = "1.21.2"
 kotlinx-datetime = "0.7.1"
 kermit = "2.0.8"
+java-keyring = "1.0.4"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -54,6 +55,7 @@ androidx-navigation-compose = { group = "org.jetbrains.androidx.navigation", nam
 ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" } #jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+java-keyring = { group = "com.github.javakeyring", name = "java-keyring", version.ref = "java-keyring" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

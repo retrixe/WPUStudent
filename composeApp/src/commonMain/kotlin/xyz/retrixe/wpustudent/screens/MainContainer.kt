@@ -74,6 +74,7 @@ fun MainContainer(
             NavigationSuiteScaffold(
                 layoutType =
                     if (isNavigationBarVisible)
+                        // FIXME: Use navigationSuiteType
                         NavigationSuiteScaffoldDefaults
                             .calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
                     else NavigationSuiteType.None,

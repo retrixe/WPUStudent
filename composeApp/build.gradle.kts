@@ -85,6 +85,7 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             // Custom dependencies
             implementation(libs.ktor.client.java)
+            implementation(libs.java.keyring)
         }
     }
 
