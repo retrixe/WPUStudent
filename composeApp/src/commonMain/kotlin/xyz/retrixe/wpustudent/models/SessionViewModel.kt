@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -118,10 +117,10 @@ class SessionViewModel(
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-                val application = extras[APPLICATION_KEY]!!
+                //val application = extras[APPLICATION_KEY]!!
                 val savedStateHandle = extras.createSavedStateHandle()
                 return SessionViewModel(
-                    application.applicationContext.sessionDataStore,
+                    sessionDataStore, //application.applicationContext.sessionDataStore,
                     savedStateHandle
                 ) as T
             }

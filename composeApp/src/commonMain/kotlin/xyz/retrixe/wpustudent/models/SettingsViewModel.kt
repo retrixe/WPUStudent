@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
@@ -45,10 +44,10 @@ class SettingsViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val application = this[APPLICATION_KEY]!!
+                //val application = this[APPLICATION_KEY]!!
                 val savedStateHandle = createSavedStateHandle()
                 SettingsViewModel(
-                    application.applicationContext.settingsDataStore,
+                    settingsDataStore, //application.applicationContext.settingsDataStore,
                     savedStateHandle
                 )
             }
