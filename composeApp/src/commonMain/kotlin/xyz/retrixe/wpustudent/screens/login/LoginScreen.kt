@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import wpustudent.composeapp.generated.resources.Res
@@ -77,13 +78,10 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
             loading = false
             // When we moved from PwC, this error handling was updated
             val response = e.response.bodyAsText().ifBlank { null }
-            snackbarHostState.showSnackbar(response ?: e.localizedMessage, withDismissAction = true)
+            snackbarHostState.showSnackbar(response ?: e.message, withDismissAction = true)
         } catch (e: Exception) {
             loading = false
-            snackbarHostState.showSnackbar(
-                e.localizedMessage ?: "Unknown error",
-                withDismissAction = true
-            )
+            snackbarHostState.showSnackbar(e.message ?: "Unknown error", withDismissAction = true)
         }
     }
 

@@ -1,6 +1,5 @@
 package xyz.retrixe.wpustudent.models
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -11,7 +10,9 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -28,6 +29,7 @@ import xyz.retrixe.wpustudent.store.SESSION_ACCOUNT_DETAILS
 import xyz.retrixe.wpustudent.store.decryptFromString
 import xyz.retrixe.wpustudent.store.encryptToString
 import xyz.retrixe.wpustudent.store.sessionDataStore
+import kotlin.reflect.KClass
 
 class SessionViewModel(
     private val sessionDataStore: DataStore<Preferences>,
@@ -77,7 +79,7 @@ class SessionViewModel(
                     else login(accountDetails[0], accountDetails[1], false)
                 }
             } catch (e: Exception) {
-                Log.w(this@SessionViewModel::class.simpleName, e)
+                Logger.w("", e, this@SessionViewModel::class.simpleName!!)
             }
             savedStateHandle["loading"] = false
         }
@@ -102,7 +104,7 @@ class SessionViewModel(
         try {
             xyz.retrixe.wpustudent.api.erp.endpoints.logout(httpClient.first())
         } catch (e: Exception) {
-            Log.w(this@SessionViewModel::class.simpleName, e)
+            Logger.w("", e, this@SessionViewModel::class.simpleName!!)
         }
         sessionDataStore.edit {
             it.remove(SESSION_ACCESS_TOKEN)
@@ -115,7 +117,7 @@ class SessionViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
                 val application = extras[APPLICATION_KEY]!!
                 val savedStateHandle = extras.createSavedStateHandle()
                 return SessionViewModel(

@@ -1,7 +1,5 @@
 package xyz.retrixe.wpustudent.screens.main.settings
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -41,17 +38,13 @@ import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.models.SettingsViewModel
 import xyz.retrixe.wpustudent.ui.components.AboutDialog
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
-import androidx.core.net.toUri
 import org.jetbrains.compose.resources.painterResource
 import wpustudent.composeapp.generated.resources.Res
 import wpustudent.composeapp.generated.resources.baseline_logout_24
 import wpustudent.composeapp.generated.resources.outline_info_24
 import xyz.retrixe.wpustudent.BuildKonfig
-
-fun openUrl(context: Context, url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-    context.startActivity(intent)
-}
+import xyz.retrixe.wpustudent.kmp.getAndroidContext
+import xyz.retrixe.wpustudent.kmp.openUrl
 
 @Composable
 fun SettingsScreen(
@@ -59,7 +52,7 @@ fun SettingsScreen(
     sessionViewModel: SessionViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
-    val context = LocalContext.current
+    val context = getAndroidContext()
     val coroutineScope = rememberCoroutineScope()
     var attendanceThresholdDialog by remember { mutableStateOf(false) }
     var aboutDialog by remember { mutableStateOf(false) }
