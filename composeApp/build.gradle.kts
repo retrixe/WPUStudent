@@ -83,6 +83,7 @@ kotlin {
             // Custom dependencies
             implementation(libs.ktor.client.java)
             implementation(libs.java.keyring)
+            implementation(libs.appdirs)
         }
     }
 

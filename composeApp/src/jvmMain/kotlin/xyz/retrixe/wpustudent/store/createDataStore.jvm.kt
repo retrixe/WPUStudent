@@ -2,7 +2,12 @@ package xyz.retrixe.wpustudent.store
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import net.harawata.appdirs.AppDirsFactory
 import java.io.File
+
+val configDir: String = AppDirsFactory
+    .getInstance()
+    .getUserConfigDir("WPUStudent", null, null)
 
 /**
  *   Gets the singleton DataStore instance, creating it if necessary.
@@ -10,8 +15,7 @@ import java.io.File
  */
 fun createDataStore(dataStoreFileName: String): DataStore<Preferences> = createDataStore(
     producePath = {
-        TODO("don't store to tmpdir")
-        val file = File(System.getProperty("java.io.tmpdir"), dataStoreFileName)
+        val file = File(configDir, dataStoreFileName)
         file.absolutePath
     }
 )

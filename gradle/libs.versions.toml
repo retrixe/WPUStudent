@@ -30,6 +30,7 @@ ksoup = "0.2.5" #jsoup = "1.21.2"
 kotlinx-datetime = "0.7.1"
 kermit = "2.0.8"
 java-keyring = "1.0.4"
+appdirs = "1.5.0"
 
 [libraries]
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
@@ -68,6 +69,7 @@ ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" } #jsoup =
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 java-keyring = { group = "com.github.javakeyring", name = "java-keyring", version.ref = "java-keyring" }
+appdirs = { group = "net.harawata", name = "appdirs", version.ref = "appdirs" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
