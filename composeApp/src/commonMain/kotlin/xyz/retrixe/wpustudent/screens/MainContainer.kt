@@ -74,9 +74,8 @@ fun MainContainer(
             NavigationSuiteScaffold(
                 layoutType =
                     if (isNavigationBarVisible)
-                        // FIXME: Use navigationSuiteType
                         NavigationSuiteScaffoldDefaults
-                            .calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
+                            .navigationSuiteType(currentWindowAdaptiveInfo())
                     else NavigationSuiteType.None,
                 navigationSuiteItems = {
                     val mainGraph = navController.graph[Screens.Main] as NavGraph

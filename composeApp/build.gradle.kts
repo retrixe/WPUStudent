@@ -59,6 +59,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.slf4j.api)
             implementation(libs.androidx.datastore.preferences)
+            implementation(libs.compose.material3.adaptive)
             implementation(libs.compose.material3.adaptiveNavigationSuite)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.ksoup)
