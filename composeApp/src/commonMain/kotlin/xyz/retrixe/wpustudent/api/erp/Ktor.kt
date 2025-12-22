@@ -1,5 +1,6 @@
 package xyz.retrixe.wpustudent.api.erp
 
+import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineFactory
@@ -10,6 +11,7 @@ import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger as KtorLogger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.cookie
 import io.ktor.http.HttpStatusCode
@@ -32,6 +34,11 @@ fun createHttpClient(token: String?): HttpClient = HttpClient(
     BrowserUserAgent()
     install(Logging) {
         level = LogLevel.INFO
+        logger = object : KtorLogger {
+            override fun log(message: String) {
+                Logger.i(message, null, "")
+            }
+        }
     }
     install(ContentNegotiation) {
         json(json)

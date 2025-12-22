@@ -24,7 +24,6 @@ kotlinx-coroutines = "1.10.2"
 buildKonfig = "0.17.1"
 ktor = "3.3.3"
 kotlinx-serialization = "1.9.0"
-slf4j = "2.0.17"
 datastore = "1.2.0"
 navigation = "2.9.1"
 ksoup = "0.2.5" #jsoup = "1.21.2"
@@ -63,8 +62,6 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-slf4j-android = { module = "uk.uuid.slf4j:slf4j-android", version = "2.0.17-0" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 androidx-navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" } #jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }

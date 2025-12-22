@@ -38,7 +38,6 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             // Custom dependencies
             implementation(libs.ktor.client.android)
-            implementation(libs.slf4j.android)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -57,7 +56,6 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.slf4j.api)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.compose.material3.adaptive)
             implementation(libs.compose.material3.adaptiveNavigationSuite)
