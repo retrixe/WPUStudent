@@ -22,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +42,7 @@ import wpustudent.composeapp.generated.resources.Res
 import wpustudent.composeapp.generated.resources.baseline_logout_24
 import wpustudent.composeapp.generated.resources.outline_info_24
 import xyz.retrixe.wpustudent.BuildKonfig
+import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
 import xyz.retrixe.wpustudent.kmp.getAndroidContext
 import xyz.retrixe.wpustudent.kmp.openUrl
 
@@ -58,7 +58,7 @@ fun SettingsScreen(
     var aboutDialog by remember { mutableStateOf(false) }
     var loggingOut by remember { mutableStateOf(false) }
 
-    val attendanceThreshold by settingsViewModel.attendanceThreshold.collectAsState()
+    val attendanceThreshold by settingsViewModel.attendanceThreshold.collectAsStateWithLifecycleMultiplatform()
 
     fun logout() = coroutineScope.launch {
         loggingOut = true

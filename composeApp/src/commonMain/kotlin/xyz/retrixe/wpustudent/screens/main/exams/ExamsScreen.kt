@@ -22,7 +22,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +44,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import xyz.retrixe.wpustudent.api.erp.entities.Exam
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
 import xyz.retrixe.wpustudent.models.main.exams.ExamsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import kotlin.time.Clock
@@ -96,7 +96,7 @@ fun ExamsScreen(
 ) {
     val examsViewModelFactory = ExamsViewModel.Factory(httpClient, studentBasicInfo)
     val examsViewModel: ExamsViewModel = viewModel(factory = examsViewModelFactory)
-    val data by examsViewModel.data.collectAsState()
+    val data by examsViewModel.data.collectAsStateWithLifecycleMultiplatform()
 
     val coroutineScope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()

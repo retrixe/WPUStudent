@@ -12,7 +12,6 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,6 +24,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.get
 import org.jetbrains.compose.resources.painterResource
+import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
 import xyz.retrixe.wpustudent.models.SessionViewModel
 import xyz.retrixe.wpustudent.models.SettingsViewModel
 import xyz.retrixe.wpustudent.screens.loading.LoadingScreen
@@ -49,12 +49,12 @@ fun MainContainer(
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val loading by sessionViewModel.loading.collectAsState()
-    val accessToken by sessionViewModel.accessToken.collectAsState()
-    val httpClient by sessionViewModel.httpClient.collectAsState()
-    val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsState()
+    val loading by sessionViewModel.loading.collectAsStateWithLifecycleMultiplatform()
+    val accessToken by sessionViewModel.accessToken.collectAsStateWithLifecycleMultiplatform()
+    val httpClient by sessionViewModel.httpClient.collectAsStateWithLifecycleMultiplatform()
+    val studentBasicInfo by sessionViewModel.studentBasicInfo.collectAsStateWithLifecycleMultiplatform()
 
-    val attendanceThreshold by settingsViewModel.attendanceThreshold.collectAsState()
+    val attendanceThreshold by settingsViewModel.attendanceThreshold.collectAsStateWithLifecycleMultiplatform()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination

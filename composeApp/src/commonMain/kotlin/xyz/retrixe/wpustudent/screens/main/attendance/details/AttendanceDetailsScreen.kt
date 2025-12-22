@@ -28,7 +28,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
@@ -52,6 +51,7 @@ import wpustudent.composeapp.generated.resources.baseline_arrow_back_24
 import wpustudent.composeapp.generated.resources.baseline_done_24
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
+import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
 import xyz.retrixe.wpustudent.kmp.toFixedString
 import xyz.retrixe.wpustudent.models.main.attendance.details.AttendanceDetailsViewModel
 import xyz.retrixe.wpustudent.state.LocalNavController
@@ -72,7 +72,7 @@ fun AttendanceDetailsScreen(
 ) {
     val attendanceDetailsViewModelFactory = AttendanceDetailsViewModel.Factory(httpClient, studentBasicInfo)
     val attendanceDetailsViewModel: AttendanceDetailsViewModel = viewModel(factory = attendanceDetailsViewModelFactory)
-    val data by attendanceDetailsViewModel.data.collectAsState()
+    val data by attendanceDetailsViewModel.data.collectAsStateWithLifecycleMultiplatform()
 
     val navController = LocalNavController.current
 

@@ -29,7 +29,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +58,7 @@ import wpustudent.composeapp.generated.resources.Res
 import wpustudent.composeapp.generated.resources.baseline_arrow_forward_24
 import xyz.retrixe.wpustudent.api.erp.entities.Event
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
 import xyz.retrixe.wpustudent.kmp.getAndroidContext
 import xyz.retrixe.wpustudent.kmp.openCalendar
 import xyz.retrixe.wpustudent.models.main.events.EventsViewModel
@@ -113,7 +113,7 @@ private fun EventCard(event: Event) {
 fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo) {
     val eventsViewModelFactory = EventsViewModel.Factory(studentBasicInfo)
     val eventsViewModel: EventsViewModel = viewModel(factory = eventsViewModelFactory)
-    val data by eventsViewModel.data.collectAsState()
+    val data by eventsViewModel.data.collectAsStateWithLifecycleMultiplatform()
 
     val coroutineScope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()

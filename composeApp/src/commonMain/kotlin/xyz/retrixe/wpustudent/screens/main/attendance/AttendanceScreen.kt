@@ -29,7 +29,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
@@ -57,6 +56,7 @@ import wpustudent.composeapp.generated.resources.baseline_sort_by_alpha_24
 import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.THRESHOLD_PERCENTAGE
 import xyz.retrixe.wpustudent.api.erp.entities.readableSubjectType
+import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
 import xyz.retrixe.wpustudent.kmp.toFixedString
 import xyz.retrixe.wpustudent.models.main.attendance.AttendanceViewModel
 import xyz.retrixe.wpustudent.screens.Screens
@@ -126,7 +126,7 @@ fun AttendanceScreen(
 ) {
     val attendanceViewModelFactory = AttendanceViewModel.Factory(httpClient)
     val attendanceViewModel: AttendanceViewModel = viewModel(factory = attendanceViewModelFactory)
-    val data by attendanceViewModel.data.collectAsState()
+    val data by attendanceViewModel.data.collectAsStateWithLifecycleMultiplatform()
 
     val coroutineScope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
