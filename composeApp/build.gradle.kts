@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.composeHotReload)
     alias(libs.plugins.buildKonfig)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
@@ -36,18 +35,18 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             // Custom dependencies
             implementation(libs.ktor.client.android)
+            implementation(libs.slf4j.android)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha05") // TODO
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.ui.toolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             // Custom dependencies
@@ -59,9 +58,8 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.slf4j.api)
-            implementation(libs.slf4j.android)
             implementation(libs.androidx.datastore.preferences)
-            implementation(compose.material3AdaptiveNavigationSuite)
+            implementation(libs.compose.material3.adaptiveNavigationSuite)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.ksoup)
             implementation(libs.kermit)
@@ -126,7 +124,7 @@ android {
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
+    debugImplementation(libs.compose.ui.tooling)
 }
 
 compose.desktop {

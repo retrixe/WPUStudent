@@ -1,7 +1,7 @@
 package xyz.retrixe.wpustudent
 
 import androidx.compose.runtime.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 import xyz.retrixe.wpustudent.screens.MainContainer
 import xyz.retrixe.wpustudent.ui.theme.WPUStudentTheme

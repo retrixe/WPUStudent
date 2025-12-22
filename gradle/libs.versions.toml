@@ -1,5 +1,5 @@
 [versions]
-# TODO: https://developer.android.com/kotlin/multiplatform/plugin
+# FIXME: AGP 9.0 + Kotlin 2.3.0 + https://developer.android.com/kotlin/multiplatform/plugin
 agp = "8.12.3"
 android-compileSdk = "36"
 android-minSdk = "26"
@@ -8,13 +8,18 @@ androidx-activity = "1.12.1"
 androidx-appcompat = "1.7.1"
 androidx-core = "1.17.0"
 androidx-espresso = "3.7.0"
-androidx-lifecycle = "2.9.6"
+androidx-lifecycle = "2.10.0-alpha06"
 androidx-testExt = "1.3.0"
-composeHotReload = "1.0.0"
-composeMultiplatform = "1.9.3"
+# When there's a Compose BOM, we should move to that for compose-* dependencies
+compose-runtime = "1.10.0-rc02"
+compose-foundation = "1.10.0-rc02"
+compose-material3 = "1.10.0-alpha05"
+compose-ui = "1.10.0-rc02"
+composeMultiplatform = "1.10.0-rc02"
 junit = "4.13.2"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
+# Custom dependencies
 buildKonfig = "0.17.1"
 ktor = "3.3.3"
 kotlinx-serialization = "1.9.0"
@@ -27,6 +32,14 @@ kermit = "2.0.8"
 java-keyring = "1.0.4"
 
 [libraries]
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-runtime" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-foundation" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
+compose-material3-adaptiveNavigationSuite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-material3" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-ui" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-ui" }
+compose-ui-toolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-ui" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -60,7 +73,6 @@ java-keyring = { group = "com.github.javakeyring", name = "java-keyring", versio
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
