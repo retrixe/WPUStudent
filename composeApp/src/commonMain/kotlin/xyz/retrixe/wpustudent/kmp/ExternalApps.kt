@@ -1,7 +1,6 @@
 package xyz.retrixe.wpustudent.kmp
 
+import androidx.compose.ui.platform.UriHandler
 import kotlinx.datetime.LocalDate
 
-expect fun openCalendar(androidContext: Any?, date: LocalDate)
-
-expect fun openUrl(androidContext: Any?, url: String)
+expect fun openCalendar(androidContext: Any?, uriHandler: UriHandler, date: LocalDate)

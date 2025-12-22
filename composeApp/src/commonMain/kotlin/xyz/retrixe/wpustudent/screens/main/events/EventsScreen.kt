@@ -38,6 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -62,17 +63,30 @@ import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
 import xyz.retrixe.wpustudent.kmp.getAndroidContext
 import xyz.retrixe.wpustudent.kmp.openCalendar
 import xyz.retrixe.wpustudent.models.main.events.EventsViewModel
+import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
 private fun EventCard(event: Event) {
+    val coroutineScope = rememberCoroutineScope()
     val context = getAndroidContext()
+    val uriHandler = LocalUriHandler.current
+    val snackbarHostState = LocalSnackbarHostState.current
+
     val startDate = LocalDateTime.parse(event.startDate, LocalDateTime.Formats.ISO).date
     val endDate = LocalDateTime.parse(event.endDate, LocalDateTime.Formats.ISO).date
 
-    OutlinedCard({ openCalendar(context, startDate) }, Modifier.width(512.dp)) {
+    OutlinedCard({
+        try {
+            openCalendar(context, uriHandler, startDate)
+        } catch (e: UnsupportedOperationException) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(e.message ?: "Unknown error occurred.",
+                    withDismissAction = true)
+            }
+        } }, Modifier.width(512.dp)) {
         Column(Modifier.padding(16.dp)) {
             Text(event.name, fontSize = 24.sp)
             Spacer(Modifier.height(8.dp))

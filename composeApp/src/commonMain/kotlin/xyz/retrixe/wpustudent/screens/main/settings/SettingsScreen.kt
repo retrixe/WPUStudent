@@ -29,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -43,8 +44,6 @@ import wpustudent.composeapp.generated.resources.baseline_logout_24
 import wpustudent.composeapp.generated.resources.outline_info_24
 import xyz.retrixe.wpustudent.BuildKonfig
 import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
-import xyz.retrixe.wpustudent.kmp.getAndroidContext
-import xyz.retrixe.wpustudent.kmp.openUrl
 
 @Composable
 fun SettingsScreen(
@@ -52,7 +51,7 @@ fun SettingsScreen(
     sessionViewModel: SessionViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
-    val context = getAndroidContext()
+    val uriHandler = LocalUriHandler.current
     val coroutineScope = rememberCoroutineScope()
     var attendanceThresholdDialog by remember { mutableStateOf(false) }
     var aboutDialog by remember { mutableStateOf(false) }
@@ -115,7 +114,7 @@ fun SettingsScreen(
             topEnd = CornerSize(0.dp),
         )
         Card(
-            { openUrl(context, "https://github.com/retrixe/WPUStudent") },
+            { uriHandler.openUri("https://github.com/retrixe/WPUStudent") },
             Modifier.width(512.dp).fillMaxWidth(),
             shape = topRounded
         ) {
@@ -127,7 +126,7 @@ fun SettingsScreen(
         }
         HorizontalDivider(Modifier.width(512.dp).fillMaxWidth())
         Card(
-            { openUrl(context, "https://github.com/retrixe/WPUStudent/blob/${BuildKonfig.VERSION_NAME}/LICENSE") },
+            { uriHandler.openUri("https://github.com/retrixe/WPUStudent/blob/${BuildKonfig.VERSION_NAME}/LICENSE") },
             Modifier.width(512.dp).fillMaxWidth(),
             shape = bottomRounded
         ) {
