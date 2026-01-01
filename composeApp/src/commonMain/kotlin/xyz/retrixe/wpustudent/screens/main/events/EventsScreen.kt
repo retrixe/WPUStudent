@@ -196,13 +196,16 @@ fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInf
                         )
                     },
                 ) {
-                    val sortedEvents = events.sortedBy { it.startDate }
-                    val pastEvents = sortedEvents.takeWhile {
-                        LocalDateTime.parse(it.endDate, LocalDateTime.Formats.ISO).date <
-                                Clock.System.todayIn(TimeZone.currentSystemDefault())
-                    }
+                    val sortedEvents = events.sortedBy { it.endDate }
+                    val pastEvents = sortedEvents
+                        .takeWhile {
+                            LocalDateTime.parse(it.endDate, LocalDateTime.Formats.ISO).date <
+                                    Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        }
+                        .sortedBy { it.startDate }
                     val upcomingEvents = sortedEvents
                         .takeLast(sortedEvents.size - pastEvents.size)
+                        .sortedBy { it.startDate }
                     Crossfade(targetState = selectedTab, label = "Events") {
                         /* transitionSpec = {
                             if (targetState > initialState) {
