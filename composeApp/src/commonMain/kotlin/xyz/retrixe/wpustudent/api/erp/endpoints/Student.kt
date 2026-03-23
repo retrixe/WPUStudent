@@ -22,19 +22,19 @@ import xyz.retrixe.wpustudent.api.erp.entities.Event
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 
 suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
-    /*  curl 'https://erp.mitwpu.edu.in/ERP_Main.aspx' \
+    /*  curl 'https://cas.mitwpu.edu.in/main_.aspx' \
           -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*SLASH*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
           -H 'accept-language: en-US,en;q=0.9' \
           -b 'ASP.NET_SessionId=CENSORED; AuthToken=CENSORED' \
           -H 'priority: u=0, i' \
-          -H 'referer: https://erp.mitwpu.edu.in/login.aspx' \
+          -H 'referer: https://cas.mitwpu.edu.in/' \
           -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
     */
-    val response = client.get("ERP_Main.aspx")
+    val response = client.get("main_.aspx")
 
     if (response.request.url.encodedPath == "/Login.aspx")
         throw ResponseException(response, "Logged out")
-    else if (response.request.url.encodedPath != "/ERP_Main.aspx")
+    else if (response.request.url.encodedPath != "/main_.aspx")
         throw ResponseException(response, "Unknown redirect")
 
     val document = Ksoup.parse(response.bodyAsText())
@@ -47,12 +47,12 @@ suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
 }
 
 suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSummary> {
-    /*  curl 'https://erp.mitwpu.edu.in/STUDENT/SelfAttendence.aspx?MENU_CODE=MWEBSTUATTEN_SLF_ATTEN' \
+    /*  curl 'https://cas.mitwpu.edu.in/STUDENT/SelfAttendence.aspx?MENU_CODE=MWEBSTUATTEN_SLF_ATTEN' \
           -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*SLASH*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
           -H 'accept-language: en-US,en;q=0.9' \
           -b 'ASP.NET_SessionId=CENSORED; AuthToken=CENSORED' \
           -H 'priority: u=0, i' \
-          -H 'referer: https://erp.mitwpu.edu.in/ERP_Main.aspx' \
+          -H 'referer: https://cas.mitwpu.edu.in/main_.aspx' \
           -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
     */
     val response = client.get("STUDENT/SelfAttendence.aspx") {
@@ -73,11 +73,12 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
             val idxStart = if (cells.size == 4) -2 else 0
             val subjectName =
                 if (cells.size == 4) attendanceSummary.lastOrNull()?.subjectName ?: "Unknown"
-                else cells[1].text()
+                else cells[1].text().trim()
             attendanceSummary.add(CourseAttendanceSummary(
+                // FIXME: These IDs are no longer embedded in this page... stupid...
                 semId + "#" + cells[idxStart + 2].select("a").attr("id"),
                 subjectName,
-                cells[idxStart + 2].select("a").text(),
+                cells[idxStart + 2].text().trim(),
                 cells[idxStart + 3].text().trim().toInt(),
                 cells[idxStart + 4].text().trim().toInt(),
                 cells[idxStart + 3].text().trim().toDouble()
@@ -98,14 +99,14 @@ data class AttendanceDetailsRequest(
 suspend fun getAttendanceDetails(
     client: HttpClient, prn: String, courseId: String
 ): List<CourseAttendanceDetail> {
-    /* curl 'https://erp.mitwpu.edu.in/STUDENT/SelfAttendence.aspx/GetAttDtls' \
+    /* curl 'https://cas.mitwpu.edu.in/STUDENT/SelfAttendence.aspx/GetAttDtls' \
          -H 'accept: application/json, text/javascript, *SLASH*; q=0.01' \
          -H 'accept-language: en-US,en;q=0.9' \
          -H 'content-type: application/json; charset=UTF-8' \
          -b 'ASP.NET_SessionId=CENSORED; AuthToken=CENSORED' \
-         -H 'origin: https://erp.mitwpu.edu.in' \
+         -H 'origin: https://cas.mitwpu.edu.in' \
          -H 'priority: u=0, i' \
-         -H 'referer: https://erp.mitwpu.edu.in/STUDENT/SelfAttendence.aspx?MENU_CODE=MWEBSTUATTEN_SLF_ATTEN' \
+         -H 'referer: https://cas.mitwpu.edu.in/STUDENT/SelfAttendence.aspx?MENU_CODE=MWEBSTUATTEN_SLF_ATTEN' \
          -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \
          -H 'x-requested-with: XMLHttpRequest' \
          --data-raw $'{strStudentId: \'1032233145\',strSemId:\'20\',strSubDetId:\'87844\',strAppNo:\'1\'}'

@@ -26,31 +26,32 @@ suspend fun login(client: HttpClient, username: String, password: String): Strin
           -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \
           -H 'x-microsoftajax: Delta=true' \
           -H 'x-requested-with: XMLHttpRequest' \
-          --data-raw $'ScriptManager1=UpdatePanel1%7CbtnLogin&__LASTFOCUS=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=CENSORED&__VIEWSTATEGENERATOR=1869F9F9&hdnMsg=&hdtype=&hdloginid=&hdnFlag=R&hdnWCCSOTP=&txtUserId=CENSORED&txtPassword=CENSORED&g-recaptcha-response=CENSORED&__ASYNCPOST=true&btnLogin=Login'
+          --data-raw $'ScriptManager1=UpdatePanel1%7CbtnLogin&__LASTFOCUS=&__EVENTTARGET=btnLogin&__EVENTARGUMENT=&__VIEWSTATE=CENSORED&__VIEWSTATEGENERATOR=1869F9F9&hdnMsg=&hdtype=&hdloginid=&hdnFlag=R&hdnWCCSOTP=&txtUserId=CENSORED&txtPassword=CENSORED&g-recaptcha-response=CENSORED&__ASYNCPOST=true'
     */
     val response = client.post("") {
         contentType(ContentType.Application.FormUrlEncoded)
         header("x-microsoftajax", "Delta=true")
         header("x-requested-with", "XMLHttpRequest")
-        setBody(listOf(
-            "ScriptManager1" to "UpdatePanel1|btnLogin",
-            "__LASTFOCUS" to "",
-            "__EVENTTARGET" to "",
-            "__EVENTARGUMENT" to "",
-            // I don't think there's anything sensitive in this, I don't even understand it
-            "__VIEWSTATE" to "/wEPDwULLTE5MzgwOTUxOTUPFgIeDkxPR0lOX0JBU0VEX09OZRYCAgMPZBYCAgEPZBYCZg9kFgoCBQ8PFgQeCEltYWdlVXJsBSZ+L05ld19Dc3MvZmF2aWNvbi9taXQtd3B1LWRyay1sb2dvLnBuZx4NQWx0ZXJuYXRlVGV4dGVkZAIGDxYCHglpbm5lcmh0bWwFBUxvZ2luZAIHD2QWAgIBDxBkDxYBZhYBEAUDQ0FTBQNDQVNnFgFmZAIKD2QWAgIBDxBkZBYBZmQCDw8WAh8DBRw8dGFibGUgY2xhc3M9J3RhYmxlJzwvdGFibGU+ZGQX+mtROtdU8DMiVPnteawM/rwmjMFn5+6XesnlGhpgFg==",
-            "__VIEWSTATEGENERATOR" to "1869F9F9",
-            "hdnMsg" to "",
-            "hdtype" to "",
-            "hdloginid" to "",
-            "hdnFlag" to "R",
-            "hdnWCCSOTP" to "",
-            "txtUserId" to username,
-            "txtPassword" to password,
-            // We can omit g-recaptcha-response thankfully...
-            "__ASYNCPOST" to "true",
-            "btnLogin" to "Login",
-        ).formUrlEncode())
+        setBody(
+            listOf(
+                "ScriptManager1" to "UpdatePanel1|btnLogin",
+                "__LASTFOCUS" to "",
+                "__EVENTTARGET" to "btnLogin",
+                "__EVENTARGUMENT" to "",
+                // I don't think there's anything sensitive in this, I don't even understand it
+                "__VIEWSTATE" to "/wEPDwUKMTc4NTU0OTc0Nw8WAh4OTE9HSU5fQkFTRURfT05lFgICAw9kFgICAQ9kFgJmD2QWCgILDw8WBB4ISW1hZ2VVcmwFJn4vTmV3X0Nzcy9mYXZpY29uL21pdC13cHUtZHJrLWxvZ28ucG5nHg1BbHRlcm5hdGVUZXh0ZWRkAg0PFgIeCWlubmVyaHRtbAUFTG9naW5kAg8PZBYEZg9kFgICAQ8QZA8WAWYWARAFA0NBUwUDQ0FTZxYBZmQCAw9kFgICAQ8QZGQWAWZkAhEPZBYCAgMPDxYCHgRUZXh0ZWRkAhUPFgIfAwUcPHRhYmxlIGNsYXNzPSd0YWJsZSc8L3RhYmxlPmRkVh+PBqw1vecxmvT5jha0lLL93ypUeAnm5e5NRcLpnR0=\n",
+                "__VIEWSTATEGENERATOR" to "1869F9F9",
+                "hdnMsg" to "",
+                "hdtype" to "",
+                "hdloginid" to "",
+                "hdnFlag" to "R",
+                "hdnWCCSOTP" to "",
+                "txtUserId" to username,
+                "txtPassword" to password,
+                // We can omit g-recaptcha-response thankfully...
+                "__ASYNCPOST" to "true",
+            ).formUrlEncode()
+        )
     }
     // If error: <input type="hidden" name="hdnMsg" id="hdnMsg" value="USER Id/ Password Mismatch ERR-ADM05" />
     // This ERP doesn't even use HTTP status codes HAHAHAHAHAHHAHAhhahahahahahHAHAHahahhahHAA......
