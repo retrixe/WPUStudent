@@ -1,3 +1,4 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -132,9 +133,12 @@ compose.desktop {
         mainClass = "xyz.retrixe.wpustudent.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg,
+                TargetFormat.Msi, TargetFormat.Exe,
+                TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage)
             packageName = "xyz.retrixe.wpustudent"
             packageVersion = "1.3.0"
+            modules("java.instrument", "java.management", "java.net.http", "jdk.security.auth", "jdk.unsupported")
         }
     }
 }
@@ -144,5 +148,6 @@ buildkonfig {
 
     defaultConfigs {
         buildConfigField(STRING, "VERSION_NAME", android.defaultConfig.versionName)
+        buildConfigField(INT, "VERSION_CODE", android.defaultConfig.versionCode?.toString())
     }
 }
