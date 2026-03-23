@@ -93,7 +93,11 @@ class SessionViewModel(
         val encryptedAccountDetails = encryptToString(SESSION_ACCOUNT_DETAILS.name, accountDetails)
         sessionDataStore.edit {
             it[SESSION_ACCESS_TOKEN] = encryptedAccessToken
-            if (saveDetails) it[SESSION_ACCOUNT_DETAILS] = encryptedAccountDetails
+            if (saveDetails) {
+                it[SESSION_ACCOUNT_DETAILS] = encryptedAccountDetails
+            } else {
+                it.remove(SESSION_ACCOUNT_DETAILS)
+            }
         }
         savedStateHandle["access_token"] = authToken
         savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
