@@ -145,7 +145,8 @@ fun ExamsScreen(
                     LazyColumn(
                         Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp),
                     ) {
                         val sortedExams = data.ticket.flatten().sortedBy { it.examDate }
                         val completedExams = sortedExams.takeWhile {

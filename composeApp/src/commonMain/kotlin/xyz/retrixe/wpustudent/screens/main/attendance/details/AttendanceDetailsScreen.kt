@@ -213,7 +213,8 @@ fun AttendanceDetailsScreen(
                     LazyColumn(
                         Modifier.fillMaxSize().padding(16.dp, 0.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp),
                     ) {
                         val filteredDetails = (if (filters.isEmpty()) details
                                 else details.filter { filters.contains(it.studentStatus) })
