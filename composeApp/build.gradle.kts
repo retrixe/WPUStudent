@@ -103,8 +103,8 @@ android {
         applicationId = "xyz.retrixe.wpustudent"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 10
-        versionName = "1.3.0"
+        versionCode = project.property("app.version.code").toString().toInt()
+        versionName = project.property("app.version.name").toString()
     }
     packaging {
         resources {
@@ -133,11 +133,12 @@ compose.desktop {
         mainClass = "xyz.retrixe.wpustudent.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg,
-                TargetFormat.Msi, TargetFormat.Exe,
-                TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage)
+            targetFormats(TargetFormat.Dmg, // macOS
+                TargetFormat.Msi, TargetFormat.Exe, // Windows
+                TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage // Linux
+            )
             packageName = "xyz.retrixe.wpustudent"
-            packageVersion = "1.3.0"
+            packageVersion = project.property("app.version.name").toString()
             modules("java.instrument", "java.management", "java.net.http", "jdk.security.auth", "jdk.unsupported")
         }
     }
