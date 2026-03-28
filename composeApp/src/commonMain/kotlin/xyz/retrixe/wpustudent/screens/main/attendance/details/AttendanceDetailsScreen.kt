@@ -115,6 +115,17 @@ fun AttendanceDetailsScreen(
 
             is AttendanceDetailsViewModel.Data.Loaded -> {
                 val details = (data as AttendanceDetailsViewModel.Data.Loaded).details
+                if (details.isEmpty()) {
+                    Spacer(Modifier.weight(1f))
+                    Text("No lectures/sessions were found for this course!",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.error)
+                    Spacer(Modifier.weight(1f))
+                    return
+                }
                 val (_, _, _, _, subjectDescription, typeDescription) = details.first()
 
                 Spacer(Modifier.height(16.dp))
