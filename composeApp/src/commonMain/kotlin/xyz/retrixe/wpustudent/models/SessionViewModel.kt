@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import xyz.retrixe.wpustudent.api.erp.createHttpClient
 import xyz.retrixe.wpustudent.api.erp.endpoints.login
-import xyz.retrixe.wpustudent.api.erp.endpoints.retrieveStudentBasicInfo
+import xyz.retrixe.wpustudent.api.erp.endpoints.getStudentBasicInfo
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
 import xyz.retrixe.wpustudent.store.SESSION_ACCESS_TOKEN
 import xyz.retrixe.wpustudent.store.SESSION_ACCOUNT_DETAILS
@@ -70,12 +70,12 @@ class SessionViewModel(
 
             try {
                 try {
-                    val studentBasicInfo = retrieveStudentBasicInfo(httpClient.first())
+                    val studentBasicInfo = getStudentBasicInfo(httpClient.first())
                     savedStateHandle["access_token"] = accessToken
                     savedStateHandle["student_basic_info"] = Json.encodeToString(studentBasicInfo)
                 } catch (e: Exception) {
                     if (accountDetails == null) throw e
-                    else login(accountDetails[0], accountDetails[1], false)
+                    else login(accountDetails[0], accountDetails[1], true)
                 }
             } catch (e: Exception) {
                 Logger.w("", e, this@SessionViewModel::class.simpleName!!)
@@ -87,7 +87,7 @@ class SessionViewModel(
     suspend fun login(username: String, password: String, saveDetails: Boolean) {
         val httpClient = _vanillaHttpClient
         val authToken = login(httpClient, username, password)
-        val studentBasicInfo = retrieveStudentBasicInfo(createHttpClient(authToken))
+        val studentBasicInfo = getStudentBasicInfo(createHttpClient(authToken))
         val encryptedAccessToken = encryptToString(SESSION_ACCESS_TOKEN.name, authToken)
         val accountDetails = "$username:$password"
         val encryptedAccountDetails = encryptToString(SESSION_ACCOUNT_DETAILS.name, accountDetails)

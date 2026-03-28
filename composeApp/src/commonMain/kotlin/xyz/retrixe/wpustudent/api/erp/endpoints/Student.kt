@@ -20,8 +20,9 @@ import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
 import xyz.retrixe.wpustudent.api.erp.entities.Event
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
+import kotlin.time.Duration.Companion.milliseconds
 
-suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
+suspend fun getStudentBasicInfo(client: HttpClient): StudentBasicInfo {
     /*  curl 'https://cas.mitwpu.edu.in/main_.aspx' \
           -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*SLASH*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
           -H 'accept-language: en-US,en;q=0.9' \
@@ -32,10 +33,10 @@ suspend fun retrieveStudentBasicInfo(client: HttpClient): StudentBasicInfo {
     */
     val response = client.get("main_.aspx")
 
-    if (response.request.url.encodedPath == "/Login.aspx")
+    if (response.request.url.encodedPath == "/Login.aspx" || response.request.url.encodedPath == "/")
         throw ResponseException(response, "Logged out")
     else if (response.request.url.encodedPath != "/main_.aspx")
-        throw ResponseException(response, "Unknown redirect")
+        throw ResponseException(response, "Unknown redirect ${response.request.url.encodedPath}")
 
     val document = Ksoup.parse(response.bodyAsText())
     return StudentBasicInfo(
@@ -124,7 +125,7 @@ suspend fun getAttendanceDetails(
 }
 
 suspend fun getEvents(term: String): List<Event> {
-    delay(500L)
+    delay(500L.milliseconds)
     val academicCalendar = if (term.matches(Regex("^SEMESTER-II?\\("))) {
         arrayOf(
             Event("Commencement of Term", "Odd Semester", "2025-07-15T00:00:00"),
