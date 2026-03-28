@@ -20,6 +20,7 @@ import xyz.retrixe.wpustudent.api.erp.entities.CourseAttendanceSummary
 import xyz.retrixe.wpustudent.api.erp.entities.ExamHallTicket
 import xyz.retrixe.wpustudent.api.erp.entities.Event
 import xyz.retrixe.wpustudent.api.erp.entities.StudentBasicInfo
+import xyz.retrixe.wpustudent.api.erp.entities.TimetableDay
 import kotlin.time.Duration.Companion.milliseconds
 
 suspend fun getStudentBasicInfo(client: HttpClient): StudentBasicInfo {
@@ -47,6 +48,42 @@ suspend fun getStudentBasicInfo(client: HttpClient): StudentBasicInfo {
         document.select("img#imgprofile").attr("src"))
 }
 
+@Serializable
+data class SessionDetails(
+    // Incomplete
+    @SerialName("STUDENT_ID") val studentId: String,
+    @SerialName("SESSION_ID") val sessionId: String,
+    @SerialName("SEMESTER_MST_ID") val semesterMstId: String,
+    @SerialName("BRANCH_STANDARD_GRP_ID") val branchStandardGrpId: String,
+    @SerialName("CENTRE_CODE") val centreCode: String,
+    @SerialName("USER_TYPE") val userType: String,
+    @SerialName("COLLEGE_NAME") val collegeName: String,
+    @SerialName("Web_Api_Url") val webApiUrl: String,
+    @SerialName("secretkey") val secretKey: String,
+)
+
+private suspend fun getSessionDetails(client: HttpClient): SessionDetails {
+    /*  curl 'https://cas.mitwpu.edu.in/Student_dashboard.aspx/getsessiondetails_' \
+        -H 'accept: application/json, text/plain, *SLASH*' \
+        -H 'accept-language: en-US,en;q=0.9' \
+        -H 'content-type: application/json;charset=UTF-8' \
+        -b 'ASP.NET_SessionId=CENSORED; AuthToken=CENSORED' \
+        -H 'origin: https://cas.mitwpu.edu.in' \
+        -H 'priority: u=1, i' \
+        -H 'referer: https://cas.mitwpu.edu.in/Student_dashboard.aspx' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36' \
+        --data-raw '{}'
+    */
+    val response = client.post("Student_dashboard.aspx/getsessiondetails_") {
+        contentType(ContentType.Application.Json)
+        setBody("{}")
+    }
+
+    @Serializable data class Body(val d: SessionDetails)
+    val body: Body = response.body()
+    return body.d
+}
+
 suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSummary> {
     /*  curl 'https://cas.mitwpu.edu.in/STUDENT/SelfAttendence.aspx?MENU_CODE=MWEBSTUATTEN_SLF_ATTEN' \
           -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*SLASH*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
@@ -60,6 +97,9 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
         url.parameters.append("MENU_CODE", "MWEBSTUATTEN_SLF_ATTEN")
     }
     val body = response.bodyAsText()
+
+    // We need to extract subject IDs from the goddamn timetable endpoint nowadays lol.....
+    val timetable = getTimetable(client)
 
     val semId = Regex("var varSemId = '(\\d+)';").find(body)?.groupValues?.getOrNull(1) ?: "FAIL"
     val document = Ksoup.parse(body)
@@ -75,11 +115,52 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
             val subjectName =
                 if (cells.size == 4) attendanceSummary.lastOrNull()?.subjectName ?: "Unknown"
                 else cells[1].text().trim()
+            val subjectType = cells[idxStart + 2].text().trim()
+            var subjectId = cells[idxStart + 2].select("a").attr("id")
+            if (subjectId == "") {
+                // We could also fetch the "subAppNo" from the subject list's __VIEWSTATE Base64 data:
+                // Fetch from SubjectlistSyllabus.aspx (Syllabus -> Subject)
+                /*
+                  // 1. Grab the raw ViewState string from the hidden input
+                  let rawViewState = document.getElementById("__VIEWSTATE").value;
+
+                  // 2. Decode the Base64 into a raw binary string
+                  let binaryString = atob(rawViewState);
+
+                  // 3. Strip out all the non-printable binary characters (ASCII 32 to 126)
+                  // We will replace the binary "junk" with a clean pipe ' | ' separator
+                  let readableText = binaryString.replace(/[^\x20-\x7E]/g, ' | ');
+
+                  // 4. Clean up the formatting so it's easy to read
+                  readableText = readableText.replace(/(\s*\|\s*)+/g, ' | ');
+
+                  console.log("%cDecoded ViewState Data:", "color: cyan; font-weight: bold;");
+                  console.log(readableText);
+                */
+                // but actually, that seems to be wrong.
+                subjectId += when (subjectType) {
+                    "TH" -> 1
+                    "PR" -> 2
+                    "TT" -> 4 // IDK if this is actually correct
+                    "PJ" -> 5
+                    else -> 3 // Safe default, but may cause issues, we will know if someone's getting empty attendance
+                }
+                subjectId += '#'
+                // Extract from the timetable, lol
+                outerLoop@ for (day in timetable) {
+                    for (period in day.periods) {
+                        if (period.subjectDescription == subjectName && period.typeShortName == subjectType) {
+                            subjectId += period.subjectDetailId
+                            break@outerLoop
+                        }
+                    }
+                }
+                // If we don't find it, forget it.
+            }
             attendanceSummary.add(CourseAttendanceSummary(
-                // FIXME: These IDs are no longer embedded in this page... stupid...
-                semId + "#" + cells[idxStart + 2].select("a").attr("id"),
+                "$semId#$subjectId",
                 subjectName,
-                cells[idxStart + 2].text().trim(),
+                subjectType,
                 cells[idxStart + 3].text().trim().toInt(),
                 cells[idxStart + 4].text().trim().toInt(),
                 cells[idxStart + 3].text().trim().toDouble()
@@ -181,6 +262,70 @@ suspend fun getEvents(term: String): List<Event> {
         Event("Diwali Holidays", "State Holiday", "2025-10-18T00:00:00", "2025-10-25T00:00:00"),
         Event("Christmas", "State Holiday", "2025-12-25T00:00:00"),
     )
+}
+
+@Serializable
+data class TimetableRequest(
+    @SerialName("USER_TYPE") val userType: String,
+    @SerialName("EMPLOYEEID") val employeeId: String = "",
+    @SerialName("DEPARTMENTNUMBER") val departmentNumber: String = "",
+    @SerialName("JOB_PROFILE_ID") val jobProfileId: String = "",
+    @SerialName("WORKDESIGCODE") val workDesigCode: String = "",
+    @SerialName("CENTRE_CODE") val centreCode: String,
+    @SerialName("COLLEGE_NAME") val collegeName: String,
+    @SerialName("MENU_CODE") val menuCode: String = "",
+    @SerialName("MENU_NAME") val menuName: String = "student_timetable_home",
+    @SerialName("CLASS_NAME") val className: String = "student_timetable_home",
+    @SerialName("FUNCTION_NAME") val functionName: String = "student_timetable_home",
+    @SerialName("FORM_NAME") val formName: String = "student_timetable_home",
+    @SerialName("EVENT_NAME") val eventName: String = "student_timetable_home",
+    @SerialName("API_NAME") val apiName: String = "/api/sapi_student/get_student_timetable_home",
+    @SerialName("apiUrl") val apiUrl: String,
+    @SerialName("requesturl") val requestUrl: String = "/api/sapi_student/get_student_timetable_home",
+    @SerialName("secretkey") val secretKey: String,
+    @SerialName("valuetype") val valueType: Int = 1,
+    @SerialName("STUDENT_ID") val studentId: String,
+    @SerialName("SESSION_ID") val sessionId: String,
+    @SerialName("SEMESTER_MST_ID") val semesterMstId: String,
+    @SerialName("BRANCH_STANDARD_GRP_ID") val branchStandardGrpId: String,
+)
+
+@Serializable
+data class TimetableResponse(
+    @SerialName("DATA") val data: List<TimetableDay>
+)
+
+suspend fun getTimetable(client: HttpClient): List<TimetableDay> {
+    val sessionDetails = getSessionDetails(client)
+    /*  curl 'https://cas.mitwpu.edu.in/Student_dashboard.aspx/post_data_' \
+          -H 'accept: application/json' \
+          -H 'accept-language: en-US,en;q=0.9' \
+          -H 'content-type: application/json' \
+          -b 'ASP.NET_SessionId=CENSORED; AuthToken=CENSORED' \
+          -H 'origin: https://cas.mitwpu.edu.in' \
+          -H 'priority: u=1, i' \
+          -H 'referer: https://cas.mitwpu.edu.in/Student_dashboard.aspx' \
+          -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36' \
+          --data-raw '{qs:{"USER_TYPE":"censored","EMPLOYEEID":"","DEPARTMENTNUMBER":"","JOB_PROFILE_ID":"","WORKDESIGCODE":"","CENTRE_CODE":"censored","COLLEGE_NAME":"censored","MENU_CODE":"","MENU_NAME":"dtls_stud_home_dash","CLASS_NAME":"dtls_stud_home_dash","FUNCTION_NAME":"dtls_stud_home_dash","FORM_NAME":"dtls_stud_home_dash","EVENT_NAME":"dtls_stud_home_dash","API_NAME":"/api/sapi_student/get_student_attendance_home","apiUrl":"censored","requesturl":"/api/sapi_student/get_student_attendance_home","secretkey":"censored","valuetype":1,"STUDENT_ID":"censored","SESSION_ID":"censored","SEMESTER_MST_ID":"censored","BRANCH_STANDARD_GRP_ID":"censored"}}'
+    */
+    @Serializable data class TimetableRequestBody(val qs: TimetableRequest)
+    @Serializable data class TimetableResponseBody(val d: TimetableResponse)
+    val response = client.post("Student_dashboard.aspx/post_data_") {
+        contentType(ContentType.Application.Json)
+        setBody(TimetableRequestBody(TimetableRequest(
+            userType = sessionDetails.userType,
+            centreCode = sessionDetails.centreCode,
+            collegeName = sessionDetails.collegeName,
+            apiUrl = sessionDetails.webApiUrl,
+            secretKey = sessionDetails.secretKey,
+            studentId = sessionDetails.studentId,
+            sessionId = sessionDetails.sessionId,
+            semesterMstId = sessionDetails.semesterMstId,
+            branchStandardGrpId = sessionDetails.branchStandardGrpId,
+        )))
+    }
+    val body: TimetableResponseBody = response.body()
+    return body.d.data
 }
 
 // TODO: Exams API is still built for PwC, until hall tickets are released, it can't be ported to ERP

@@ -57,6 +57,32 @@ data class Event(
 
 @Parcelize
 @Serializable
+data class TimetablePeriod(
+    @SerialName("PERIOD_FROM_TIME") val periodFromTime: String, // "10:45",
+    @SerialName("PERIOD_UPTO_TIME") val periodUptoTime: String, // "12:45",
+    @SerialName("PERIOD_FROM_TIME1") val periodFromTimeAmPmMarker: String, // "AM",
+    @SerialName("PERIOD_UPTO_TIME1") val periodUptoTimeAmPmMarker: String, // "PM",
+    @SerialName("SUBJECT_DETAIL_ID") val subjectDetailId: String, // "93248",
+    @SerialName("SUBJECT_DESCRIPTION") val subjectDescription: String, // "Full Stack Development Laboratory",
+    @SerialName("TYPE_SHORT_NAME") val typeShortName: String, // "PR",
+    @SerialName("PERIOD_TYPE") val periodType: String, // "",
+    @SerialName("EMP_NAME") val empName: String, // "P.N.N.",
+    @SerialName("BATCH_SHORT_NAME") val batchShortName: String, // "B1",
+    @SerialName("BUILDING_NAME") val buildingName: String, // "",
+    @SerialName("ROOM_NUMBER") val roomNumber: String, // "VY-228",
+) : Parcelable
+
+@Parcelize
+@Serializable
+data class TimetableDay(
+    @SerialName("WEEK_DAY_ID") val weekDayId: String,
+    @SerialName("DAY_NAME") val dayName: String,
+    @SerialName("WEEK_DATE") val weekDate: String,
+    @SerialName("stud_tt") val periods: List<TimetablePeriod>
+) : Parcelable
+
+@Parcelize
+@Serializable
 data class ExamHallTicket(
     val sessionName: String,
     val ticket: List<List<Exam>>,
