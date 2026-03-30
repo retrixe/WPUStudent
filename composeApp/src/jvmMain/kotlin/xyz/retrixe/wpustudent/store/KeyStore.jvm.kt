@@ -2,13 +2,12 @@ package xyz.retrixe.wpustudent.store
 
 import com.github.javakeyring.Keyring
 import com.github.javakeyring.PasswordAccessException
-import io.ktor.util.decodeBase64Bytes
-import io.ktor.util.encodeBase64
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import kotlin.io.encoding.Base64
 
 private const val SERVICE = "xyz.retrixe.wpustudent"
 private const val BASE_CIPHER = "AES"
@@ -23,11 +22,11 @@ private fun generateSecretKey(keyAlias: String): SecretKey {
     try {
         val encodedKey = keyring.getPassword("xyz.retrixe.wpustudent", keyAlias)
             ?: throw PasswordAccessException("No such key alias \"$keyAlias\" stored")
-        val decodedKey = encodedKey.decodeBase64Bytes()
+        val decodedKey = Base64.decode(encodedKey)
         return SecretKeySpec(decodedKey, 0, decodedKey.size, BASE_CIPHER)
     } catch (_: PasswordAccessException) {
         val newKey = keyGenerator.apply { init(CIPHER_SIZE) }.generateKey()
-        keyring.setPassword(SERVICE, keyAlias, newKey.encoded.encodeBase64())
+        keyring.setPassword(SERVICE, keyAlias, Base64.encode(newKey.encoded))
         return newKey
     }
 }
@@ -36,7 +35,7 @@ private fun getSecretKey(keyAlias: String): SecretKey? {
     try {
         val encodedKey = keyring.getPassword("xyz.retrixe.wpustudent", keyAlias)
             ?: throw PasswordAccessException("No such key alias \"$keyAlias\" stored")
-        val decodedKey = encodedKey.decodeBase64Bytes()
+        val decodedKey = Base64.decode(encodedKey)
         return SecretKeySpec(decodedKey, 0, decodedKey.size, BASE_CIPHER)
     } catch (_: PasswordAccessException) {
         return null
