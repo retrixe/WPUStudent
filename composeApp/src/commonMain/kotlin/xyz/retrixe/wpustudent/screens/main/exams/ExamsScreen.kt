@@ -51,6 +51,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 // TODO: Bold text has been removed from other screens, look at it here when re-enabling it
+// TODO: Also, improve the LazyColumn keys
 
 @Composable
 private fun ExamsCard(exam: Exam) {

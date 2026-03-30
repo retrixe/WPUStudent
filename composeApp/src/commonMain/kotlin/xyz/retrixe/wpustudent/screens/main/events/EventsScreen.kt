@@ -206,7 +206,7 @@ fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInf
                     val upcomingEvents = sortedEvents
                         .takeLast(sortedEvents.size - pastEvents.size)
                         .sortedBy { it.startDate }
-                    Crossfade(targetState = selectedTab, label = "Events") {
+                    Crossfade(targetState = selectedTab, label = "Events") { state ->
                         /* transitionSpec = {
                             if (targetState > initialState) {
                                 slideInHorizontally { width -> width } + fadeIn() togetherWith
@@ -234,7 +234,10 @@ fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInf
                                     Text("Past events", fontSize = 24.sp)
                                 }
                             } */
-                            items(if (it == 0) upcomingEvents else pastEvents) { event ->
+                            items(
+                                if (state == 0) upcomingEvents else pastEvents,
+                                key = { it.subType + it.name + it.startDate + it.endDate }
+                            ) { event ->
                                 EventCard(event)
                             }
                         }

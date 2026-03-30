@@ -227,12 +227,17 @@ fun AttendanceDetailsScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(bottom = 16.dp),
                     ) {
-                        val filteredDetails = (if (filters.isEmpty()) details
-                                else details.filter { filters.contains(it.studentStatus) })
+                        // We need to key by index because some of these can be identical here...
+                        val indexedDetails = details.withIndex()
+                        val filteredDetails = (if (filters.isEmpty()) indexedDetails else
+                            indexedDetails.filter {
+                                filters.contains(it.value.studentStatus)
+                            })
                             .sortedByDescending {
-                                LocalDate.parse(it.attendanceDate, DD_MM_YYYY_DATE)
+                                LocalDate.parse(it.value.attendanceDate, DD_MM_YYYY_DATE)
                             }
-                        items(filteredDetails, key = { it }) { detail ->
+                        items(filteredDetails, key = { it.index }) { detail ->
+                            val detail = detail.value
                             OutlinedCard(Modifier.animateItem().width(512.dp)) {
                                 Row(
                                     Modifier.padding(16.dp).fillMaxWidth(),

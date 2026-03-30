@@ -256,7 +256,7 @@ fun AttendanceScreen(
                                 summary.sortedBy { it.subjectName + it.subjectType }
                         items(
                             sortedItems,
-                            key = { it.subjectName + it.subjectType + sortedByAttendance }
+                            key = { it.subjectName + it.subjectType /*+ sortedByAttendance*/ }
                         ) { course ->
                             AttendanceCard(course, attendanceThreshold ?: (THRESHOLD_PERCENTAGE + 5))
                         }
