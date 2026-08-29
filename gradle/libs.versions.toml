@@ -1,8 +1,5 @@
 [versions]
-# FIXME: AGP 9.0 + Gradle 9
-# https://developer.android.com/kotlin/multiplatform/plugin
-# https://kotlinlang.org/docs/multiplatform/multiplatform-project-agp-9-migration.html
-agp = "8.13.2"
+agp = "9.1.1"
 android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "36"

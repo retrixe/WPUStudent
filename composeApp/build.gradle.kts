@@ -14,8 +14,8 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
-        namespace = "xyz.retrixe.wpustudent"
+    android {
+        namespace = "xyz.retrixe.wpustudent.composeApp"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
