@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.buildKonfig)
@@ -14,11 +14,23 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
+    androidLibrary {
+        namespace = "xyz.retrixe.wpustudent"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
             // Custom
             freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=xyz.retrixe.wpustudent.kmp.Parcelize")
+        }
+
+        androidResources {
+            enable = true
+        }
+
+        withHostTest {
+            isIncludeAndroidResources = true
         }
     }
 
@@ -36,7 +48,6 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.androidx.activity.compose)
             // Custom dependencies
             implementation(libs.ktor.client.android)
         }
@@ -95,37 +106,9 @@ kotlin {
     }
 }
 
-android {
-    namespace = "xyz.retrixe.wpustudent"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        applicationId = "xyz.retrixe.wpustudent"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = project.property("app.version.code").toString().toInt()
-        versionName = project.property("app.version.name").toString()
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
 dependencies {
-    debugImplementation(libs.compose.ui.tooling)
+    // Formerly debugImplementation (not 100% sure what's happening)
+    androidRuntimeClasspath(libs.compose.ui.tooling)
 }
 
 compose.desktop {
@@ -191,7 +174,7 @@ buildkonfig {
     packageName = "xyz.retrixe.wpustudent"
 
     defaultConfigs {
-        buildConfigField(STRING, "VERSION_NAME", android.defaultConfig.versionName)
-        buildConfigField(INT, "VERSION_CODE", android.defaultConfig.versionCode?.toString())
+        buildConfigField(STRING, "VERSION_NAME", project.property("app.version.name").toString())
+        buildConfigField(INT, "VERSION_CODE", project.property("app.version.code").toString())
     }
 }
