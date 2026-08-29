@@ -147,10 +147,10 @@ suspend fun getAttendanceSummary(client: HttpClient): List<CourseAttendanceSumma
                 }
                 subjectId += '#'
                 // Extract from the timetable, lol
-                outerLoop@ for (day in timetable) {
-                    for (period in day.periods) {
-                        if (period.subjectDescription == subjectName && period.typeShortName == subjectType) {
-                            subjectId += period.subjectDetailId
+                outerLoop@ for ((_, _, _, periods) in timetable) {
+                    for ((_, _, _, _, subjectDetailId, subjectDescription, typeShortName) in periods) {
+                        if (subjectDescription == subjectName && typeShortName == subjectType) {
+                            subjectId += subjectDetailId
                             break@outerLoop
                         }
                     }

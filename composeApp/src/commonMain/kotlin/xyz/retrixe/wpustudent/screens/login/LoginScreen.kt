@@ -14,8 +14,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -55,7 +53,6 @@ import xyz.retrixe.wpustudent.ui.components.PasswordTextField
 import xyz.retrixe.wpustudent.ui.components.PlainTooltipBox
 import xyz.retrixe.wpustudent.utils.handleKeyEvent
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel) {
     val coroutineScope = rememberCoroutineScope()
@@ -158,7 +155,7 @@ fun LoginScreen(paddingValues: PaddingValues, sessionViewModel: SessionViewModel
                 Button(
                     onClick = { login() },
                     modifier = Modifier.align(Alignment.End).focusRequester(loginButtonFocus),
-                    enabled = !loading && !username.isBlank() && !password.toString().isBlank(),
+                    enabled = !loading && username.isNotBlank() && password.toString().isNotBlank(),
                 ) {
                     Text("Login")
                 }

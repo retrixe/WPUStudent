@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Badge
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +47,6 @@ import xyz.retrixe.wpustudent.kmp.collectAsStateWithLifecycleMultiplatform
 import xyz.retrixe.wpustudent.models.main.exams.ExamsViewModel
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 // TODO: Bold text has been removed from other screens, look at it here when re-enabling it
 // TODO: Also, improve the LazyColumn keys
@@ -88,7 +86,7 @@ private fun ExamsCard(exam: Exam) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ExamsScreen(
     paddingValues: PaddingValues,

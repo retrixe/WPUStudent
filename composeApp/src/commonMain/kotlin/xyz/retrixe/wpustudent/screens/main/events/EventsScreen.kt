@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Badge
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
@@ -66,7 +65,6 @@ import xyz.retrixe.wpustudent.models.main.events.EventsViewModel
 import xyz.retrixe.wpustudent.state.LocalSnackbarHostState
 import xyz.retrixe.wpustudent.utils.RFC_1123_DATE
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 @Composable
 private fun EventCard(event: Event) {
@@ -122,7 +120,7 @@ private fun EventCard(event: Event) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun EventsScreen(paddingValues: PaddingValues, studentBasicInfo: StudentBasicInfo) {
     val eventsViewModelFactory = EventsViewModel.Factory(studentBasicInfo)
