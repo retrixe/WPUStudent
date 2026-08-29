@@ -1,6 +1,5 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -97,8 +96,6 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
         jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
             // Custom dependencies
             implementation(libs.ktor.client.java)
             implementation(libs.java.keyring)
@@ -116,65 +113,6 @@ kotlin {
 dependencies {
     // Formerly debugImplementation (not 100% sure what's happening)
     androidRuntimeClasspath(libs.compose.ui.tooling)
-}
-
-compose.desktop {
-    application {
-        mainClass = "xyz.retrixe.wpustudent.MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, // macOS
-                TargetFormat.Msi, TargetFormat.Exe, // Windows
-                TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage // Linux
-            )
-
-            modules(
-                "java.instrument",
-                "java.management",
-                "java.net.http",
-                "jdk.security.auth",
-                "jdk.unsupported"
-            )
-
-            packageName = "WPUStudent"
-            packageVersion = project.property("app.version.name").toString()
-            description = "A useful app for MIT-WPU students with various tools like attendance tracking."
-            copyright = "Copyright © 2026 Ibrahim Ansari. Licensed under MPL-2.0."
-            vendor = "retrixe"
-            licenseFile.set(rootProject.file("LICENSE"))
-
-            // TODO: https://kotlinlang.org/docs/multiplatform/compose-native-distribution.html#platform-specific-options
-            /* windows {
-                dirChooser = true
-                upgradeUuid = ""
-                shortcut = true
-                menu = true
-                iconFile.set(rootProject.file("resources/icon.ico"))
-                menuGroup = "WPUStudent"
-            }
-            macOS {
-                bundleID = "xyz.retrixe.wpustudent"
-                packageName = rootProject.name
-                iconFile.set(rootProject.file("resources/icon.icns"))
-            }
-            linux {
-                iconFile.set(rootProject.file("resources/icon.png"))
-            } */
-        }
-
-        buildTypes.release.proguard {
-            configurationFiles.from(
-                project.file("proguard-rules.pro"),
-                project.file("compose-desktop.pro"))
-        }
-    }
-}
-
-// http://youtrack.jetbrains.com/issue/CMP-1675
-tasks.withType<Zip>().named {
-    it.matches(Regex("package(Release)?UberJarForCurrentOS"))
-}.configureEach {
-    exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
 }
 
 buildkonfig {
