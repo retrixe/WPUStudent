@@ -6,7 +6,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -75,7 +75,7 @@ fun MainContainer(
                 layoutType =
                     if (isNavigationBarVisible)
                         NavigationSuiteScaffoldDefaults
-                            .navigationSuiteType(currentWindowAdaptiveInfo())
+                            .navigationSuiteType(currentWindowAdaptiveInfoV2())
                     else NavigationSuiteType.None,
                 navigationSuiteItems = {
                     val mainGraph = navController.graph[Screens.Main] as NavGraph
